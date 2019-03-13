@@ -1,6 +1,4 @@
-<Page class="page"
-    navigatingTo="onNavigatingTo" 
-    actionBarHidden="true"
+<Page class="page" navigatingTo="onNavigatingTo" actionBarHidden="true" 
     xmlns="http://schemas.nativescript.org/tns.xsd">
 
     <GridLayout rows="auto, *" ios:class="auth-container top-safe-full-screen-margin" android:class="auth-container pull-up">
@@ -17,49 +15,30 @@
 
                         <StackLayout class="input-field with-validation">
                             <GridLayout columns="*, 25" class="login-field-wrapper">
-                                <TextField col="0"
-                                    class="{{ !emailEmpty && emailValid ? 'login-field valid' : 'login-field invalid' }}" 
-                                    hint="Email" keyboardType="email"
-                                    text="{{ email }}"/>
-                                <Label col="1"
-                                    class="fa login-icon" 
-                                    text="&#xf0e0;" />
+                                <TextField col="0" class="{{ !emailEmpty && emailValid ? 'login-field valid' : 'login-field invalid' }}" hint="Email" keyboardType="email" text="{{ email }}"/>
+                                <Label col="1" class="fa login-icon" text="&#xf0e0;" />
                             </GridLayout>
 
                             <StackLayout class="login-field-validation-wrapper">
-                                <Label 
-                                    visibility="{{ emailEmpty ? 'visible' : 'collapsed' }}" 
-                                    text="email is missing" 
-                                    class="validation"/>
-                                <Label 
-                                    visibility="{{ !emailValid ? 'visible' : 'collapsed' }}" 
-                                    text="the email is not in the correct format"
-                                    class="validation"/>
+                                <Label visibility="{{ emailEmpty ? 'visible' : 'collapsed' }}" text="email is missing" class="validation"/>
+                                <Label visibility="{{ !emailValid ? 'visible' : 'collapsed' }}" text="the email is not in the correct format" class="validation"/>
                             </StackLayout>
                         </StackLayout>
 
                         <StackLayout class="input-field with-validation">
                             <GridLayout columns="*, 25" class="login-field-wrapper">
-                                <TextField col="0"
-                                    class="{{ !passwordEmpty ? 'login-field valid' : 'login-field invalid' }}"
-                                    hint="Password" secure="true"
-                                    text="{{ password }}"/>
-                                <Label col="1"
-                                    class="fa login-icon"
-                                    text="&#xf023;"></Label>
+                                <TextField col="0" class="{{ !passwordEmpty ? 'login-field valid' : 'login-field invalid' }}" hint="Password" secure="true" text="{{ password }}"/>
+                                <Label col="1" class="fa login-icon" text="&#xf023;"></Label>
                             </GridLayout>
 
                             <StackLayout>
                                 <StackLayout>
-                                    <Label visibility="{{ passwordEmpty ? 'visible' : 'collapsed' }}"
-                                        text="password is required" class="validation"/>
+                                    <Label visibility="{{ passwordEmpty ? 'visible' : 'collapsed' }}" text="password is required" class="validation"/>
                                 </StackLayout>
                             </StackLayout>
                         </StackLayout>
 
-                        <Button text="{{ L('Login') }}" tap="onLoginTap" 
-                            isEnabled="{{ formValid }}"
-                            class="{{ formValid ? 'btn-login btn-primary' : 'btn-login' }}"/>
+                        <Button text="{{ L('Login') }}" tap="onLoginTap" isEnabled="{{ formValid }}" class="{{ formValid ? 'btn-login btn-primary' : 'btn-login' }}"/>
 
                         <Label class="hr"/>
 
@@ -67,18 +46,12 @@
                 </StackLayout>
                 <StackLayout row="2" class="bottom-safe-nav">
                     <Label text="Need an account?" class="smaller"/>
-                    <Label tap="onGotoRegisterTap"
-                        textTransform="uppercase" 
-                        class="text-center m-20" 
-                        color="white" text="{{ L('Register') }}"/>
+                    <Label tap="onGotoRegisterTap" textTransform="uppercase" class="text-center m-20" color="white" text="{{ L('Register') }}"/>
                 </StackLayout>
             </GridLayout>
         </StackLayout>
 
-        <ActivityIndicator 
-            row="1" 
-            busy="{{ loggingIn }}" 
-            color="#ffffff"  />
+        <ActivityIndicator row="1" busy="{{ loggingIn }}" color="#ffffff" />
 
     </GridLayout>
 

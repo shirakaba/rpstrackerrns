@@ -218,3 +218,6 @@ components that have the btn class name.
     color: #4b5833;
   }
   
+  .text-center {
+    text-align: center;
+  }

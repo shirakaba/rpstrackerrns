@@ -1,13 +1,10 @@
-<Page
-    class="page"
-    navigatingTo="onNavigatingTo"
-    xmlns:df="nativescript-ui-dataform"
+<Page class="page" navigatingTo="onNavigatingTo" 
+    xmlns:df="nativescript-ui-dataform" 
     xmlns="http://schemas.nativescript.org/tns.xsd">
     <ActionBar title="Item">
         <NavigationButton text="Back" android.systemIcon="ic_menu_back" tap="{{ onNavBackTap }}"></NavigationButton>
 
-        <ActionItem tap="onDeleteTap" ios.systemIcon="16" ios.position="right" text="delete" android.systemIcon="ic_menu_delete"
-            android.position="actionBar"></ActionItem>
+        <ActionItem tap="onDeleteTap" ios.systemIcon="16" ios.position="right" text="delete" android.systemIcon="ic_menu_delete" android.position="actionBar"></ActionItem>
     </ActionBar>
 
     <StackLayout>
@@ -15,23 +12,20 @@
         <GridLayout class="pt-item-detail-header" rows="*, 40">
 
             <GridLayout row="0" columns="*" class="pt-item-detail-header-title-row">
-                
+
                 <Label text="{{ itemTitle }}" class="pt-item-detail-header-title" col="0"></Label>
             </GridLayout>
 
             <StackLayout row="1">
                 <FlexboxLayout class="selector">
                     <GridLayout class="{{ selectedScreen === 'details' ? 'selector-btn-wrapper active' : 'selector-btn-wrapper' }}">
-                        <Button tap="{{ onTabDetailsTap }}" text="Details" 
-                            class="{{ selectedScreen === 'details' ? 'selector-btn active' : 'selector-btn' }}"></Button>
+                        <Button tap="{{ onTabDetailsTap }}" text="Details" class="{{ selectedScreen === 'details' ? 'selector-btn active' : 'selector-btn' }}"></Button>
                     </GridLayout>
                     <GridLayout class="{{ selectedScreen === 'tasks' ? 'selector-btn-wrapper active' : 'selector-btn-wrapper' }}">
-                        <Button tap="{{ onTabTasksTap }}" text="Tasks" 
-                            class="{{ selectedScreen === 'tasks' ? 'selector-btn active' : 'selector-btn' }}"></Button>
+                        <Button tap="{{ onTabTasksTap }}" text="Tasks" class="{{ selectedScreen === 'tasks' ? 'selector-btn active' : 'selector-btn' }}"></Button>
                     </GridLayout>
                     <GridLayout class="{{ selectedScreen === 'chitchat' ? 'selector-btn-wrapper active' : 'selector-btn-wrapper' }}">
-                        <Button tap="{{ onTabChitchatTap }}" text="Chitchat" 
-                            class="{{ selectedScreen === 'chitchat' ? 'selector-btn active' : 'selector-btn' }}"></Button>
+                        <Button tap="{{ onTabChitchatTap }}" text="Chitchat" class="{{ selectedScreen === 'chitchat' ? 'selector-btn active' : 'selector-btn' }}"></Button>
                     </GridLayout>
                 </FlexboxLayout>
             </StackLayout>
@@ -39,85 +33,83 @@
 
         <StackLayout>
             <!-- Details -->
-            <GridLayout visibility="{{ selectedScreen === 'details' ? 'visible' : 'collapsed' }}"
-                rows="auto, auto" class="pt-item-details-container">
+            <GridLayout visibility="{{ selectedScreen === 'details' ? 'visible' : 'collapsed' }}" rows="auto, auto" class="pt-item-details-container">
 
                 <GridLayout row="0" columns="*, *, auto" class="assignee-row" tap="onAssigneeRowTap">
                     <Label text="Assignee" color="#4b5833" col="0" />
-                    <Label text="{{ selectedAssignee.fullName }}"  col="1" />
+                    <Label text="{{ selectedAssignee.fullName }}" col="1" />
                     <Image id="assigneeImg" width="40" height="40" class="pt-item-detail-avatar" src="{{ selectedAssignee.avatar }}" col="2" />
                 </GridLayout>
 
                 <df:RadDataForm id="itemDetailsDataForm" row="1" source="{{ itemForm }}" propertyCommitted="onPropertyCommitted" editorUpdate="onEditorUpdate">
                     <df:RadDataForm.properties>
-                    <df:EntityProperty  name="title" displayName="Title" index="1" hintText="Title">
-                    <df:EntityProperty.editor>
-                        <df:PropertyEditor  type="Text">
-                        <df:PropertyEditor.propertyEditorStyle>
-                            <df:PropertyEditorStyle  labelTextColor="#4b5833" labelPosition="top"></df:PropertyEditorStyle>
-                            </df:PropertyEditor.propertyEditorStyle>
-                        </df:PropertyEditor>
-                        </df:EntityProperty.editor>
-                        <df:EntityProperty.validators>
-                        <df:NonEmptyValidator  errorMessage="Title can't be empty."></df:NonEmptyValidator>
-                        </df:EntityProperty.validators>
-                    </df:EntityProperty>
+                        <df:EntityProperty name="title" displayName="Title" index="1" hintText="Title">
+                            <df:EntityProperty.editor>
+                                <df:PropertyEditor type="Text">
+                                    <df:PropertyEditor.propertyEditorStyle>
+                                        <df:PropertyEditorStyle labelTextColor="#4b5833" labelPosition="top"></df:PropertyEditorStyle>
+                                    </df:PropertyEditor.propertyEditorStyle>
+                                </df:PropertyEditor>
+                            </df:EntityProperty.editor>
+                            <df:EntityProperty.validators>
+                                <df:NonEmptyValidator errorMessage="Title can't be empty."></df:NonEmptyValidator>
+                            </df:EntityProperty.validators>
+                        </df:EntityProperty>
 
-                    <df:EntityProperty  name="description" displayName="Description" index="2" required="true" hintText="description">
-                    <df:EntityProperty.editor>
-                        <df:PropertyEditor  type="MultilineText">
-                        <df:PropertyEditor.propertyEditorStyle>
-                            <df:PropertyEditorStyle  labelTextColor="#4b5833" labelPosition="top"></df:PropertyEditorStyle>
-                            </df:PropertyEditor.propertyEditorStyle>
-                        </df:PropertyEditor>
-                        </df:EntityProperty.editor>
-                    </df:EntityProperty>
+                        <df:EntityProperty name="description" displayName="Description" index="2" required="true" hintText="description">
+                            <df:EntityProperty.editor>
+                                <df:PropertyEditor type="MultilineText">
+                                    <df:PropertyEditor.propertyEditorStyle>
+                                        <df:PropertyEditorStyle labelTextColor="#4b5833" labelPosition="top"></df:PropertyEditorStyle>
+                                    </df:PropertyEditor.propertyEditorStyle>
+                                </df:PropertyEditor>
+                            </df:EntityProperty.editor>
+                        </df:EntityProperty>
 
-                    <df:EntityProperty  name="typeStr" displayName="{{ itemTypeEditorDisplayName }}" index="3" imageResource="{{ itemTypeImage }}"
-                        valuesProvider="{{ itemTypesProvider }}">
-                        <df:EntityProperty.editor>
-                        <df:PropertyEditor  type="Picker">
-                        <df:PropertyEditor.propertyEditorStyle>
-                            <df:PropertyEditorStyle  labelTextColor="#4b5833"></df:PropertyEditorStyle>
-                            </df:PropertyEditor.propertyEditorStyle>
-                        </df:PropertyEditor>
-                        </df:EntityProperty.editor>
-                    </df:EntityProperty>
+                        <df:EntityProperty name="typeStr" displayName="{{ itemTypeEditorDisplayName }}" index="3" imageResource="{{ itemTypeImage }}" valuesProvider="{{ itemTypesProvider }}">
+                            <df:EntityProperty.editor>
+                                <df:PropertyEditor type="Picker">
+                                    <df:PropertyEditor.propertyEditorStyle>
+                                        <df:PropertyEditorStyle labelTextColor="#4b5833"></df:PropertyEditorStyle>
+                                    </df:PropertyEditor.propertyEditorStyle>
+                                </df:PropertyEditor>
+                            </df:EntityProperty.editor>
+                        </df:EntityProperty>
 
-                    <df:EntityProperty  name="statusStr" displayName="Status" index="4" valuesProvider="{{ statusesProvider }}">
-                    <df:EntityProperty.editor>
-                        <df:PropertyEditor  type="Picker">
-                        <df:PropertyEditor.propertyEditorStyle>
-                            <df:PropertyEditorStyle  labelTextColor="#4b5833"></df:PropertyEditorStyle>
-                            </df:PropertyEditor.propertyEditorStyle>
-                        </df:PropertyEditor>
-                        </df:EntityProperty.editor>
-                    </df:EntityProperty>
+                        <df:EntityProperty name="statusStr" displayName="Status" index="4" valuesProvider="{{ statusesProvider }}">
+                            <df:EntityProperty.editor>
+                                <df:PropertyEditor type="Picker">
+                                    <df:PropertyEditor.propertyEditorStyle>
+                                        <df:PropertyEditorStyle labelTextColor="#4b5833"></df:PropertyEditorStyle>
+                                    </df:PropertyEditor.propertyEditorStyle>
+                                </df:PropertyEditor>
+                            </df:EntityProperty.editor>
+                        </df:EntityProperty>
 
-                    <df:EntityProperty  name="estimate" displayName="Estimate" index="5">
-                    <df:EntityProperty.editor>
-                        <df:PropertyEditor  type="Stepper">
-                        <df:PropertyEditor.propertyEditorStyle>
-                            <df:PropertyEditorStyle  labelTextColor="#4b5833"></df:PropertyEditorStyle>
-                            </df:PropertyEditor.propertyEditorStyle>
-                        </df:PropertyEditor>
-                        </df:EntityProperty.editor>
-                    </df:EntityProperty>
-
-
-                    <df:EntityProperty  name="priorityStr" displayName="Priority" index="6" valuesProvider="{{ prioritiesProvider }}">
-                    <df:EntityProperty.editor>
-                        <df:PropertyEditor  type="SegmentedEditor">
-                        <df:PropertyEditor.propertyEditorStyle>
-                            <df:PropertyEditorStyle  labelTextColor="#4b5833" labelPosition="top"></df:PropertyEditorStyle>
-                            </df:PropertyEditor.propertyEditorStyle>
-                        </df:PropertyEditor>
-                        </df:EntityProperty.editor>
-                    </df:EntityProperty>
+                        <df:EntityProperty name="estimate" displayName="Estimate" index="5">
+                            <df:EntityProperty.editor>
+                                <df:PropertyEditor type="Stepper">
+                                    <df:PropertyEditor.propertyEditorStyle>
+                                        <df:PropertyEditorStyle labelTextColor="#4b5833"></df:PropertyEditorStyle>
+                                    </df:PropertyEditor.propertyEditorStyle>
+                                </df:PropertyEditor>
+                            </df:EntityProperty.editor>
+                        </df:EntityProperty>
 
 
-                    <df:EntityProperty  name="assigneeName" hidden="true">
-                    </df:EntityProperty>
+                        <df:EntityProperty name="priorityStr" displayName="Priority" index="6" valuesProvider="{{ prioritiesProvider }}">
+                            <df:EntityProperty.editor>
+                                <df:PropertyEditor type="SegmentedEditor">
+                                    <df:PropertyEditor.propertyEditorStyle>
+                                        <df:PropertyEditorStyle labelTextColor="#4b5833" labelPosition="top"></df:PropertyEditorStyle>
+                                    </df:PropertyEditor.propertyEditorStyle>
+                                </df:PropertyEditor>
+                            </df:EntityProperty.editor>
+                        </df:EntityProperty>
+
+
+                        <df:EntityProperty name="assigneeName" hidden="true">
+                        </df:EntityProperty>
 
                     </df:RadDataForm.properties>
                 </df:RadDataForm>
@@ -127,13 +119,10 @@
             </GridLayout>
 
             <!-- Tasks -->
-            <GridLayout visibility="{{ selectedScreen === 'tasks' ? 'visible' : 'collapsed' }}"
-                rows="70, *" class="pt-item-tasks-container">
+            <GridLayout visibility="{{ selectedScreen === 'tasks' ? 'visible' : 'collapsed' }}" rows="70, *" class="pt-item-tasks-container">
                 <GridLayout row="0" columns="*, 80" class="pt-tasks-add-row">
                     <TextField hint="Enter new task..." text="{{ newTaskTitle }}" col="0" class="pt-text-task-add" />
-                    <Button tap="{{ onAddTask }}" text="Add" col="1"
-                        class="{{ newTaskTitle.length > 0 ? 'pt-btn-task-add enabled' : 'pt-btn-task-add' }}"
-                        isEnabled="{{ newTaskTitle.length > 0 }}"></Button>
+                    <Button tap="{{ onAddTask }}" text="Add" col="1" class="{{ newTaskTitle.length > 0 ? 'pt-btn-task-add enabled' : 'pt-btn-task-add' }}" isEnabled="{{ newTaskTitle.length > 0 }}"></Button>
                 </GridLayout>
 
                 <StackLayout row="1" class="pt-tasks-scroll">
@@ -141,12 +130,8 @@
                         <ListView id="tasksList" items="{{ tasks }}">
                             <ListView.itemTemplate>
                                 <GridLayout columns="30, *" class="pt-task-wrapper">
-                                    <Image tap="onTaskToggleTap" src="{{ completed ? 'res://checkboxchecked' : 'res://checkboxunchecked' }}" class="task-checkbox"
-                                        col="0" />
-                                    <TextField col="1" text="{{ title }}"
-                                        focus="onTaskFocused"
-                                        blur="onTaskBlurred"
-                                        class="task-title" />
+                                    <Image tap="onTaskToggleTap" src="{{ completed ? 'res://checkboxchecked' : 'res://checkboxunchecked' }}" class="task-checkbox" col="0" />
+                                    <TextField col="1" text="{{ title }}" focus="onTaskFocused" blur="onTaskBlurred" class="task-title" />
                                 </GridLayout>
                             </ListView.itemTemplate>
                         </ListView>
@@ -155,15 +140,12 @@
             </GridLayout>
 
             <!-- Chitchat -->
-            <GridLayout visibility="{{ selectedScreen === 'chitchat' ? 'visible' : 'collapsed' }}"
-                rows="70, *" class="pt-item-chitchat-container">
+            <GridLayout visibility="{{ selectedScreen === 'chitchat' ? 'visible' : 'collapsed' }}" rows="70, *" class="pt-item-chitchat-container">
 
                 <GridLayout row="0" columns="60, *, 80" class="pt-comments-add-row">
                     <Image src="{{ currentUserAvatar }}" stretch="aspectFit" class="pt-img-comment-add" col="0" />
                     <TextField text="" hint="Enter new comment..." text="{{ newCommentText }}" col="1" class="pt-text-comment-add" />
-                    <Button tap="{{ onAddComment }}" text="Add" col="2"
-                        class="{{ newCommentText.length > 0 ? 'pt-btn-comment-add enabled' : 'pt-btn-comment-add' }}"
-                        isEnabled="{{ newCommentText.length > 0 }}"/>
+                    <Button tap="{{ onAddComment }}" text="Add" col="2" class="{{ newCommentText.length > 0 ? 'pt-btn-comment-add enabled' : 'pt-btn-comment-add' }}" isEnabled="{{ newCommentText.length > 0 }}"/>
                 </GridLayout>
 
                 <ScrollView row="1" class="pt-comments-scroll">

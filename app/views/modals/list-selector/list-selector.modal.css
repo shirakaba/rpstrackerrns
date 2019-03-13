@@ -1,4 +1,5 @@
 .modal-actions-container {
+    align-items: center;
     background-color: #efefef;
     justify-content: space-between;
 }
