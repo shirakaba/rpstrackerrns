@@ -1,16 +1,13 @@
-<Page
-    class="page"
-    navigatingTo="onNavigatingTo"
-    loaded="onLoaded"
-    xmlns:nsDrawer="nativescript-ui-sidedrawer"
-    xmlns:nsRefresh="nativescript-pulltorefresh"
-    xmlns:menu="shared/components/menu"
+<Page class="page" navigatingTo="onNavigatingTo" loaded="onLoaded" 
+    xmlns:nsDrawer="nativescript-ui-sidedrawer" 
+    xmlns:nsRefresh="nativescript-pulltorefresh" 
+    xmlns:menu="shared/components/menu" 
     xmlns="http://schemas.nativescript.org/tns.xsd">
 
     <ActionBar title="Backlog">
         <ActionItem ios.position="right">
             <StackLayout class="navbar_image_wrapper" ios:horizontalAlignment="right">
-                <Image src="res://iconelipseswhite" />
+                <Image src="res://iconelipseswhite" tap="toggleDrawer" />
             </StackLayout>
         </ActionItem>
     </ActionBar>
@@ -31,7 +28,7 @@
                     <StackLayout row="1" class="menu-container">
                         <menu:menu presetSelected="{{ onPresetSelected }}"/>
                     </StackLayout>
-                    
+
                     <StackLayout row="2" class="menu-container">
                         <Button tap="onLogoutTap" text="LOGOUT" class="btn-inverse" />
                     </StackLayout>
@@ -64,7 +61,7 @@
                                             <Label text="{{ dateCreated | dateConverter }}" class="li-date" />
                                         </StackLayout>
 
-                                    </GridLayout>                            
+                                    </GridLayout>
                                 </ListView.itemTemplate>
                             </ListView>
                         </nsRefresh:PullToRefresh>
