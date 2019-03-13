@@ -1,0 +1,21 @@
+<Page
+    xmlns="http://schemas.nativescript.org/tns.xsd" shownModally="onShownModally">
+
+    <GridLayout rows="60, *" verticalAlignment="top">
+
+        <FlexboxLayout row="0" class="modal-actions-container">
+            <Image src="res://iconcloseblack" tap="{{ onCancelButtonTap }}" class="modal-close-img"></Image>
+        </FlexboxLayout>
+
+        <ListView id="listView" row="1" items="{{ items }}" itemTap="{{ onItemSelected }}" class="list-modal-list">
+            <ListView.itemTemplate>
+                <StackLayout orientation="horizontal" class="list-modal-item-wrapper">
+                    <Image width="50" height="50" src="{{ img }}"></Image>
+                    <Label text="{{ value }}" class="list-modal-label"></Label>
+                </StackLayout>
+            </ListView.itemTemplate>
+        </ListView>
+
+    </GridLayout>
+
+</Page>

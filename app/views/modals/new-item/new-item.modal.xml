@@ -1,0 +1,46 @@
+<Page
+    xmlns="http://schemas.nativescript.org/tns.xsd" shownModally="onShownModally">
+    <GridLayout rows="60, *"
+        xmlns:df="nativescript-ui-dataform">
+
+        <FlexboxLayout row="0" class="new-item-actions-container">
+            <Image src="res://iconcloseblack" tap="onCancelButtonTap" class="modal-close-img" />
+            <Button text="{{ btnOkText }}" tap="onOkButtonTap" class="btn-save" />
+        </FlexboxLayout>
+
+        <df:RadDataForm row="1" id="itemDetailsDataForm" source="{{ newItemForm }}" commitMode="Manual" editorUpdate="onEditorUpdate">
+            <df:RadDataForm.properties>
+                <df:EntityProperty name="title" displayName="Title" index="0" hintText="Title" required="true">
+                    <df:EntityProperty.editor>
+                        <df:PropertyEditor type="MultilineText">
+                            <df:PropertyEditor.propertyEditorStyle>
+                                <df:PropertyEditorStyle labelTextColor="#4b5833" labelPosition="top"/>
+                            </df:PropertyEditor.propertyEditorStyle>
+                        </df:PropertyEditor>
+                    </df:EntityProperty.editor>
+                    <df:EntityProperty.validators>
+                        <df:NonEmptyValidator 
+                            errorMessage="Title can't be empty." /> 
+                    </df:EntityProperty.validators> 
+                </df:EntityProperty>
+
+                <df:EntityProperty name="description" displayName="Description" index="1" hintText="description" required="true">
+                    <df:EntityProperty.editor>
+                        <df:PropertyEditor type="MultilineText">
+                            <df:PropertyEditor.propertyEditorStyle>
+                                <df:PropertyEditorStyle labelTextColor="#4b5833" labelPosition="top"/>
+                            </df:PropertyEditor.propertyEditorStyle>
+                        </df:PropertyEditor>
+                    </df:EntityProperty.editor>
+                </df:EntityProperty>
+
+                <df:EntityProperty name="typeStr" displayName="Type" index="2" valuesProvider="{{ itemTypesProvider }}" required="true" imageResource="{{ itemTypeImage }}">
+                    <df:EntityProperty.editor>
+                        <df:PropertyEditor type="Picker" />
+                    </df:EntityProperty.editor>
+                </df:EntityProperty>
+
+            </df:RadDataForm.properties>
+        </df:RadDataForm>
+    </GridLayout>
+</Page>

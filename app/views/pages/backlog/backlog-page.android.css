@@ -1,0 +1,107 @@
+/* Common Styles */
+.backlog-container {
+    background-color: #ffffff;
+}
+
+.side-drawer-panel {
+    background-color: #333333;
+}
+
+.slide-out-img {
+    margin: 20 0 30 12;
+}
+
+.menu-container {
+    margin-left: 15;
+    text-align: left;
+}
+
+.list-container {
+    height: 100%;
+}
+
+.btn-add-wrapper {
+    vertical-align: middle;
+    height: 60;
+}
+
+.btn-add {
+    vertical-align: middle;
+    height: 100%;
+    background-color: #555a97;
+    border-color: #555a97;
+    border-width: 1;
+    color: white;
+}
+
+.menu-wrapper {
+    width: 100%;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.li-indicator {
+    height: 58;
+    width: 10;
+    text-align: left;
+}
+
+.li-indicator label {
+    width: 5;
+    height: 58;
+    horizontal-align: left;
+}
+
+.li-info-wrapper {
+    margin-left: 5;
+}
+
+.li-title {
+    font-size: 14;
+    color: #4b5833;
+}
+
+.li-avatar {
+    background-color: #eeeeee;
+    width: 50;
+    height: 50;
+}
+
+.li-estimate {
+    font-size: 10;
+    font-weight: bold;
+    color: #555a97;
+}
+
+.li-date {
+    font-size: 12;
+    color: #555a97;
+    margin-left: 10;
+}
+
+.indicator-pbi {
+    background-color: #527fd7;
+}
+
+.indicator-bug {
+    background-color: #d75252;
+}
+
+.indicator-chore {
+    background-color: #666666;
+}
+
+.indicator-impediment {
+    background-color: #d7c152;
+}
+
+/* Android styles */
+ActionBar {
+    color: #ffffff;
+}
+
+.backlog-container {
+    background-color: #ffffff;
+    /*height: 100%;
+   margin-top: 20;*/
+}

@@ -1,0 +1,91 @@
+<Page class="page"
+    navigatingTo="onNavigatingTo" 
+    actionBarHidden="true"
+    xmlns="http://schemas.nativescript.org/tns.xsd">
+
+    <GridLayout rows="auto, *" ios:class="auth-container top-safe-full-screen-margin" android:class="auth-container pull-up">
+
+        <StackLayout row="0" class="logo-container">
+            <Image src="res://rpslogo" stretch="aspectFit"/>
+        </StackLayout>
+
+        <StackLayout row="1">
+            <GridLayout rows="50, *, auto" class="register-page-wrapper">
+                <Label class="title" row="0" text="{{ L('Register') }}"/>
+                <StackLayout row="1">
+                    <StackLayout>
+
+                        <StackLayout class="input-field with-validation">
+                            <GridLayout columns="*, 25" class="login-field-wrapper">
+                                <TextField col="0"  
+                                    class="{{ !nameEmpty ? 'login-field valid' : 'login-field invalid' }}"
+                                    hint="Name" text="{{ fullName }}" />
+                                <Label col="1" 
+                                    class="fa login-icon" 
+                                    text="&#xf007;" />
+                            </GridLayout>
+
+                            <StackLayout>
+                                <Label visibility="{{ nameEmpty ? 'visible' : 'collapsed' }}"
+                                    text="full name is missing" class="validation"/>
+                            </StackLayout>
+                        </StackLayout>
+
+
+                        <StackLayout class="input-field with-validation">
+                            <GridLayout columns="*, 25" class="login-field-wrapper">
+                                <TextField col="0"
+                                    class="{{ !emailEmpty && emailValid ? 'login-field valid' : 'login-field invalid' }}"
+                                    keyboardType="email"
+                                    hint="Email" text="{{ email }}" />
+                                <Label col="1"
+                                    class="fa login-icon" 
+                                    text="&#xf0e0;" />
+                            </GridLayout>
+
+                            <StackLayout>
+                                <Label visibility="{{ emailEmpty ? 'visible' : 'collapsed' }}"
+                                    text="email is missing" class="validation"/>
+                                <Label visibility="{{ !emailValid ? 'visible' : 'collapsed' }}"
+                                    text="the email is not in the correct format" class="validation"/>
+                            </StackLayout>
+                        </StackLayout>
+
+                        <StackLayout class="input-field with-validation">
+                            <GridLayout columns="*, 25" class="login-field-wrapper">
+                                <TextField col="0"
+                                    class="{{ !passwordEmpty ? 'login-field valid' : 'login-field invalid' }}"
+                                    hint="Password" secure="true" 
+                                    text="{{ password }}" />
+                                <Label class="fa login-icon" text="&#xf023;" col="1"/>
+                            </GridLayout>
+
+                            <StackLayout>
+                                <StackLayout>
+                                    <Label visibility="{{ passwordEmpty ? 'visible' : 'collapsed' }}"
+                                        text="password is required" class="validation"/>
+                                </StackLayout>
+                            </StackLayout>
+                        </StackLayout>
+
+
+                        <Button text="{{ L('Register') }}" tap="onRegisterTap"
+                            isEnabled="{{ formValid }}"
+                            class="{{ formValid ? 'btn-login btn-primary' : 'btn-login' }}"/>
+
+                    </StackLayout>
+
+                </StackLayout>
+                <StackLayout row="2" class="bottom-safe-nav">
+                    <Label text="Already have an account?" class="smaller"></Label>
+                    <Label tap="onGotoLoginTap"
+                        textTransform="uppercase" 
+                        class="text-center m-20" 
+                        color="white" text="{{ L('Login') }}"/>
+                </StackLayout>
+            </GridLayout>
+        </StackLayout>
+
+    </GridLayout>
+
+</Page>

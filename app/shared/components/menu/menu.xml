@@ -1,0 +1,7 @@
+<FlexboxLayout class="menu-wrapper" loaded="onLoaded">
+    <Button tap="onSelectPresetTap" preset="my" text="MY ITEMS" class="btn-inverse" />
+    <Button tap="onSelectPresetTap" preset="open" text="OPEN ITEMS" class="btn-inverse"/>
+    <Button tap="onSelectPresetTap" preset="closed" text="FINISHED ITEMS" class="btn-inverse"/>
+
+    <Button tap="onSettingsTap" text="SETTINGS" class="btn-inverse"/>
+</FlexboxLayout>
