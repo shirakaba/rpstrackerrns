@@ -1,8 +1,4 @@
-import { APP_STATE_KEY, PtStorageService } from '~/core/contracts/services';
-import {
-  PtAppState,
-  PtAppStateService
-} from '~/core/contracts/services/pt-state-service.contract';
+import { APP_STATE_KEY, PtStorageService, PtAppState, PtAppStateService } from '~/core/contracts/services';
 
 export const INITIAL_STATE: PtAppState = {
   backlogItems: [],

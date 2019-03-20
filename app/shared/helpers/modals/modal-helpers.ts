@@ -1,13 +1,14 @@
 import { Page } from 'tns-core-modules/ui/page';
 import { PtUser } from '~/core/models/domain';
 import { EMPTY_STRING } from '~/core/models/domain/constants/strings';
-import { ROUTES } from '~/core/routes';
+
 import { getUserService } from '~/globals/dependencies/locator';
 import {
   PtModalContext,
   PtModalListDisplayItem,
   ptUserToModalListDisplayItem
 } from '~/shared/helpers/modals';
+import { ROUTES } from '../navigation/routes';
 
 let modalIsShowing = false;
 
