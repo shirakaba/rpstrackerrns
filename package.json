@@ -1,12 +1,6 @@
 {
   "nativescript": {
-    "id": "org.nativescript.rpstrackertns",
-    "tns-android": {
-      "version": "5.2.1"
-    },
-    "tns-ios": {
-      "version": "5.2.0"
-    }
+    "id": "org.nativescript.rpstrackertns"
   },
   "prettier": {
     "singleQuote": true
