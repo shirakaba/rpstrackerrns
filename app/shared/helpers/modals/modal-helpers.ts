@@ -1,4 +1,4 @@
-import { Page } from 'tns-core-modules/ui/page';
+import { Page, ShowModalOptions } from 'tns-core-modules/ui/page';
 import { PtUser } from '~/core/models/domain';
 import { EMPTY_STRING } from '~/core/models/domain/constants/strings';
 
@@ -40,15 +40,17 @@ function createModal<T, R>(
   return new Promise<R>(resolve => {
     modalIsShowing = true;
 
-    page.showModal(
-      route,
-      context,
-      result => {
+    const showModalOptions: ShowModalOptions = {
+      context: context,
+      closeCallback: result => {
         resolve(result);
         modalIsShowing = false;
       },
-      true
-    );
+      fullscreen: true
+    };
+
+    page.showModal(route, showModalOptions);
+
   });
 }
 
@@ -80,7 +82,13 @@ export function showModal<T>(
   context: any
 ): Promise<T> {
   return new Promise<T>(resolve => {
-    page.showModal(route, context, resolve, fullscreen);
+    const showModalOptions: ShowModalOptions = {
+      context: context,
+      closeCallback: resolve,
+      fullscreen: fullscreen
+    };
+
+    page.showModal(route, showModalOptions);
   });
 }
 

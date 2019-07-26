@@ -5,7 +5,7 @@ export const ROUTES = {
     detailPage: './views/pages/detail/detail-page',
     settingsPage: './views/pages/settings/settings-page',
 
-    newItemModal: './views/modals/new-item/new-item.modal',
-    textInputModal: './views/modals/text-input/text-input.modal',
-    listSelectorModal: './views/modals/list-selector/list-selector.modal',
+    newItemModal: './views/modals/new-item/new-item-modal',
+    textInputModal: './views/modals/text-input/text-input-modal',
+    listSelectorModal: './views/modals/list-selector/list-selector-modal',
 };
