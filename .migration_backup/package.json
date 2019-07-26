@@ -1,9 +1,6 @@
 {
   "nativescript": {
-    "id": "org.nativescript.rpstrackertns",
-    "tns-ios": {
-      "version": "6.0.1"
-    }
+    "id": "org.nativescript.rpstrackertns"
   },
   "prettier": {
     "singleQuote": true
@@ -18,18 +15,18 @@
   "dependencies": {
     "email-validator": "2.0.4",
     "moment": "2.24.0",
-    "nativescript-localize": "4.2.0",
+    "nativescript-localize": "4.1.1",
     "nativescript-pulltorefresh": "2.2.1",
     "nativescript-theme-core": "~1.0.4",
-    "nativescript-ui-dataform": "5.0.0",
-    "nativescript-ui-sidedrawer": "7.0.0",
-    "tns-core-modules": "6.0.1"
+    "nativescript-ui-dataform": "3.10.1",
+    "nativescript-ui-sidedrawer": "6.0.0",
+    "tns-core-modules": "~5.2.0"
   },
   "devDependencies": {
-    "nativescript-dev-webpack": "1.0.1",
-    "tns-platform-declarations": "6.0.1",
-    "tslint": "5.13.1",
-    "typescript": "3.4.5"
+    "nativescript-dev-typescript": "~0.8.0",
+    "nativescript-dev-webpack": "~0.20.0",
+    "tns-platform-declarations": "5.2.2",
+    "tslint": "5.13.1"
   },
   "gitHead": "f548ec926e75201ab1b7c4a3a7ceefe7a4db15af",
   "readme": "NativeScript Application"
