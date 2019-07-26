@@ -1,6 +1,6 @@
 {
   "nativescript": {
-    "id": "org.nativescript.rpstrackertns",
+    "id": "org.nativescript.rpstrackerrns",
     "tns-ios": {
       "version": "6.0.1"
     }
@@ -12,9 +12,14 @@
     "lint": "tslint 'app/**/*.ts' -t verbose"
   },
   "main": "app.js",
-  "description": "NativeScript Application",
-  "license": "SEE LICENSE IN <your-license-filename>",
-  "repository": "<fill-your-repository-here>",
+  "description": "Alex Ziskind's RPS Tracker app ported from NativeScript Core to React NativeScript",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Jamie Birch",
+  "contributors": [
+    "Alex Ziskind",
+    "Jamie Birch"
+  ],
+  "repository": "https://github.com/shirakaba/rpstrackerrns",
   "dependencies": {
     "email-validator": "2.0.4",
     "moment": "2.24.0",
