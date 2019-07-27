@@ -28,6 +28,10 @@ export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<P
     private readonly loginVm: LoginViewModel = new LoginViewModel();
     private readonly authService: PtAuthService = getAuthService();
 
+    componentDidMount(){
+        this.props.forwardedRef.current!.addCssFile("views/pages/login/login-page.css");
+    }
+
     constructor(props){
         super(props);
 
