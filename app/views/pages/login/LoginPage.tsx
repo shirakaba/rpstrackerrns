@@ -10,7 +10,14 @@ import {
     goToBacklogPage,
     goToRegisterPage
   } from '~/shared/helpers/navigation/nav.helper';
-  import { localize } from "nativescript-localize";
+import { localize } from "nativescript-localize";
+import { PtLoginModel } from '~/core/models/domain';
+import { EMPTY_STRING } from '~/core/models/domain/constants/strings';
+import * as emailValidator from 'email-validator';
+
+interface Props {
+    forwardedRef: React.RefObject<Page>,
+}
 
 interface State {
     email: string,
@@ -22,15 +29,15 @@ interface State {
     loggingIn: boolean,
 }
 
-export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<Page> }, State> {
+export class LoginPage extends React.Component<Props, State> {
     private readonly loginVm: LoginViewModel = new LoginViewModel();
     private readonly authService: PtAuthService = getAuthService();
 
-    componentDidMount(){
+    public componentDidMount(): void {
         this.props.forwardedRef.current!.addCssFile("views/pages/login/login-page.css");
     }
 
-    constructor(props){
+    constructor(props: Props){
         super(props);
 
         this.state = {
@@ -44,9 +51,8 @@ export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<P
         };
     }
 
-    render(){
+    public render(){
         const { loggingIn, emailEmpty, email, emailValid, password, passwordEmpty, formValid } = this.state;
-
 
         return (
             <$Page ref={this.props.forwardedRef} actionBarHidden={true} className={"sanity-test"}>
@@ -149,4 +155,78 @@ export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<P
             alert('Sorry, could not log in at this time');
         });
     };
+
+	public onLoginTapHandler(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.setState(
+                {
+                    loggingIn: true
+                },
+                () => {
+                    this.authService
+                    .login({
+                        username: this.state.email,
+                        password: this.state.password
+                    })
+                    .then(() => {
+                        this.setState({ loggingIn: false }, () => {
+                            resolve();
+                        });
+                    })
+                    .catch(er => {
+                        this.setState({ loggingIn: false }, () => {
+                            reject(er);
+                        });
+                    });
+                }
+            );
+        });
+    }
+    
+    // TODO: validate on text change of these fields, rather than speculatively on componentDidUpdate()
+    public componentDidUpdate(prevProps: Props, prevState: State): void {
+        if(this.state.email !== prevState.email){
+            this.validate("email");
+        }
+        if(this.state.password !== prevState.password){
+            this.validate("password");
+        }
+    }
+
+	private validate(changedPropName: string) {
+		switch (changedPropName) {
+			case 'email':
+				if (this.state.email.trim() === EMPTY_STRING) {
+                    this.setState({
+                        emailEmpty: true,
+                        emailValid: true,
+                        formValid: false,
+                    });
+				} else if (emailValidator.validate(this.state.email)) {
+                    this.setState((state) => ({
+                        emailEmpty: false,
+                        emailValid: true,
+                        formValid: !state.passwordEmpty,
+                    }));
+				} else {
+                    this.setState({
+                        emailEmpty: false,
+                        emailValid: false,
+                        formValid: false,
+                    });
+				}
+				break;
+
+			case 'password':
+				if (this.state.password.trim() === EMPTY_STRING) {
+                    this.setState({ passwordEmpty: true });
+				} else {
+					this.setState({ passwordEmpty: false });
+				}
+				break;
+
+			default:
+				return;
+		}
+	}
 }
