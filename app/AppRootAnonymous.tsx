@@ -1,7 +1,7 @@
 import * as React from "react";
 import { $Frame } from "react-nativescript";
 import { Frame, Page } from "react-nativescript/dist/client/ElementRegistry";
-import { LoginPage } from "./views/pages/login/LoginPage";
+import { LoginPage } from "./views/pages/login/login-page";
 
 
 export class AppRootAnonymous extends React.Component<{ forwardedRef: React.RefObject<Frame> }, {}> {

@@ -1,3 +1,7 @@
+.sanity-test {
+    background-color: #42a948;
+}
+
 .login-page-wrapper {
     animation-name: fadeIn;
     animation-duration: 500ms;

@@ -5,7 +5,14 @@ import { isIOS, isAndroid } from "tns-core-modules/platform/platform";
 import { Page, Color } from "react-nativescript/dist/client/ElementRegistry";
 import { PtAuthService } from '~/core/contracts/services';
 import { getAuthService } from '~/globals/dependencies/locator';
-import "./login-page.css";
+import { LoginViewModel } from '~/shared/view-models/pages/login/login.page.vm';
+import {
+    goToBacklogPage,
+    goToRegisterPage
+  } from '~/shared/helpers/navigation/nav.helper';
+// import "./login-page.css";
+// const css = require("./login-page.css"); // Import for effects
+// console.log(`Use css`, css);
 
 interface State {
     email: string,
@@ -18,6 +25,7 @@ interface State {
 }
 
 export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<Page> }, State> {
+    private readonly loginVm: LoginViewModel = new LoginViewModel();
     private readonly authService: PtAuthService = getAuthService();
 
     constructor(props){
@@ -37,8 +45,9 @@ export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<P
     render(){
         const { loggingIn, emailEmpty, email, emailValid, password, passwordEmpty, formValid } = this.state;
 
+
         return (
-            <$Page ref={this.props.forwardedRef} actionBarHidden={true}>
+            <$Page ref={this.props.forwardedRef} actionBarHidden={true} className={"sanity-test"}>
                 <$GridLayout
                     rows={[new ItemSpec(1, "auto"), new ItemSpec(1, "star")]}
                     columns={[]}
@@ -57,7 +66,7 @@ export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<P
                             columns={[]}
                             className={"login-page-wrapper"}
                         >
-                            <$Label className="title" row={0}>L('Login') would go in here</$Label>
+                            <$Label className="title" row={0} text={"{{ L('Login') }}"}/>
 
                             <$StackLayout row={1}>
                                 <$StackLayout>
@@ -124,10 +133,18 @@ export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<P
     }
 
     private readonly onGotoRegisterTap = () => {
-        console.log(`STUB: onGotoRegisterTap()`);
+        goToRegisterPage();
     };
 
     private readonly onLoginTap = () => {
-        console.log(`STUB: onLoginTap()`);
+        this.loginVm
+        .onLoginTapHandler()
+        .then(() => {
+            goToBacklogPage(true);
+        })
+        .catch(error => {
+            console.error(error);
+            alert('Sorry, could not log in at this time');
+        });
     };
 }
