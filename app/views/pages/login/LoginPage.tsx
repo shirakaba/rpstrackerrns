@@ -5,6 +5,7 @@ import { isIOS, isAndroid } from "tns-core-modules/platform/platform";
 import { Page, Color } from "react-nativescript/dist/client/ElementRegistry";
 import { PtAuthService } from '~/core/contracts/services';
 import { getAuthService } from '~/globals/dependencies/locator';
+import "./login-page.css";
 
 interface State {
     email: string,
@@ -39,7 +40,7 @@ export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<P
         return (
             <$Page ref={this.props.forwardedRef} actionBarHidden={true}>
                 <$GridLayout
-                    rows={[new ItemSpec(0, "auto"), new ItemSpec(0, "star")]}
+                    rows={[new ItemSpec(1, "auto"), new ItemSpec(1, "star")]}
                     columns={[]}
                     className={
                         isIOS ? "auth-container top-safe-full-screen-margin" : 
@@ -52,7 +53,7 @@ export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<P
 
                     <$StackLayout row={1} visibility={!loggingIn ? "visible" : "collapse"}>
                         <$GridLayout
-                            rows={[new ItemSpec(50, "pixel"), new ItemSpec(0, "star"), new ItemSpec(0, "auto")]}
+                            rows={[new ItemSpec(50, "pixel"), new ItemSpec(1, "star"), new ItemSpec(1, "auto")]}
                             columns={[]}
                             className={"login-page-wrapper"}
                         >
@@ -63,7 +64,7 @@ export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<P
                                     <$StackLayout className="input-field with-validation">
                                         <$GridLayout
                                             rows={[]}
-                                            columns={[new ItemSpec(0, "star"), new ItemSpec(25, "pixel")]}
+                                            columns={[new ItemSpec(1, "star"), new ItemSpec(25, "pixel")]}
                                             className={"login-field-wrapper"}
                                         >
                                             <$TextField
@@ -85,7 +86,7 @@ export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<P
                                     <$StackLayout className="input-field with-validation">
                                         <$Label col={1} className={"fa login-icon"} text="&#xf023;"/>
 
-                                        <$GridLayout rows={[]} columns={[new ItemSpec(0, "star"), new ItemSpec(25, "pixel")]} className="login-field-wrapper">
+                                        <$GridLayout rows={[]} columns={[new ItemSpec(1, "star"), new ItemSpec(25, "pixel")]} className="login-field-wrapper">
                                             <$TextField col={0} className={ !passwordEmpty ? 'login-field valid' : 'login-field invalid' } hint="Password" secure={true} text={password}/>
                                             <$Label col={1} className="fa login-icon" text="&#xf023;"/>
                                         </$GridLayout>
