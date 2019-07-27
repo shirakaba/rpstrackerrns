@@ -10,9 +10,7 @@ import {
     goToBacklogPage,
     goToRegisterPage
   } from '~/shared/helpers/navigation/nav.helper';
-// import "./login-page.css";
-// const css = require("./login-page.css"); // Import for effects
-// console.log(`Use css`, css);
+  import { localize } from "nativescript-localize";
 
 interface State {
     email: string,
@@ -70,7 +68,7 @@ export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<P
                             columns={[]}
                             className={"login-page-wrapper"}
                         >
-                            <$Label className="title" row={0} text={"{{ L('Login') }}"}/>
+                            <$Label className="title" row={0} text={localize('Login')}/>
 
                             <$StackLayout row={1}>
                                 <$StackLayout>
@@ -111,7 +109,7 @@ export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<P
                                         </$StackLayout>
                                     </$StackLayout>
 
-                                    <$Button text="{{ L('Login') }}" onTap={this.onLoginTap} isEnabled={ formValid } className={ formValid ? 'btn-login btn-primary' : 'btn-login' }/>
+                                    <$Button text={localize('Login')} onTap={this.onLoginTap} isEnabled={ formValid } className={ formValid ? 'btn-login btn-primary' : 'btn-login' }/>
 
                                     <$Label className="hr"/>
                                 </$StackLayout>
@@ -124,7 +122,7 @@ export class LoginPage extends React.Component<{ forwardedRef: React.RefObject<P
                                     textTransform={"uppercase"}
                                     className="text-center m-20"
                                     color={new Color("white")}
-                                    text={`L('Register') would go here`}
+                                    text={localize('Register')}
                                 />
                             </$StackLayout>
                         </$GridLayout>
