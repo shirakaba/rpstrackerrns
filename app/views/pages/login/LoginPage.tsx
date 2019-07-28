@@ -88,9 +88,7 @@ export class LoginPage extends React.Component<Props, State> {
                                                 hint={"Email"}
                                                 keyboardType={"email"}
                                                 text={email}
-                                                onTextChange={(args: EventData) => {
-                                                    this.onEmailTextChange((args.object as TextField).text);
-                                                }}
+                                                onTextChange={this.onEmailTextChange}
                                             />
                                             <$Label col={1} className="fa login-icon" text="&#xf0e0;"/>
                                         </$GridLayout>
@@ -111,9 +109,7 @@ export class LoginPage extends React.Component<Props, State> {
                                                 hint="Password"
                                                 secure={true}
                                                 text={password}
-                                                onTextChange={(args: EventData) => {
-                                                    this.onPasswordTextChange((args.object as TextField).text);
-                                                }}
+                                                onTextChange={this.onPasswordTextChange}
                                             />
                                             <$Label col={1} className="fa login-icon" text="&#xf023;"/>
                                         </$GridLayout>
@@ -192,7 +188,8 @@ export class LoginPage extends React.Component<Props, State> {
         });
     }
 
-    private readonly onEmailTextChange = (text: string) => {
+    private readonly onEmailTextChange = (args: EventData) => {
+        const text: string = (args.object as TextField).text;
         // console.log(`onEmailTextChange`, text);
         if (text.trim() === EMPTY_STRING) {
             this.setState({
@@ -218,7 +215,8 @@ export class LoginPage extends React.Component<Props, State> {
         }
     }
 
-    private readonly onPasswordTextChange = (text: string) => {
+    private readonly onPasswordTextChange = (args: EventData) => {
+        const text: string = (args.object as TextField).text;
         // console.log(`onPasswordTextChange`, text);
         if (text.trim() === EMPTY_STRING) {
             this.setState({
