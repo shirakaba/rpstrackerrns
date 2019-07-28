@@ -13,10 +13,17 @@ export const drawerContentNodeTreeRole: string = "RadSideDrawerDrawerContent";
 
 // @ts-ignore RadSideDrawer DOES extend View!
 class RNSFriendlyRadSideDrawer extends NativeScriptRadSideDrawer implements CustomNodeHierarchyManager<RNSFriendlyRadSideDrawer> {
-    public __customHostConfigAppendChild(parentInstance: RNSFriendlyRadSideDrawer, child: Instance | TextInstance): boolean {
+    public readonly __ImplementsCustomNodeHierarchyManager__: true = true;
+
+    constructor(){
+        super();
+        // This constructor call is needed for some reason; they must be doing something odd with the constructor.
+    }
+
+    public __customHostConfigAppendChild(parent: RNSFriendlyRadSideDrawer, child: Instance | TextInstance): boolean {
         if((child as any).__rns__nodeTreeRole === mainContentNodeTreeRole){
             // @ts-ignore RadSideDrawer DOES extend View!
-            parentInstance.mainContent = child as View;
+            parent.mainContent = child as View;
         } else if((child as any).__rns__nodeTreeRole === drawerContentNodeTreeRole){
             // @ts-ignore RadSideDrawer DOES extend View!
             parent.drawerContent = child as View;
@@ -35,13 +42,13 @@ class RNSFriendlyRadSideDrawer extends NativeScriptRadSideDrawer implements Cust
             parent.drawerContent = null;
         } else {
             console.warn(
-                `<RadSideDrawer> received a child lacking an "__rns__nodeTreeRole" prop;` +
+                `<RadSideDrawer> received a child lacking an "__rns__nodeTreeRole" prop; ` +
                 `please set this prop with the value "${mainContentNodeTreeRole}" or "${drawerContentNodeTreeRole}".`
             );
         }
         return true;
     }
-    public __customHostConfigInsertBefore(parentInstance: RNSFriendlyRadSideDrawer, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
+    public __customHostConfigInsertBefore(parent: RNSFriendlyRadSideDrawer, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
         // No-op, because re-arranging the order of mainContent or drawerContent doesn't matter as RadSideDrawer only accepts one of each.
         return true;
     }
