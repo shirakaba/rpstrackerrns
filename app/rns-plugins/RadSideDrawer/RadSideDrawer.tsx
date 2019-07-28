@@ -5,10 +5,37 @@ import { RadSideDrawer as NativeScriptRadSideDrawer, DrawerStateChangingEventArg
 import { ViewComponentProps, RCTView } from "react-nativescript/dist/components/View";
 import { updateListener } from "react-nativescript/dist/client/EventHandling";
 import { EventData } from "tns-core-modules/data/observable/observable";
-import { register } from "react-nativescript/dist/client/ElementRegistry";
+import { register, View } from "react-nativescript/dist/client/ElementRegistry";
+import { CustomNodeHierarchyManager, Type, Container, HostContext, Instance, TextInstance } from "react-nativescript/dist/shared/HostConfigTypes";
+
+// @ts-ignore RadSideDrawer DOES extend View!
+class RNSFriendlyRadSideDrawer extends NativeScriptRadSideDrawer implements CustomNodeHierarchyManager<RNSFriendlyRadSideDrawer> {
+    public appendChild(parentInstance: RNSFriendlyRadSideDrawer, child: Instance | TextInstance): boolean {
+        // TODO
+        return true;
+    }
+    public removeChild(parent: RNSFriendlyRadSideDrawer, child: Instance | TextInstance): boolean {
+        // TODO
+        return true;
+    }
+    public insertBefore(parentInstance: RNSFriendlyRadSideDrawer, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
+        // TODO
+        return true;
+    }
+}
 
 const elementKey: string = "radSideDrawer";
-register(elementKey, NativeScriptRadSideDrawer);
+register(
+    elementKey,
+    (
+        props: Props,
+        rootContainerInstance: Container,
+        hostContext: HostContext,
+    ) => {
+        // @ts-ignore RadSideDrawer DOES extend ViewBase!
+        return new RNSFriendlyRadSideDrawer() as Instance;
+    }
+);
 
 type RadSideDrawerProps = Pick<NativeScriptRadSideDrawer,
 "mainContent"|
@@ -31,12 +58,14 @@ interface Props {
 
 export type RadSideDrawerComponentProps<
     E extends NativeScriptRadSideDrawer = NativeScriptRadSideDrawer
+    // @ts-ignore RadSideDrawer DOES extend View!
 > = Props /* & typeof RadSideDrawer.defaultProps */ & Partial<RadSideDrawerProps> & ViewComponentProps<E>;
 
 export class _RadSideDrawer<
     P extends RadSideDrawerComponentProps<E>,
     S extends {},
     E extends NativeScriptRadSideDrawer
+    // @ts-ignore RadSideDrawer DOES extend View!
 > extends RCTView<P, S, E> {
     // static defaultProps = {
     //     forwardedRef: React.createRef<NativeScriptRadSideDrawer>()
