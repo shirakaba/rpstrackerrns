@@ -20,7 +20,14 @@ import {
     getAuthService,
     getBacklogService
 } from '~/globals/dependencies/locator';
+import { showModalNewItem } from '~/shared/helpers/modals';
+import {
+    goToDetailPage,
+    goToLoginPage,
+    goToSettingsPage
+  } from '~/shared/helpers/navigation/nav.helper';
 import { EventData } from "tns-core-modules/data/observable/observable";
+import { dateConverter } from "~/utils/converters";
 
 export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject<Page> }, {}> {
     private readonly drawerRef: React.RefObject<RadSideDrawer> = React.createRef<RadSideDrawer>();
@@ -83,7 +90,7 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
 
                                                     <$StackLayout col={3}>
                                                         {/* TODO */}
-                                                        <$Label text="{{ dateCreated | dateConverter }}" className="li-date" />
+                                                        <$Label text={dateConverter(dateCreated)} className="li-date" />
                                                     </$StackLayout>
                                                 </$GridLayout>
                                             );
@@ -128,35 +135,47 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
     };
 
     private readonly onListItemTap = () => {
+        // TODO
         // goToDetailPage(args.view.bindingContext);
     };
 
     private readonly onAddTap = () => {
-        // toggleDrawer
+        const page: Page = this.props.forwardedRef.current!;
+        // @ts-ignore Still not sure why View (and subclass) typings are broken...
+        showModalNewItem(page).then((newItem: PtItem) => {
+            if (newItem) {
+                this.addItem(newItem, this.authService.getCurrentUser());
+            }
+        });
     };
 
     private readonly onLogoutTap = () => {
-        // toggleDrawer
+        this.onLogoutTapHandler().then(() => goToLoginPage());
+    };
+
+    private readonly onSettingsTap = () => {
+        goToSettingsPage();
     };
 
     private readonly onToggleDrawerTap = () => {
         this.drawerRef.current!.toggleDrawerState();
     };
 
-
     private readonly onPresetSelected = () => {
         this.refresh();
-    }
-    
-    private readonly addNewItemHandler = (newItem: PtItem) => {
-        if (newItem) {
-            this.addItem(newItem, this.authService.getCurrentUser());
-        }
     }
     
     private readonly onLogoutTapHandler = () => {
         return this.authService.logout();
     }
+
+    private readonly onRefreshRequested = () => {
+        // TODO
+        /* Get reference to the PullToRefresh; */
+        // const pullToRefresh = args.object;
+        // backLogVm.refresh();
+        // pullToRefresh.refreshing = false;
+    };
     
     private readonly refresh = () => {
         const fetchReq = toFetchItemsRequest(
