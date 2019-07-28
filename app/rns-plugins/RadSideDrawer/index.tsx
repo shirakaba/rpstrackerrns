@@ -8,18 +8,41 @@ import { EventData } from "tns-core-modules/data/observable/observable";
 import { register, View } from "react-nativescript/dist/client/ElementRegistry";
 import { CustomNodeHierarchyManager, Type, Container, HostContext, Instance, TextInstance } from "react-nativescript/dist/shared/HostConfigTypes";
 
+export const mainContentNodeTreeRole: string = "RadSideDrawerMainContent";
+export const drawerContentNodeTreeRole: string = "RadSideDrawerDrawerContent";
+
 // @ts-ignore RadSideDrawer DOES extend View!
 class RNSFriendlyRadSideDrawer extends NativeScriptRadSideDrawer implements CustomNodeHierarchyManager<RNSFriendlyRadSideDrawer> {
-    public appendChild(parentInstance: RNSFriendlyRadSideDrawer, child: Instance | TextInstance): boolean {
-        // TODO
+    public __customHostConfigAppendChild(parentInstance: RNSFriendlyRadSideDrawer, child: Instance | TextInstance): boolean {
+        if((child as any).__rns__nodeTreeRole === mainContentNodeTreeRole){
+            // @ts-ignore RadSideDrawer DOES extend View!
+            parentInstance.mainContent = child as View;
+        } else if((child as any).__rns__nodeTreeRole === drawerContentNodeTreeRole){
+            // @ts-ignore RadSideDrawer DOES extend View!
+            parent.drawerContent = child as View;
+        } else {
+            console.warn(
+                `<RadSideDrawer> received a child lacking an "__rns__nodeTreeRole" prop;` +
+                `please set this prop with the value "${mainContentNodeTreeRole}" or "${drawerContentNodeTreeRole}".`
+            );
+        }
         return true;
     }
-    public removeChild(parent: RNSFriendlyRadSideDrawer, child: Instance | TextInstance): boolean {
-        // TODO
+    public __customHostConfigRemoveChild(parent: RNSFriendlyRadSideDrawer, child: Instance | TextInstance): boolean {
+        if((child as any).__rns__nodeTreeRole === mainContentNodeTreeRole){
+            parent.mainContent = null;
+        } else if((child as any).__rns__nodeTreeRole === drawerContentNodeTreeRole){
+            parent.drawerContent = null;
+        } else {
+            console.warn(
+                `<RadSideDrawer> received a child lacking an "__rns__nodeTreeRole" prop;` +
+                `please set this prop with the value "${mainContentNodeTreeRole}" or "${drawerContentNodeTreeRole}".`
+            );
+        }
         return true;
     }
-    public insertBefore(parentInstance: RNSFriendlyRadSideDrawer, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
-        // TODO
+    public __customHostConfigInsertBefore(parentInstance: RNSFriendlyRadSideDrawer, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
+        // No-op, because re-arranging the order of mainContent or drawerContent doesn't matter as RadSideDrawer only accepts one of each.
         return true;
     }
 }
