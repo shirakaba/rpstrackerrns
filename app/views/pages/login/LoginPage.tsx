@@ -1,19 +1,18 @@
 import * as React from "react";
-import { $TabView, $TabViewItem, $StackLayout, $Label, $Page, $GridLayout, $Image, $ActivityIndicator, $TextField, $Button } from "react-nativescript";
+import { $StackLayout, $Label, $Page, $GridLayout, $Image, $ActivityIndicator, $TextField, $Button } from "react-nativescript";
 import { ItemSpec } from "tns-core-modules/ui/layouts/grid-layout/grid-layout";
 import { isIOS, isAndroid } from "tns-core-modules/platform/platform";
-import { Page, Color } from "react-nativescript/dist/client/ElementRegistry";
+import { Page, Color, TextField } from "react-nativescript/dist/client/ElementRegistry";
 import { PtAuthService } from '~/core/contracts/services';
 import { getAuthService } from '~/globals/dependencies/locator';
-import { LoginViewModel } from '~/shared/view-models/pages/login/login.page.vm';
 import {
     goToBacklogPage,
     goToRegisterPage
   } from '~/shared/helpers/navigation/nav.helper';
 import { localize } from "nativescript-localize";
-import { PtLoginModel } from '~/core/models/domain';
 import { EMPTY_STRING } from '~/core/models/domain/constants/strings';
 import * as emailValidator from 'email-validator';
+import { EventData } from "tns-core-modules/ui/editable-text-base/editable-text-base";
 
 interface Props {
     forwardedRef: React.RefObject<Page>,
@@ -30,7 +29,6 @@ interface State {
 }
 
 export class LoginPage extends React.Component<Props, State> {
-    private readonly loginVm: LoginViewModel = new LoginViewModel();
     private readonly authService: PtAuthService = getAuthService();
 
     public componentDidMount(): void {
@@ -90,6 +88,9 @@ export class LoginPage extends React.Component<Props, State> {
                                                 hint={"Email"}
                                                 keyboardType={"email"}
                                                 text={email}
+                                                onTextChange={(args: EventData) => {
+                                                    this.onEmailTextChange((args.object as TextField).text);
+                                                }}
                                             />
                                             <$Label col={1} className="fa login-icon" text="&#xf0e0;"/>
                                         </$GridLayout>
@@ -104,7 +105,16 @@ export class LoginPage extends React.Component<Props, State> {
                                         <$Label col={1} className={"fa login-icon"} text="&#xf023;"/>
 
                                         <$GridLayout rows={[]} columns={[new ItemSpec(1, "star"), new ItemSpec(25, "pixel")]} className="login-field-wrapper">
-                                            <$TextField col={0} className={ !passwordEmpty ? 'login-field valid' : 'login-field invalid' } hint="Password" secure={true} text={password}/>
+                                            <$TextField
+                                                col={0}
+                                                className={ !passwordEmpty ? 'login-field valid' : 'login-field invalid' }
+                                                hint="Password"
+                                                secure={true}
+                                                text={password}
+                                                onTextChange={(args: EventData) => {
+                                                    this.onPasswordTextChange((args.object as TextField).text);
+                                                }}
+                                            />
                                             <$Label col={1} className="fa login-icon" text="&#xf023;"/>
                                         </$GridLayout>
 
@@ -145,8 +155,7 @@ export class LoginPage extends React.Component<Props, State> {
     };
 
     private readonly onLoginTap = () => {
-        this.loginVm
-        .onLoginTapHandler()
+        this.onLoginTapHandler()
         .then(() => {
             goToBacklogPage(true);
         })
@@ -156,7 +165,7 @@ export class LoginPage extends React.Component<Props, State> {
         });
     };
 
-	public onLoginTapHandler(): Promise<void> {
+	private readonly onLoginTapHandler = () : Promise<void> => {
         return new Promise((resolve, reject) => {
             this.setState(
                 {
@@ -182,51 +191,45 @@ export class LoginPage extends React.Component<Props, State> {
             );
         });
     }
-    
-    // TODO: validate on text change of these fields, rather than speculatively on componentDidUpdate()
-    public componentDidUpdate(prevProps: Props, prevState: State): void {
-        if(this.state.email !== prevState.email){
-            this.validate("email");
-        }
-        if(this.state.password !== prevState.password){
-            this.validate("password");
+
+    private readonly onEmailTextChange = (text: string) => {
+        console.log(`onEmailTextChange`, text);
+        if (text.trim() === EMPTY_STRING) {
+            this.setState({
+                email: text,
+                emailEmpty: true,
+                emailValid: true,
+                formValid: false,
+            });
+        } else if (emailValidator.validate(text)) {
+            this.setState((state: State) => ({
+                email: text,
+                emailEmpty: false,
+                emailValid: true,
+                formValid: !state.passwordEmpty,
+            }));
+        } else {
+            this.setState({
+                email: text,
+                emailEmpty: false,
+                emailValid: false,
+                formValid: false,
+            });
         }
     }
 
-	private validate(changedPropName: string) {
-		switch (changedPropName) {
-			case 'email':
-				if (this.state.email.trim() === EMPTY_STRING) {
-                    this.setState({
-                        emailEmpty: true,
-                        emailValid: true,
-                        formValid: false,
-                    });
-				} else if (emailValidator.validate(this.state.email)) {
-                    this.setState((state) => ({
-                        emailEmpty: false,
-                        emailValid: true,
-                        formValid: !state.passwordEmpty,
-                    }));
-				} else {
-                    this.setState({
-                        emailEmpty: false,
-                        emailValid: false,
-                        formValid: false,
-                    });
-				}
-				break;
-
-			case 'password':
-				if (this.state.password.trim() === EMPTY_STRING) {
-                    this.setState({ passwordEmpty: true });
-				} else {
-					this.setState({ passwordEmpty: false });
-				}
-				break;
-
-			default:
-				return;
-		}
-	}
+    private readonly onPasswordTextChange = (text: string) => {
+        // console.log(`onPasswordTextChange`, text);
+        if (text.trim() === EMPTY_STRING) {
+            this.setState({
+                password: text,
+                passwordEmpty: true,
+            });
+        } else {
+            this.setState({
+                password: text,
+                passwordEmpty: false,
+            });
+        }
+    }
 }
