@@ -23,9 +23,48 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
                     </$ActionItem>
                 </$ActionBar>
                 <$RadSideDrawer id={"sideDrawer"} drawerLocation={SideDrawerLocation.Right}>
-                    <$Label>You shouldn't see me</$Label>
-                    <$StackLayout __rns__nodeTreeRole={mainContentNodeTreeRole}>
-                        <$Label>I'm the main content</$Label>
+                    {/* <$Label>You shouldn't see me</$Label> */}
+                    <$StackLayout __rns__nodeTreeRole={mainContentNodeTreeRole} className={"mainContent"}>
+                        <$GridLayout className="backlog-container" rows={[new ItemSpec(1, "star"), new ItemSpec(1, "auto")]} columns={[]}>
+                            <$GridLayout row={0} rows={[]} columns={[]} className="list-container">
+                                {/* <nsRefresh:PullToRefresh refresh="onRefreshRequested">
+                                    <$ListView
+                                        id="backlogList"
+                                        className="items-list"
+                                        items="{{ items }}"
+                                        itemTap="onListItemTap"
+                                        separatorColor="#97a879"
+                                    >
+                                        <ListView.itemTemplate>
+                                            <$GridLayout className="li-wrapper" rows={[new ItemSpec(60, "pixel")]} columns={[new ItemSpec(10, "pixel"), new ItemSpec(50, "pixel"),  new ItemSpec(1, "star"), new ItemSpec(100, "pixel")]}>
+                                                <$StackLayout className="li-indicator" row={0} col={0}>
+                                                    <$Label className="{{ $value | itemToIndicatorClassConverter }}" />
+                                                </$StackLayout>
+
+                                                <$GridLayout col={1} rows={[]} columns={[]} className="li-avatar">
+                                                    <$Image src="{{ assignee.avatar }}" stretch="aspectFit" />
+                                                </$GridLayout>
+
+                                                <$StackLayout className="li-info-wrapper" col={2}>
+                                                    <$Label className="li-title" textWrap={true} text="{{ title }}" />
+                                                    <$Label className="li-estimate" text="{{ 'estimate: ' + estimate }}" />
+                                                </$StackLayout>
+
+                                                <$StackLayout col={3}>
+                                                    <$Label text="{{ dateCreated | dateConverter }}" className="li-date" />
+                                                </$StackLayout>
+
+                                            </$GridLayout>
+                                        </ListView.itemTemplate>
+                                    </$ListView>
+                                </nsRefresh:PullToRefresh> */}
+                            </$GridLayout>
+
+                            <$StackLayout row={1} className="btn-add-wrapper">
+                                <$Button text="Add" className="btn-add bottom-safe-nav" onTap={this.onAddTap} />
+                            </$StackLayout>
+
+                        </$GridLayout>
                     </$StackLayout>
                     <$StackLayout __rns__nodeTreeRole={drawerContentNodeTreeRole}>
                         <$GridLayout
@@ -50,6 +89,10 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
             </$Page>
         );
     }
+
+    private readonly onAddTap = () => {
+        // toggleDrawer
+    };
 
     private readonly onLogoutTap = () => {
         // toggleDrawer
