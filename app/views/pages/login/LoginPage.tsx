@@ -193,7 +193,7 @@ export class LoginPage extends React.Component<Props, State> {
     }
 
     private readonly onEmailTextChange = (text: string) => {
-        console.log(`onEmailTextChange`, text);
+        // console.log(`onEmailTextChange`, text);
         if (text.trim() === EMPTY_STRING) {
             this.setState({
                 email: text,
