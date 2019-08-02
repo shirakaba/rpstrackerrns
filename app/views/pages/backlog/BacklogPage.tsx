@@ -27,7 +27,8 @@ import {
     goToSettingsPage
   } from '~/shared/helpers/navigation/nav.helper';
 import { EventData } from "tns-core-modules/data/observable/observable";
-import { dateConverter } from "~/utils/converters";
+import { dateConverter, itemToIndicatorClassConverter } from "~/utils/converters";
+import { ItemEventData } from "tns-core-modules/ui/list-view/list-view";
 
 export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject<Page> }, {}> {
     private readonly drawerRef: React.RefObject<RadSideDrawer> = React.createRef<RadSideDrawer>();
@@ -44,8 +45,8 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
         // console.log(`BackLogPage.render`);
         return (
             <$Page ref={this.props.forwardedRef} onLoaded={this.onPageLoaded}>
-                <$ActionBar>
-                    <$ActionItem>
+                <$ActionBar title="Backlog">
+                    <$ActionItem ios={{ position: "right" }}>
                         <$StackLayout className="navbar_image_wrapper" horizontalAlignment={ isIOS ? "right" : void 0 }>
                             <$Image src="res://iconelipseswhite" onTap={this.onToggleDrawerTap} />
                         </$StackLayout>
@@ -73,10 +74,7 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
                                                     columns={[new ItemSpec(10, "pixel"), new ItemSpec(50, "pixel"), new ItemSpec(1, "star"), new ItemSpec(100, "pixel")]}
                                                 >
                                                     <$StackLayout className="li-indicator" row={0} col={0}>
-                                                        <$Label
-                                                            // TODO
-                                                            // className="{{ $value | itemToIndicatorClassConverter }}"
-                                                        />
+                                                        <$Label className={itemToIndicatorClassConverter(item)} />
                                                     </$StackLayout>
 
                                                     <$GridLayout col={1} rows={[]} columns={[]} className="li-avatar">
@@ -89,7 +87,6 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
                                                     </$StackLayout>
 
                                                     <$StackLayout col={3}>
-                                                        {/* TODO */}
                                                         <$Label text={dateConverter(dateCreated)} className="li-date" />
                                                     </$StackLayout>
                                                 </$GridLayout>
@@ -134,14 +131,18 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
         this.refresh();
     };
 
-    private readonly onListItemTap = () => {
+    private readonly onListItemTap = (itemEventData: ItemEventData) => {
+        console.log(`[onListItemTap] got itemEventData:`, itemEventData);
+        const item: PtItem = this.items.getItem(itemEventData.index);
+        console.log(`[onListItemTap] got itemEventData.object:`, itemEventData.object);
+
         // TODO
         // goToDetailPage(args.view.bindingContext);
+        goToDetailPage(item);
     };
 
     private readonly onAddTap = () => {
         const page: Page = this.props.forwardedRef.current!;
-        // @ts-ignore Still not sure why View (and subclass) typings are broken...
         showModalNewItem(page).then((newItem: PtItem) => {
             if (newItem) {
                 this.addItem(newItem, this.authService.getCurrentUser());
