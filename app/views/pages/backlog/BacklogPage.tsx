@@ -1,6 +1,7 @@
 import * as React from "react";
 import { $StackLayout, $Label, $Page, $GridLayout, $Image, $ActionBar, $ActionItem, $Button, $ListView } from "react-nativescript";
 import { $RadSideDrawer, mainContentNodeTreeRole, drawerContentNodeTreeRole } from "~/rns-plugins/RadSideDrawer";
+import { $PullToRefresh } from "~/rns-plugins/@nstudio/nativescript-pulltorefresh";
 import { ItemSpec } from "tns-core-modules/ui/layouts/grid-layout/grid-layout";
 import { isIOS, isAndroid } from "tns-core-modules/platform/platform";
 import { Page, Color } from "react-nativescript/dist/client/ElementRegistry";
@@ -29,6 +30,7 @@ import {
 import { EventData } from "tns-core-modules/data/observable/observable";
 import { dateConverter, itemToIndicatorClassConverter } from "~/utils/converters";
 import { ItemEventData } from "tns-core-modules/ui/list-view/list-view";
+import { PullToRefresh } from "@nstudio/nativescript-pulltorefresh";
 
 export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject<Page> }, {}> {
     private readonly drawerRef: React.RefObject<RadSideDrawer> = React.createRef<RadSideDrawer>();
@@ -57,7 +59,7 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
                     <$StackLayout __rns__nodeTreeRole={mainContentNodeTreeRole} className={"mainContent"}>
                         <$GridLayout className="backlog-container" rows={[new ItemSpec(1, "star"), new ItemSpec(1, "auto")]} columns={[]}>
                             <$GridLayout row={0} rows={[]} columns={[]} className="list-container">
-                                {/* <nsRefresh:PullToRefresh refresh="onRefreshRequested"> */}
+                                <$PullToRefresh onRefresh={this.onRefreshRequested}>
                                     <$ListView
                                         id="backlogList"
                                         className="items-list"
@@ -93,8 +95,8 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
                                             );
                                         }}
                                         separatorColor={new Color("#97a879")}
-                                    />
-                                {/* </nsRefresh:PullToRefresh> */}
+                                        />
+                                </$PullToRefresh>
                             </$GridLayout>
 
                             <$StackLayout row={1} className="btn-add-wrapper">
@@ -159,6 +161,7 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
         this.drawerRef.current!.toggleDrawerState();
     };
 
+    /* Listed in original, but not seeing that it was ever used in practice */
     private readonly onPresetSelected = () => {
         this.refresh();
     }
@@ -167,12 +170,10 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
         return this.authService.logout();
     }
 
-    private readonly onRefreshRequested = () => {
-        // TODO
-        /* Get reference to the PullToRefresh; */
-        // const pullToRefresh = args.object;
-        // backLogVm.refresh();
-        // pullToRefresh.refreshing = false;
+    private readonly onRefreshRequested = (args: EventData) => {
+        const pullToRefresh: PullToRefresh = args.object as PullToRefresh;
+        this.refresh();
+        pullToRefresh.refreshing = false;
     };
     
     private readonly refresh = () => {
