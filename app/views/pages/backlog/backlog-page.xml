@@ -1,6 +1,6 @@
 <Page class="page" navigatingTo="onNavigatingTo" loaded="onLoaded" 
     xmlns:nsDrawer="nativescript-ui-sidedrawer" 
-    xmlns:nsRefresh="nativescript-pulltorefresh" 
+    xmlns:nsRefresh="@nstudio/nativescript-pulltorefresh" 
     xmlns:menu="shared/components/menu" 
     xmlns="http://schemas.nativescript.org/tns.xsd">
 

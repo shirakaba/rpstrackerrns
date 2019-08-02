@@ -21,10 +21,10 @@
   ],
   "repository": "https://github.com/shirakaba/rpstrackerrns",
   "dependencies": {
+    "@nstudio/nativescript-pulltorefresh": "^1.0.1",
     "email-validator": "2.0.4",
     "moment": "2.24.0",
     "nativescript-localize": "4.2.0",
-    "nativescript-pulltorefresh": "2.2.1",
     "nativescript-theme-core": "~1.0.4",
     "nativescript-ui-dataform": "5.0.0",
     "nativescript-ui-sidedrawer": "7.0.0",
