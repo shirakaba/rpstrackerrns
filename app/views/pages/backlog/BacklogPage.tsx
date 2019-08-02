@@ -132,12 +132,8 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
     };
 
     private readonly onListItemTap = (itemEventData: ItemEventData) => {
-        console.log(`[onListItemTap] got itemEventData:`, itemEventData);
         const item: PtItem = this.items.getItem(itemEventData.index);
-        console.log(`[onListItemTap] got itemEventData.object:`, itemEventData.object);
 
-        // TODO
-        // goToDetailPage(args.view.bindingContext);
         goToDetailPage(item);
     };
 
@@ -154,6 +150,7 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
         this.onLogoutTapHandler().then(() => goToLoginPage());
     };
 
+    /* Listed in original, but not seeing that it was ever used in practice */
     private readonly onSettingsTap = () => {
         goToSettingsPage();
     };
