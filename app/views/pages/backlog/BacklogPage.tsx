@@ -7,6 +7,7 @@ import { isIOS, isAndroid } from "tns-core-modules/platform/platform";
 import { Page, Color } from "react-nativescript/dist/client/ElementRegistry";
 import { SideDrawerLocation, SlideInOnTopTransition, RadSideDrawer } from "nativescript-ui-sidedrawer";
 import { PtItem } from '~/core/models/domain';
+import { Menu } from '~/shared/components/menu/menu';
 import { ObservableArray } from "tns-core-modules/data/observable-array/observable-array";
 import { PtAuthService, PtBacklogService } from '~/core/contracts/services';
 import {
@@ -116,7 +117,7 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
                             </$StackLayout>
 
                             <$StackLayout row={1} className="menu-container">
-                                {/* <menu:menu presetSelected="{{ onPresetSelected }}"/> */}
+                                <Menu onPresetSelected={this.onPresetSelected} onSettingsTap={this.onSettingsTap}/>
                             </$StackLayout>
 
                             <$StackLayout row={2} className="menu-container">
@@ -128,6 +129,10 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
             </$Page>
         );
     }
+
+    private readonly onPresetSelected = (preset: "my"|"open"|"closed") => {
+        this.refresh();
+    };
 
     private readonly onPageLoaded = (args: EventData) => {
         this.refresh();
@@ -152,7 +157,7 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
         this.onLogoutTapHandler().then(() => goToLoginPage());
     };
 
-    /* Listed in original, but not seeing that it was ever used in practice */
+    /* In the original, this was deferred to the menu component, but we'll pass it down as a prop in this version. */
     private readonly onSettingsTap = () => {
         goToSettingsPage();
     };
@@ -160,11 +165,6 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
     private readonly onToggleDrawerTap = () => {
         this.drawerRef.current!.toggleDrawerState();
     };
-
-    /* Listed in original, but not seeing that it was ever used in practice */
-    private readonly onPresetSelected = () => {
-        this.refresh();
-    }
     
     private readonly onLogoutTapHandler = () => {
         return this.authService.logout();
