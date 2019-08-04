@@ -39,6 +39,7 @@ import { ObservableArray } from "tns-core-modules/data/observable-array/observab
 import { PtTaskViewModel } from "~/shared/view-models/pages/detail/pt-task.vm";
 import { PtCommentViewModel } from "~/shared/view-models/pages/detail/pt-comment.vm";
 import { DetailPageProps } from "~/core/models/page-props/detail-page-props";
+import { EventData } from "tns-core-modules/ui/text-base/text-base";
 
 type Props = DetailPageProps;
 
@@ -143,6 +144,14 @@ export class DetailPage extends React.Component<Props, State> {
         // stub
     };
 
+    private readonly onTaskFocused = (args: EventData) => {
+
+    };
+
+    private readonly onTaskBlurred = (args: EventData) => {
+
+    };
+
     componentDidMount(){
         console.log(`[DetailPage.componentDidMount] this.props.forwardedRef: ${this.props.forwardedRef}; this.props.forwardedRef.current: ${this.props.forwardedRef}`);
         this.props.forwardedRef.current!.addCssFile("views/pages/detail/detail-page.css");
@@ -158,7 +167,7 @@ export class DetailPage extends React.Component<Props, State> {
         const observableComments = new ObservableArray<PtCommentViewModel>(
             item.comments.map(comment => new PtCommentViewModel(comment))
         );
-        const { newTaskTitle, newCommentText, selectedScreen } = this.state;
+        const { newTaskTitle, newCommentText, selectedScreen, selectedAssignee } = this.state;
 
         return (
             <$Page ref={this.props.forwardedRef} className="page">
@@ -196,8 +205,8 @@ export class DetailPage extends React.Component<Props, State> {
 
                             <$GridLayout row={0} columns={[new ItemSpec(1, "star"), new ItemSpec(1, "star"), new ItemSpec(1, "auto")]} rows={[]} className="assignee-row" onTap={this.onAssigneeRowTap}>
                                 <$Label text="Assignee" color={new Color("#4b5833")} col={0} />
-                                <$Label text="{{ selectedAssignee.fullName }}" col={1} />
-                                <$Image id="assigneeImg" width={40} height={40} className="pt-item-detail-avatar" src="{{ selectedAssignee.avatar }}" col={2} />
+                                <$Label text={selectedAssignee.fullName} col={1} />
+                                <$Image id="assigneeImg" width={40} height={40} className="pt-item-detail-avatar" src={selectedAssignee.avatar} col={2} />
                             </$GridLayout>
 
                             {/* <df:RadDataForm id="itemDetailsDataForm" row={1} source="{{ itemForm }}" propertyCommitted="onPropertyCommitted" editorUpdate="onEditorUpdate">
@@ -302,7 +311,7 @@ export class DetailPage extends React.Component<Props, State> {
                                                 >
                                                     <$Image onTap={this.onTaskToggleTap} src={completed ? 'res://checkboxchecked' : 'res://checkboxunchecked'} className="task-checkbox" col={0} />
                                                     {/* TODO */}
-                                                    {/* <$TextField col={1} text={title} onFocus={this.onTaskFocused} onBlur={this.onTaskBlurred} className="task-title" /> */}
+                                                    <$TextField col={1} text={title} onFocus={this.onTaskFocused} onBlur={this.onTaskBlurred} className="task-title" />
                                                 </$GridLayout>
                                             );
                                         }}
