@@ -38,11 +38,9 @@ import {
 import { ObservableArray } from "tns-core-modules/data/observable-array/observable-array";
 import { PtTaskViewModel } from "~/shared/view-models/pages/detail/pt-task.vm";
 import { PtCommentViewModel } from "~/shared/view-models/pages/detail/pt-comment.vm";
+import { DetailPageProps } from "~/core/models/page-props/detail-page-props";
 
-interface Props {
-    forwardedRef: React.RefObject<Page>,
-    item: PtItem,
-}
+type Props = DetailPageProps;
 
 interface State {
     newTaskTitle: string,

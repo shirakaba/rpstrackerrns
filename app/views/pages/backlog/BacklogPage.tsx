@@ -141,6 +141,7 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
     private readonly onListItemTap = (itemEventData: ItemEventData) => {
         const item: PtItem = this.items.getItem(itemEventData.index);
 
+        // TODO: navigate to React-managed page
         goToDetailPage(item);
     };
 
@@ -159,6 +160,7 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
 
     /* In the original, this was deferred to the menu component, but we'll pass it down as a prop in this version. */
     private readonly onSettingsTap = () => {
+        // TODO: navigate to React-managed page
         goToSettingsPage();
     };
 
