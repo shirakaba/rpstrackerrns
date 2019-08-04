@@ -153,6 +153,7 @@ export class LoginPage extends React.Component<Props, State> {
     private readonly onLoginTap = () => {
         this.onLoginTapHandler()
         .then(() => {
+            // Note when implementing in React: we must specify clearHistory in the NavigationEntry
             goToBacklogPage(true);
         })
         .catch(error => {
