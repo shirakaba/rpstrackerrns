@@ -144,7 +144,7 @@ export class DetailPage extends React.Component<Props, State> {
     };
 
     componentDidMount(){
-        // console.log(`BackLogPage.componentDidMount`);
+        console.log(`[DetailPage.componentDidMount] this.props.forwardedRef: ${this.props.forwardedRef}; this.props.forwardedRef.current: ${this.props.forwardedRef}`);
         this.props.forwardedRef.current!.addCssFile("views/pages/detail/detail-page.css");
     }
 
@@ -161,7 +161,7 @@ export class DetailPage extends React.Component<Props, State> {
         const { newTaskTitle, newCommentText, selectedScreen } = this.state;
 
         return (
-            <$Page className="page">
+            <$Page ref={this.props.forwardedRef} className="page">
                 <$ActionBar title="Item">
                     <$NavigationButton text="Back" android={{ systemIcon: "ic_menu_back" }} onTap={this.onNavBackTap}/>
 

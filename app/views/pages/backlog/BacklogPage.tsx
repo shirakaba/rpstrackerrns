@@ -32,6 +32,7 @@ import { EventData } from "tns-core-modules/data/observable/observable";
 import { dateConverter, itemToIndicatorClassConverter } from "~/utils/converters";
 import { ItemEventData } from "tns-core-modules/ui/list-view/list-view";
 import { PullToRefresh } from "@nstudio/nativescript-pulltorefresh";
+import { goToDetailPageReact } from "~/shared/helpers/navigation/nav-react.helper";
 
 export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject<Page> }, {}> {
     private readonly drawerRef: React.RefObject<RadSideDrawer> = React.createRef<RadSideDrawer>();
@@ -142,7 +143,9 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
         const item: PtItem = this.items.getItem(itemEventData.index);
 
         // TODO: navigate to React-managed page
-        goToDetailPage(item);
+        // goToDetailPage(item);
+        console.log(`Going to (React) detail page...`);
+        goToDetailPageReact({ item });
     };
 
     private readonly onAddTap = () => {

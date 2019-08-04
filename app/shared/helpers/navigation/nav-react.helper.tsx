@@ -8,6 +8,9 @@ import { topmost, Frame, NavigationEntry, ViewEntry } from "tns-core-modules/ui/
 import { StackLayout } from "tns-core-modules/ui/layouts/stack-layout/stack-layout";
 import { Label } from "tns-core-modules/ui/label/label";
 
+// Because at-loader can't find this type for some reason...
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+
 export function goToDetailPageReact(
     props: Omit<DetailPageProps, "renderingRoot"|"forwardedRef">,
     navEntry: Omit<NavigationEntry, keyof ViewEntry> = {},
@@ -19,7 +22,7 @@ export function goToDetailPageReact(
         (<DetailPage forwardedRef={forwardedRef} renderingRoot={ROUTES.detailPage} {...props}/>),
         null,
         () => {
-            console.log(`[goToDetailPageReact] DetailPage top-level render completed!`);
+            console.log(`[goToDetailPageReact] DetailPage top-level render completed! forwardedRef.current:`, forwardedRef.current);
         },
         ROUTES.detailPage,
     );
@@ -29,6 +32,7 @@ export function goToDetailPageReact(
         create: () => {
             const targetPage: Page|null = forwardedRef.current;
 
+            console.log(`[goToDetailPageReact] targetPage was:`, targetPage);
             if(targetPage === null){
                 const stack = new StackLayout();
                 const label = new Label();
