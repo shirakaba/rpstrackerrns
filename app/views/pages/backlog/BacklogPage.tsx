@@ -96,7 +96,7 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
                                             );
                                         }}
                                         separatorColor={new Color("#97a879")}
-                                        />
+                                    />
                                 </$PullToRefresh>
                             </$GridLayout>
 
