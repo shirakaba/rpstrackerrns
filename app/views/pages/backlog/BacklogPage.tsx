@@ -33,12 +33,34 @@ import { dateConverter, itemToIndicatorClassConverter } from "~/utils/converters
 import { ItemEventData } from "tns-core-modules/ui/list-view/list-view";
 import { PullToRefresh } from "@nstudio/nativescript-pulltorefresh";
 import { goToDetailPageReact } from "~/shared/helpers/navigation/nav-react.helper";
+import { DetailPageProps } from "~/core/models/page-props/detail-page-props";
+import { DetailPage } from "../detail/DetailPage";
+import { NavigatedData } from "tns-core-modules/ui/page/page";
 
-export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject<Page> }, {}> {
+interface Props {
+    forwardedRef: React.RefObject<Page>
+}
+
+interface State {
+    navToDetailPageArgs: Pick<DetailPageProps, "item">|null,
+    navToSettingsPageArgs: {}|null,
+}
+
+export class BackLogPage extends React.Component<Props, State> {
     private readonly drawerRef: React.RefObject<RadSideDrawer> = React.createRef<RadSideDrawer>();
+    private readonly detailsPageRef: React.RefObject<Page> = React.createRef<Page>();
     private readonly authService: PtAuthService = getAuthService();
     private readonly backlogService: PtBacklogService = getBacklogService();
     public items: ObservableArray<PtItem> = new ObservableArray<PtItem>();
+
+    constructor(props: Props){
+        super(props);
+
+        this.state = {
+            navToDetailPageArgs: null,
+            navToSettingsPageArgs: null,
+        };
+    }
     
     componentDidMount(){
         // console.log(`BackLogPage.componentDidMount`);
@@ -46,6 +68,8 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
     }
 
     render(){
+        const { navToDetailPageArgs, navToSettingsPageArgs } = this.state;
+
         // console.log(`BackLogPage.render`);
         return (
             <$Page ref={this.props.forwardedRef} onLoaded={this.onPageLoaded}>
@@ -127,6 +151,19 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
                         </$GridLayout>
                     </$StackLayout>
                 </$RadSideDrawer>
+
+                {/* It's a bit fiddly, but this setup lets us lazily mount a Page and unmount it as soon as we've returned from it. */}
+                {
+                    navToDetailPageArgs === null ?
+                        null :
+                        (
+                            <DetailPage
+                                forwardedRef={this.detailsPageRef}
+                                item={navToDetailPageArgs.item}
+                                onNavigatedFrom={this.onNavigatedFromDetailpage}
+                            />
+                        )
+                }
             </$Page>
         );
     }
@@ -142,10 +179,26 @@ export class BackLogPage extends React.Component<{ forwardedRef: React.RefObject
     private readonly onListItemTap = (itemEventData: ItemEventData) => {
         const item: PtItem = this.items.getItem(itemEventData.index);
 
-        // TODO: navigate to React-managed page
         // goToDetailPage(item);
-        console.log(`Going to (React) detail page...`);
-        goToDetailPageReact({ item });
+
+        console.log(`Going to (React) detail page via memory-efficient approach...`);
+        // goToDetailPageReact({ item });
+        this.setState(
+            {
+                navToDetailPageArgs: { item }
+            },
+            () => {
+                this.props.forwardedRef.current!.frame.navigate({
+                    create: () => {
+                        return this.detailsPageRef.current!;
+                    }
+                })
+            }
+        );
+    };
+
+    private readonly onNavigatedFromDetailpage = (args: NavigatedData) => {
+        this.setState({ navToDetailPageArgs: null });
     };
 
     private readonly onAddTap = () => {

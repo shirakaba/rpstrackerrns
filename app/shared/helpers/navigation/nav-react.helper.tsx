@@ -12,14 +12,14 @@ import { Label } from "tns-core-modules/ui/label/label";
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
 export function goToDetailPageReact(
-    props: Omit<DetailPageProps, "renderingRoot"|"forwardedRef">,
+    props: Omit<DetailPageProps, "forwardedRef">,
     navEntry: Omit<NavigationEntry, keyof ViewEntry> = {},
 ): void
 {
     // TODO: Allow DetailPage to remove itself from the rendering roots upon navigating away again.
     const forwardedRef: React.RefObject<Page> = React.createRef<Page>();
     ReactNativeScript.render(
-        (<DetailPage forwardedRef={forwardedRef} renderingRoot={ROUTES.detailPage} {...props}/>),
+        (<DetailPage forwardedRef={forwardedRef} {...props}/>),
         null,
         () => {
             console.log(`[goToDetailPageReact] DetailPage top-level render completed! forwardedRef.current:`, forwardedRef.current);
@@ -49,3 +49,15 @@ export function goToDetailPageReact(
         ...navEntry,
     });
 }
+
+// interface LazyMountedPageProps<P extends {}> {
+//     props: P|null;
+// }
+
+// class LazyMountedDetailPage extends React.Component<LazyMountedPageProps<DetailPageProps>, {}>{
+//     render(){
+//         const { props, children, ...rest } = this.props;
+
+//         return props === null ? null : (<DetailPage {...props}/>);
+//     }
+// }

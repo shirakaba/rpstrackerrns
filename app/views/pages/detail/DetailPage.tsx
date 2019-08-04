@@ -158,7 +158,7 @@ export class DetailPage extends React.Component<Props, State> {
     }
 
     public render(){
-        const { item } = this.props;
+        const { item, ...rest } = this.props;
         const itemForm: PtItemDetailsEditFormModel = ptItemToFormModel(item);
         const { comments, tasks, title } = item;
         const observableTasks = new ObservableArray<PtTaskViewModel>(
@@ -170,7 +170,7 @@ export class DetailPage extends React.Component<Props, State> {
         const { newTaskTitle, newCommentText, selectedScreen, selectedAssignee } = this.state;
 
         return (
-            <$Page ref={this.props.forwardedRef} className="page">
+            <$Page ref={this.props.forwardedRef} className="page" {...rest}>
                 <$ActionBar title="Item">
                     <$NavigationButton text="Back" android={{ systemIcon: "ic_menu_back" }} onTap={this.onNavBackTap}/>
 
