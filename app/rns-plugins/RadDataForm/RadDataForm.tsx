@@ -1,12 +1,44 @@
 import * as console from "react-nativescript/dist/shared/Logger";
 import * as React from "react";
 import { PropsWithoutForwardedRef } from "react-nativescript/dist/shared/NativeScriptComponentTypings";
-import { RadDataForm as NativeScriptRadDataForm, DataFormEventData } from "nativescript-ui-dataform";
+import { RadDataForm as NativeScriptRadDataForm, DataFormEventData, EntityProperty, PropertyGroup } from "nativescript-ui-dataform";
 import { ViewComponentProps, RCTView } from "react-nativescript/dist/components/View";
 import { updateListener } from "react-nativescript/dist/client/EventHandling";
 import { EventData } from "tns-core-modules/data/observable/observable";
 import { register, View } from "react-nativescript/dist/client/ElementRegistry";
-import { Container, HostContext, Instance } from "react-nativescript/dist/shared/HostConfigTypes";
+import { CustomNodeHierarchyManager, Type, Container, HostContext, Instance, TextInstance } from "react-nativescript/dist/shared/HostConfigTypes";
+
+class RNSFriendlyRadDataForm extends NativeScriptRadDataForm implements CustomNodeHierarchyManager<RNSFriendlyRadDataForm> {
+    public readonly __ImplementsCustomNodeHierarchyManager__: true = true;
+
+    constructor(){
+        super();
+        // This constructor call is needed for some reason; they must be doing something odd with the constructor.
+    }
+
+    public __customHostConfigAppendChild(parent: RNSFriendlyRadDataForm, child: Instance | TextInstance): boolean {
+        if(child instanceof EntityProperty){
+            parent.properties = [...parent.properties, child];
+        } else if(child instanceof PropertyGroup){
+            parent.groups = [...parent.groups, child];
+        }
+        // i.e. don't bother deferring to Host Config.
+        return true;
+    }
+    public __customHostConfigRemoveChild(parent: RNSFriendlyRadDataForm, child: Instance | TextInstance): boolean {
+        if(child instanceof EntityProperty){
+            parent.properties = parent.properties.filter((entityPoperty) => entityPoperty !== child);
+        } else if(child instanceof PropertyGroup){
+            parent.groups = parent.groups.filter((group) => group !== child);
+        }
+        // i.e. don't bother deferring to Host Config.
+        return true;
+    }
+    public __customHostConfigInsertBefore(parent: RNSFriendlyRadDataForm, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
+        // TODO: splice
+        return true;
+    }
+}
 
 const elementKey: string = "radDataForm";
 register(
@@ -16,7 +48,7 @@ register(
         rootContainerInstance: Container,
         hostContext: HostContext,
     ) => {
-        return new NativeScriptRadDataForm();
+        return new RNSFriendlyRadDataForm();
     }
 );
 
