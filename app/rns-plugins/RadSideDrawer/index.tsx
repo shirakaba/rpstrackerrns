@@ -126,6 +126,12 @@ export class _RadSideDrawer<
         const {
             forwardedRef,
 
+            onDrawerOpening,
+            onDrawerOpened,
+            onDrawerClosing,
+            onDrawerClosed,
+            onDrawerPan,
+
             onLoaded,
             onUnloaded,
             onAndroidBackPressed,
