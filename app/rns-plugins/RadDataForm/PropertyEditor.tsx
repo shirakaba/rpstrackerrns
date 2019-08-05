@@ -50,7 +50,6 @@ export class _PropertyEditor<
             onPropertyChange,
 
             children,
-            // actionView, /* We disallow this at the typings level. */
             ...rest
         } = this.props;
 

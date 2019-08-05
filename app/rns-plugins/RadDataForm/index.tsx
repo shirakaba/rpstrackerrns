@@ -8,9 +8,6 @@ import { EventData } from "tns-core-modules/data/observable/observable";
 import { register, View } from "react-nativescript/dist/client/ElementRegistry";
 import { Container, HostContext, Instance } from "react-nativescript/dist/shared/HostConfigTypes";
 
-export const mainContentNodeTreeRole: string = "RadDataFormMainContent";
-export const drawerContentNodeTreeRole: string = "RadDataFormDrawerContent";
-
 const elementKey: string = "radDataForm";
 register(
     elementKey,
@@ -70,32 +67,32 @@ export class _RadDataForm<
         super.updateListeners(node, attach, nextProps);
 
         if (attach === null) {
-            updateListener(node, NativeScriptRadDataForm.editorSelectedEvent, this.props.onEditorSelected, nextProps.onEditorSelected)
-            updateListener(node, NativeScriptRadDataForm.editorDeselectedEvent, this.props.onEditorDeselected, nextProps.onEditorDeselected)
-            updateListener(node, NativeScriptRadDataForm.propertyEditedEvent, this.props.onPropertyEdited, nextProps.onPropertyEdited)
-            updateListener(node, NativeScriptRadDataForm.propertyValidateEvent, this.props.onPropertyValidate, nextProps.onPropertyValidate)
-            updateListener(node, NativeScriptRadDataForm.propertyValidatedEvent, this.props.onPropertyValidated, nextProps.onPropertyValidated)
-            updateListener(node, NativeScriptRadDataForm.editorSetupEvent, this.props.onEditorSetup, nextProps.onEditorSetup)
-            updateListener(node, NativeScriptRadDataForm.editorUpdateEvent, this.props.onEditorUpdate, nextProps.onEditorUpdate)
-            updateListener(node, NativeScriptRadDataForm.groupUpdateEvent, this.props.onGroupUpdate, nextProps.onGroupUpdate)
-            updateListener(node, NativeScriptRadDataForm.propertyCommitEvent, this.props.onPropertyCommit, nextProps.onPropertyCommit)
-            updateListener(node, NativeScriptRadDataForm.propertyCommittedEvent, this.props.onPropertyCommitted, nextProps.onPropertyCommitted)
-            updateListener(node, NativeScriptRadDataForm.groupExpandedEvent, this.props.onGroupExpanded, nextProps.onGroupExpanded)
-            updateListener(node, NativeScriptRadDataForm.groupCollapsedEvent, this.props.onGroupCollapsed, nextProps.onGroupCollapsed)
+            updateListener(node, NativeScriptRadDataForm.editorSelectedEvent, this.props.onEditorSelected, nextProps.onEditorSelected);
+            updateListener(node, NativeScriptRadDataForm.editorDeselectedEvent, this.props.onEditorDeselected, nextProps.onEditorDeselected);
+            updateListener(node, NativeScriptRadDataForm.propertyEditedEvent, this.props.onPropertyEdited, nextProps.onPropertyEdited);
+            updateListener(node, NativeScriptRadDataForm.propertyValidateEvent, this.props.onPropertyValidate, nextProps.onPropertyValidate);
+            updateListener(node, NativeScriptRadDataForm.propertyValidatedEvent, this.props.onPropertyValidated, nextProps.onPropertyValidated);
+            updateListener(node, NativeScriptRadDataForm.editorSetupEvent, this.props.onEditorSetup, nextProps.onEditorSetup);
+            updateListener(node, NativeScriptRadDataForm.editorUpdateEvent, this.props.onEditorUpdate, nextProps.onEditorUpdate);
+            updateListener(node, NativeScriptRadDataForm.groupUpdateEvent, this.props.onGroupUpdate, nextProps.onGroupUpdate);
+            updateListener(node, NativeScriptRadDataForm.propertyCommitEvent, this.props.onPropertyCommit, nextProps.onPropertyCommit);
+            updateListener(node, NativeScriptRadDataForm.propertyCommittedEvent, this.props.onPropertyCommitted, nextProps.onPropertyCommitted);
+            updateListener(node, NativeScriptRadDataForm.groupExpandedEvent, this.props.onGroupExpanded, nextProps.onGroupExpanded);
+            updateListener(node, NativeScriptRadDataForm.groupCollapsedEvent, this.props.onGroupCollapsed, nextProps.onGroupCollapsed);
         } else {
             const method = (attach ? node.on : node.off).bind(node);
-            if(this.props.onEditorSelected) method(NativeScriptRadDataForm.editorSelectedEvent, this.props.onEditorSelected)
-            if(this.props.onEditorDeselected) method(NativeScriptRadDataForm.editorDeselectedEvent, this.props.onEditorDeselected)
-            if(this.props.onPropertyEdited) method(NativeScriptRadDataForm.propertyEditedEvent, this.props.onPropertyEdited)
-            if(this.props.onPropertyValidate) method(NativeScriptRadDataForm.propertyValidateEvent, this.props.onPropertyValidate)
-            if(this.props.onPropertyValidated) method(NativeScriptRadDataForm.propertyValidatedEvent, this.props.onPropertyValidated)
-            if(this.props.onEditorSetup) method(NativeScriptRadDataForm.editorSetupEvent, this.props.onEditorSetup)
-            if(this.props.onEditorUpdate) method(NativeScriptRadDataForm.editorUpdateEvent, this.props.onEditorUpdate)
-            if(this.props.onGroupUpdate) method(NativeScriptRadDataForm.groupUpdateEvent, this.props.onGroupUpdate)
-            if(this.props.onPropertyCommit) method(NativeScriptRadDataForm.propertyCommitEvent, this.props.onPropertyCommit)
-            if(this.props.onPropertyCommitted) method(NativeScriptRadDataForm.propertyCommittedEvent, this.props.onPropertyCommitted)
-            if(this.props.onGroupExpanded) method(NativeScriptRadDataForm.groupExpandedEvent, this.props.onGroupExpanded)
-            if(this.props.onGroupCollapsed) method(NativeScriptRadDataForm.groupCollapsedEvent, this.props.onGroupCollapsed)
+            if(this.props.onEditorSelected) method(NativeScriptRadDataForm.editorSelectedEvent, this.props.onEditorSelected);
+            if(this.props.onEditorDeselected) method(NativeScriptRadDataForm.editorDeselectedEvent, this.props.onEditorDeselected);
+            if(this.props.onPropertyEdited) method(NativeScriptRadDataForm.propertyEditedEvent, this.props.onPropertyEdited);
+            if(this.props.onPropertyValidate) method(NativeScriptRadDataForm.propertyValidateEvent, this.props.onPropertyValidate);
+            if(this.props.onPropertyValidated) method(NativeScriptRadDataForm.propertyValidatedEvent, this.props.onPropertyValidated);
+            if(this.props.onEditorSetup) method(NativeScriptRadDataForm.editorSetupEvent, this.props.onEditorSetup);
+            if(this.props.onEditorUpdate) method(NativeScriptRadDataForm.editorUpdateEvent, this.props.onEditorUpdate);
+            if(this.props.onGroupUpdate) method(NativeScriptRadDataForm.groupUpdateEvent, this.props.onGroupUpdate);
+            if(this.props.onPropertyCommit) method(NativeScriptRadDataForm.propertyCommitEvent, this.props.onPropertyCommit);
+            if(this.props.onPropertyCommitted) method(NativeScriptRadDataForm.propertyCommittedEvent, this.props.onPropertyCommitted);
+            if(this.props.onGroupExpanded) method(NativeScriptRadDataForm.groupExpandedEvent, this.props.onGroupExpanded);
+            if(this.props.onGroupCollapsed) method(NativeScriptRadDataForm.groupCollapsedEvent, this.props.onGroupCollapsed);
         }
     }
 
