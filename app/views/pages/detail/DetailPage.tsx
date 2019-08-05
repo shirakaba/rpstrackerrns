@@ -17,7 +17,7 @@ import { PtTask } from "~/core/models/domain/pt-task.model";
 import { EMPTY_STRING } from '~/core/models/domain/constants/strings';
 import { PtComment } from "~/core/models/domain/pt-comment.model";
 import { dateConverter } from "~/utils/converters";
-import { RadDataForm } from "nativescript-ui-dataform";
+import { RadDataForm, DataFormEventData } from "nativescript-ui-dataform";
 import { ConfirmOptions, confirm } from 'tns-core-modules/ui/dialogs';
 import { PtUser } from "~/core/models/domain/pt-user.model";
 import { PtItemDetailsEditFormModel, ptItemToFormModel } from "~/core/models/forms/pt-item-details-edit-form.model";
@@ -40,6 +40,7 @@ import { PtTaskViewModel } from "~/shared/view-models/pages/detail/pt-task.vm";
 import { PtCommentViewModel } from "~/shared/view-models/pages/detail/pt-comment.vm";
 import { DetailPageProps } from "~/core/models/page-props/detail-page-props";
 import { EventData } from "tns-core-modules/ui/text-base/text-base";
+import { $RadDataForm } from "~/rns-plugins/RadDataForm";
 
 type Props = DetailPageProps;
 
@@ -152,6 +153,14 @@ export class DetailPage extends React.Component<Props, State> {
 
     };
 
+    private readonly onPropertyCommitted = (args: DataFormEventData) => {
+
+    };
+
+    private readonly onEditorUpdate = (args: DataFormEventData) => {
+
+    };
+
     componentDidMount(){
         console.log(`[DetailPage.componentDidMount] this.props.forwardedRef: ${this.props.forwardedRef}; this.props.forwardedRef.current: ${this.props.forwardedRef}`);
         this.props.forwardedRef.current!.addCssFile("views/pages/detail/detail-page.css");
@@ -208,6 +217,15 @@ export class DetailPage extends React.Component<Props, State> {
                                 <$Label text={selectedAssignee.fullName} col={1} />
                                 <$Image id="assigneeImg" width={40} height={40} className="pt-item-detail-avatar" src={selectedAssignee.avatar} col={2} />
                             </$GridLayout>
+
+                            <$RadDataForm
+                                id="itemDetailsDataForm"
+                                row={1}
+                                source={itemForm}
+                                onPropertyCommitted={this.onPropertyCommitted}
+                                onEditorUpdate={this.onEditorUpdate}
+                            >
+                            </$RadDataForm>
 
                             {/* <df:RadDataForm id="itemDetailsDataForm" row={1} source="{{ itemForm }}" propertyCommitted="onPropertyCommitted" editorUpdate="onEditorUpdate">
                                 <df:RadDataForm.properties>
