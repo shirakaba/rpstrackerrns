@@ -3,8 +3,6 @@ import * as React from "react";
 import { EntityProperty as NativeScriptEntityProperty } from "nativescript-ui-dataform";
 import { PropsWithoutForwardedRef } from "react-nativescript/dist/shared/NativeScriptComponentTypings";
 import { ViewBaseComponentProps, RCTViewBase } from "react-nativescript/dist/components/ViewBase";
-import { updateListener } from "react-nativescript/dist/client/EventHandling";
-import { GestureEventData } from "tns-core-modules/ui/gestures/gestures";
 import { register } from "react-nativescript/dist/client/ElementRegistry";
 import { Container, HostContext, Instance } from "react-nativescript/dist/shared/HostConfigTypes";
 
