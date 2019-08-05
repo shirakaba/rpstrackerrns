@@ -63,7 +63,7 @@ export class _MaximumLengthValidator<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<MaximumLengthValidatorComponentProps<NativeScriptMaximumLengthValidator>>;
 
-export const MaximumLengthValidator: React.ComponentType<
+export const $MaximumLengthValidator: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptMaximumLengthValidator>
 > = React.forwardRef<NativeScriptMaximumLengthValidator, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptMaximumLengthValidator>) => {

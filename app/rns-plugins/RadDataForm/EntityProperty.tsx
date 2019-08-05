@@ -80,7 +80,7 @@ export class _EntityProperty<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<EntityPropertyComponentProps<NativeScriptEntityProperty>>;
 
-export const EntityProperty: React.ComponentType<
+export const $EntityProperty: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptEntityProperty>
 > = React.forwardRef<NativeScriptEntityProperty, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptEntityProperty>) => {

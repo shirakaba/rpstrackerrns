@@ -63,7 +63,7 @@ export class _NonEmptyValidator<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<NonEmptyValidatorComponentProps<NativeScriptNonEmptyValidator>>;
 
-export const NonEmptyValidator: React.ComponentType<
+export const $NonEmptyValidator: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptNonEmptyValidator>
 > = React.forwardRef<NativeScriptNonEmptyValidator, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptNonEmptyValidator>) => {

@@ -68,7 +68,7 @@ export class _PropertyEditorParams<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<PropertyEditorParamsComponentProps<NativeScriptPropertyEditorParams>>;
 
-export const PropertyEditorParams: React.ComponentType<
+export const $PropertyEditorParams: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptPropertyEditorParams>
 > = React.forwardRef<NativeScriptPropertyEditorParams, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptPropertyEditorParams>) => {

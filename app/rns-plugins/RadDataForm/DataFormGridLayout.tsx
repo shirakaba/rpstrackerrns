@@ -63,7 +63,7 @@ export class _DataFormGridLayout<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<DataFormGridLayoutComponentProps<NativeScriptDataFormGridLayout>>;
 
-export const DataFormGridLayout: React.ComponentType<
+export const $DataFormGridLayout: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptDataFormGridLayout>
 > = React.forwardRef<NativeScriptDataFormGridLayout, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptDataFormGridLayout>) => {

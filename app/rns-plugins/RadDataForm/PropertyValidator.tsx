@@ -66,7 +66,7 @@ export class _PropertyValidator<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<PropertyValidatorComponentProps<NativeScriptPropertyValidator>>;
 
-export const PropertyValidator: React.ComponentType<
+export const $PropertyValidator: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptPropertyValidator>
 > = React.forwardRef<NativeScriptPropertyValidator, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptPropertyValidator>) => {

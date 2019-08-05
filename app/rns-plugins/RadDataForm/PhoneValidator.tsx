@@ -63,7 +63,7 @@ export class _PhoneValidator<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<PhoneValidatorComponentProps<NativeScriptPhoneValidator>>;
 
-export const PhoneValidator: React.ComponentType<
+export const $PhoneValidator: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptPhoneValidator>
 > = React.forwardRef<NativeScriptPhoneValidator, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptPhoneValidator>) => {

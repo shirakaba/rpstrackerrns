@@ -63,7 +63,7 @@ export class _IsTrueValidator<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<IsTrueValidatorComponentProps<NativeScriptIsTrueValidator>>;
 
-export const IsTrueValidator: React.ComponentType<
+export const $IsTrueValidator: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptIsTrueValidator>
 > = React.forwardRef<NativeScriptIsTrueValidator, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptIsTrueValidator>) => {

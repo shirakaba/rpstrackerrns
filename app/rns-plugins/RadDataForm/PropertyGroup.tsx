@@ -73,7 +73,7 @@ export class _PropertyGroup<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<PropertyGroupComponentProps<NativeScriptPropertyGroup>>;
 
-export const PropertyGroup: React.ComponentType<
+export const $PropertyGroup: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptPropertyGroup>
 > = React.forwardRef<NativeScriptPropertyGroup, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptPropertyGroup>) => {

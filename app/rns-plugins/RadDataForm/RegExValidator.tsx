@@ -65,7 +65,7 @@ export class _RegExValidator<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<RegExValidatorComponentProps<NativeScriptRegExValidator>>;
 
-export const RegExValidator: React.ComponentType<
+export const $RegExValidator: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptRegExValidator>
 > = React.forwardRef<NativeScriptRegExValidator, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptRegExValidator>) => {

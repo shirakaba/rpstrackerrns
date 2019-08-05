@@ -63,7 +63,7 @@ export class _GroupTitleStyle<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<GroupTitleStyleComponentProps<NativeScriptGroupTitleStyle>>;
 
-export const GroupTitleStyle: React.ComponentType<
+export const $GroupTitleStyle: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptGroupTitleStyle>
 > = React.forwardRef<NativeScriptGroupTitleStyle, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptGroupTitleStyle>) => {

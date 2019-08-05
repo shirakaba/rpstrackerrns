@@ -64,7 +64,7 @@ export class _LengthValidator<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<LengthValidatorComponentProps<NativeScriptLengthValidator>>;
 
-export const LengthValidator: React.ComponentType<
+export const $LengthValidator: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptLengthValidator>
 > = React.forwardRef<NativeScriptLengthValidator, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptLengthValidator>) => {

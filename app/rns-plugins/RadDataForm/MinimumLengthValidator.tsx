@@ -63,7 +63,7 @@ export class _MinimumLengthValidator<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<MinimumLengthValidatorComponentProps<NativeScriptMinimumLengthValidator>>;
 
-export const MinimumLengthValidator: React.ComponentType<
+export const $MinimumLengthValidator: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptMinimumLengthValidator>
 > = React.forwardRef<NativeScriptMinimumLengthValidator, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptMinimumLengthValidator>) => {

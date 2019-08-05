@@ -40,7 +40,7 @@ import { PtTaskViewModel } from "~/shared/view-models/pages/detail/pt-task.vm";
 import { PtCommentViewModel } from "~/shared/view-models/pages/detail/pt-comment.vm";
 import { DetailPageProps } from "~/core/models/page-props/detail-page-props";
 import { EventData } from "tns-core-modules/ui/text-base/text-base";
-import { $RadDataForm } from "~/rns-plugins/RadDataForm";
+import { $RadDataForm, $EntityProperty } from "~/rns-plugins/RadDataForm/RadDataForm";
 
 type Props = DetailPageProps;
 
@@ -225,6 +225,7 @@ export class DetailPage extends React.Component<Props, State> {
                                 onPropertyCommitted={this.onPropertyCommitted}
                                 onEditorUpdate={this.onEditorUpdate}
                             >
+                                <$EntityProperty></$EntityProperty>
                             </$RadDataForm>
 
                             {/* <df:RadDataForm id="itemDetailsDataForm" row={1} source="{{ itemForm }}" propertyCommitted="onPropertyCommitted" editorUpdate="onEditorUpdate">

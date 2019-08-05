@@ -66,7 +66,7 @@ export class _RangeValidator<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<RangeValidatorComponentProps<NativeScriptRangeValidator>>;
 
-export const RangeValidator: React.ComponentType<
+export const $RangeValidator: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptRangeValidator>
 > = React.forwardRef<NativeScriptRangeValidator, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptRangeValidator>) => {

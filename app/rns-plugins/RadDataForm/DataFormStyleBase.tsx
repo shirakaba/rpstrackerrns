@@ -73,7 +73,7 @@ export class _DataFormStyleBase<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<DataFormStyleBaseComponentProps<NativeScriptDataFormStyleBase>>;
 
-export const DataFormStyleBase: React.ComponentType<
+export const $DataFormStyleBase: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptDataFormStyleBase>
 > = React.forwardRef<NativeScriptDataFormStyleBase, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptDataFormStyleBase>) => {

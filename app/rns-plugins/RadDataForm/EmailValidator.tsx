@@ -63,7 +63,7 @@ export class _EmailValidator<
 
 type OwnPropsWithoutForwardedRef = PropsWithoutForwardedRef<EmailValidatorComponentProps<NativeScriptEmailValidator>>;
 
-export const EmailValidator: React.ComponentType<
+export const $EmailValidator: React.ComponentType<
     OwnPropsWithoutForwardedRef & React.ClassAttributes<NativeScriptEmailValidator>
 > = React.forwardRef<NativeScriptEmailValidator, OwnPropsWithoutForwardedRef>(
     (props: React.PropsWithChildren<OwnPropsWithoutForwardedRef>, ref: React.RefObject<NativeScriptEmailValidator>) => {
