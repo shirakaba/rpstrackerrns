@@ -8,15 +8,18 @@ import { EventData } from "tns-core-modules/data/observable/observable";
 import { register, View } from "react-nativescript/dist/client/ElementRegistry";
 import { CustomNodeHierarchyManager, Type, Container, HostContext, Instance, TextInstance } from "react-nativescript/dist/shared/HostConfigTypes";
 
-class RNSFriendlyRadDataForm extends NativeScriptRadDataForm implements CustomNodeHierarchyManager<RNSFriendlyRadDataForm> {
-    public readonly __ImplementsCustomNodeHierarchyManager__: true = true;
+type Constructor<T = {}> = new (...args: any[]) => T;
 
-    constructor(){
-        super();
+export function RNSFriendly<TBase extends Constructor<NativeScriptRadDataForm>>(Base: TBase) {
+  return class extends Base implements CustomNodeHierarchyManager<NativeScriptRadDataForm> {
+    __ImplementsCustomNodeHierarchyManager__: true = true;
+
+    constructor(...args: any[]){
+        super(...args);
         // This constructor call is needed for some reason; they must be doing something odd with the constructor.
     }
 
-    public __customHostConfigAppendChild(parent: RNSFriendlyRadDataForm, child: Instance | TextInstance): boolean {
+    public __customHostConfigAppendChild(parent: NativeScriptRadDataForm, child: Instance | TextInstance): boolean {
         if(child instanceof EntityProperty){
             parent.properties = [...parent.properties, child];
         } else if(child instanceof PropertyGroup){
@@ -25,7 +28,7 @@ class RNSFriendlyRadDataForm extends NativeScriptRadDataForm implements CustomNo
         // i.e. don't bother deferring to Host Config.
         return true;
     }
-    public __customHostConfigRemoveChild(parent: RNSFriendlyRadDataForm, child: Instance | TextInstance): boolean {
+    public __customHostConfigRemoveChild(parent: NativeScriptRadDataForm, child: Instance | TextInstance): boolean {
         if(child instanceof EntityProperty){
             parent.properties = parent.properties.filter((entityPoperty) => entityPoperty !== child);
         } else if(child instanceof PropertyGroup){
@@ -34,11 +37,14 @@ class RNSFriendlyRadDataForm extends NativeScriptRadDataForm implements CustomNo
         // i.e. don't bother deferring to Host Config.
         return true;
     }
-    public __customHostConfigInsertBefore(parent: RNSFriendlyRadDataForm, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
+    public __customHostConfigInsertBefore(parent: NativeScriptRadDataForm, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
         // TODO: splice
         return true;
     }
+  };
 }
+
+const RNSFriendlyRadDataForm = RNSFriendly(NativeScriptRadDataForm);
 
 const elementKey: string = "radDataForm";
 register(

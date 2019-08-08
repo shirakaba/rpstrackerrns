@@ -6,15 +6,18 @@ import { ViewBaseComponentProps, RCTViewBase } from "react-nativescript/dist/com
 import { register } from "react-nativescript/dist/client/ElementRegistry";
 import { CustomNodeHierarchyManager, Type, Container, HostContext, Instance, TextInstance } from "react-nativescript/dist/shared/HostConfigTypes";
 
-class RNSFriendlyEntityProperty extends NativeScriptEntityProperty implements CustomNodeHierarchyManager<RNSFriendlyEntityProperty> {
-    public readonly __ImplementsCustomNodeHierarchyManager__: true = true;
+type Constructor<T = {}> = new (...args: any[]) => T;
 
-    constructor(){
-        super();
+export function RNSFriendly<TBase extends Constructor<NativeScriptEntityProperty>>(Base: TBase) {
+  return class extends Base implements CustomNodeHierarchyManager<NativeScriptEntityProperty> {
+    __ImplementsCustomNodeHierarchyManager__: true = true;
+
+    constructor(...args: any[]){
+        super(...args);
         // This constructor call is needed for some reason; they must be doing something odd with the constructor.
     }
 
-    public __customHostConfigAppendChild(parent: RNSFriendlyEntityProperty, child: Instance | TextInstance): boolean {
+    public __customHostConfigAppendChild(parent: NativeScriptEntityProperty, child: Instance | TextInstance): boolean {
         if(child instanceof PropertyEditor){
             parent.editor = child;
         } else if(child instanceof PropertyValidator){
@@ -23,7 +26,8 @@ class RNSFriendlyEntityProperty extends NativeScriptEntityProperty implements Cu
         // i.e. don't bother deferring to Host Config.
         return true;
     }
-    public __customHostConfigRemoveChild(parent: RNSFriendlyEntityProperty, child: Instance | TextInstance): boolean {
+
+    public __customHostConfigRemoveChild(parent: NativeScriptEntityProperty, child: Instance | TextInstance): boolean {
         if(child instanceof PropertyEditor){
             // TODO: check whether nullable.
             parent.editor = null;
@@ -34,10 +38,14 @@ class RNSFriendlyEntityProperty extends NativeScriptEntityProperty implements Cu
         // i.e. don't bother deferring to Host Config.
         return true;
     }
-    public __customHostConfigInsertBefore(parent: RNSFriendlyEntityProperty, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
+
+    public __customHostConfigInsertBefore(parent: NativeScriptEntityProperty, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
         return true;
     }
+  };
 }
+
+const RNSFriendlyEntityProperty = RNSFriendly(NativeScriptEntityProperty);
 
 const elementKey: string = "radDataFormEntityProperty";
 register(

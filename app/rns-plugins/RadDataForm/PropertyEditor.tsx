@@ -8,7 +8,6 @@ import { CustomNodeHierarchyManager, Type, Container, HostContext, Instance, Tex
 
 type Constructor<T = {}> = new (...args: any[]) => T;
 
-/* I've separated this implementation to make it easy to share it with subclasses of PropertyEditor. */
 export function RNSFriendly<TBase extends Constructor<NativeScriptPropertyEditor>>(Base: TBase) {
   return class extends Base implements CustomNodeHierarchyManager<NativeScriptPropertyEditor> {
     __ImplementsCustomNodeHierarchyManager__: true = true;
