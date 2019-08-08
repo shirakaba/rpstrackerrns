@@ -6,10 +6,18 @@ import { ViewBaseComponentProps, RCTViewBase } from "react-nativescript/dist/com
 import { register } from "react-nativescript/dist/client/ElementRegistry";
 import { CustomNodeHierarchyManager, Type, Container, HostContext, Instance, TextInstance } from "react-nativescript/dist/shared/HostConfigTypes";
 
-/* I've separated this implementation to make it easy to share it with subclasses of PropertyEditor.
- * There may be a better way to achieve sideways inheritance, but whatever, this works. */
-export const PropertyEditorCustomNodeHierarchyManager: CustomNodeHierarchyManager<NativeScriptPropertyEditor> = {
-    __ImplementsCustomNodeHierarchyManager__: true,
+type Constructor<T = {}> = new (...args: any[]) => T;
+
+/* I've separated this implementation to make it easy to share it with subclasses of PropertyEditor. */
+export function RNSFriendly<TBase extends Constructor<NativeScriptPropertyEditor>>(Base: TBase) {
+  return class extends Base implements CustomNodeHierarchyManager<NativeScriptPropertyEditor> {
+    __ImplementsCustomNodeHierarchyManager__: true = true;
+
+    constructor(...args: any[]){
+        super(...args);
+        // This constructor call is needed for some reason; they must be doing something odd with the constructor.
+    }
+
     __customHostConfigAppendChild(parent: NativeScriptPropertyEditor, child: Instance | TextInstance): boolean {
         if(child instanceof PropertyEditorStyle){
             parent.propertyEditorStyle = child;
@@ -18,7 +26,8 @@ export const PropertyEditorCustomNodeHierarchyManager: CustomNodeHierarchyManage
         }
         // i.e. don't bother deferring to Host Config.
         return true;
-    },
+    }
+
     __customHostConfigRemoveChild(parent: NativeScriptPropertyEditor, child: Instance | TextInstance): boolean {
         if(child instanceof PropertyEditorStyle){
             // TODO: check whether nullable.
@@ -29,31 +38,15 @@ export const PropertyEditorCustomNodeHierarchyManager: CustomNodeHierarchyManage
         }
         // i.e. don't bother deferring to Host Config.
         return true;
-    },
+    }
+
     __customHostConfigInsertBefore(parent: NativeScriptPropertyEditor, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
         return true;
-    },
-};
-
-export class RNSFriendlyPropertyEditor extends NativeScriptPropertyEditor implements CustomNodeHierarchyManager<RNSFriendlyPropertyEditor> {
-    private readonly propertyEditorCustomNodeHierarchyManager = PropertyEditorCustomNodeHierarchyManager;
-    public readonly __ImplementsCustomNodeHierarchyManager__: true = true;
-
-    constructor(){
-        super();
-        // This constructor call is needed for some reason; they must be doing something odd with the constructor.
     }
-
-    public __customHostConfigAppendChild(parent: RNSFriendlyPropertyEditor, child: Instance | TextInstance): boolean {
-        return this.propertyEditorCustomNodeHierarchyManager.__customHostConfigAppendChild(parent, child);
-    }
-    public __customHostConfigRemoveChild(parent: RNSFriendlyPropertyEditor, child: Instance | TextInstance): boolean {
-        return this.propertyEditorCustomNodeHierarchyManager.__customHostConfigRemoveChild(parent, child);
-    }
-    public __customHostConfigInsertBefore(parent: RNSFriendlyPropertyEditor, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
-        return this.propertyEditorCustomNodeHierarchyManager.__customHostConfigInsertBefore(parent, child, beforeChild);
-    }
+  };
 }
+
+const RNSFriendlyPropertyEditor = RNSFriendly(NativeScriptPropertyEditor);
 
 const elementKey: string = "radDataFormPropertyEditor";
 register(
