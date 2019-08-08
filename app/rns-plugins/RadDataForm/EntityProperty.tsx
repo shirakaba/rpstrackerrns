@@ -1,10 +1,43 @@
 import * as console from "react-nativescript/dist/shared/Logger";
 import * as React from "react";
-import { EntityProperty as NativeScriptEntityProperty } from "nativescript-ui-dataform";
+import { EntityProperty as NativeScriptEntityProperty, PropertyEditor, PropertyValidator } from "nativescript-ui-dataform";
 import { PropsWithoutForwardedRef } from "react-nativescript/dist/shared/NativeScriptComponentTypings";
 import { ViewBaseComponentProps, RCTViewBase } from "react-nativescript/dist/components/ViewBase";
 import { register } from "react-nativescript/dist/client/ElementRegistry";
-import { Container, HostContext, Instance } from "react-nativescript/dist/shared/HostConfigTypes";
+import { CustomNodeHierarchyManager, Type, Container, HostContext, Instance, TextInstance } from "react-nativescript/dist/shared/HostConfigTypes";
+
+class RNSFriendlyEntityProperty extends NativeScriptEntityProperty implements CustomNodeHierarchyManager<RNSFriendlyEntityProperty> {
+    public readonly __ImplementsCustomNodeHierarchyManager__: true = true;
+
+    constructor(){
+        super();
+        // This constructor call is needed for some reason; they must be doing something odd with the constructor.
+    }
+
+    public __customHostConfigAppendChild(parent: RNSFriendlyEntityProperty, child: Instance | TextInstance): boolean {
+        if(child instanceof PropertyEditor){
+            parent.editor = child;
+        } else if(child instanceof PropertyValidator){
+            parent.validators = [...parent.validators, child];
+        }
+        // i.e. don't bother deferring to Host Config.
+        return true;
+    }
+    public __customHostConfigRemoveChild(parent: RNSFriendlyEntityProperty, child: Instance | TextInstance): boolean {
+        if(child instanceof PropertyEditor){
+            // TODO: check whether nullable.
+            parent.editor = null;
+        } else if(child instanceof PropertyValidator){
+            // TODO: check whether nullable.
+            parent.validators = null;
+        }
+        // i.e. don't bother deferring to Host Config.
+        return true;
+    }
+    public __customHostConfigInsertBefore(parent: RNSFriendlyEntityProperty, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
+        return true;
+    }
+}
 
 const elementKey: string = "radDataFormEntityProperty";
 register(
@@ -14,7 +47,7 @@ register(
         rootContainerInstance: Container,
         hostContext: HostContext,
     ) => {
-        return new NativeScriptEntityProperty();
+        return new RNSFriendlyEntityProperty();
     }
 );
 

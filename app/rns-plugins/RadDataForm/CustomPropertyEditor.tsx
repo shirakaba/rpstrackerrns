@@ -2,10 +2,32 @@ import * as console from "react-nativescript/dist/shared/Logger";
 import * as React from "react";
 import { RadDataForm as NativeScriptRadDataForm, CustomPropertyEditor as NativeScriptCustomPropertyEditor, DataFormCustomPropertyEditorEventData } from "nativescript-ui-dataform";
 import { PropsWithoutForwardedRef } from "react-nativescript/dist/shared/NativeScriptComponentTypings";
-import { PropertyEditorComponentProps, _PropertyEditor } from "./PropertyEditor";
+import { PropertyEditorComponentProps, _PropertyEditor, RNSFriendlyPropertyEditor, PropertyEditorCustomNodeHierarchyManager } from "./PropertyEditor";
 import { register } from "react-nativescript/dist/client/ElementRegistry";
 import { updateListener } from "react-nativescript/dist/client/EventHandling";
-import { Container, HostContext, Instance } from "react-nativescript/dist/shared/HostConfigTypes";
+import { CustomNodeHierarchyManager, Type, Container, HostContext, Instance, TextInstance } from "react-nativescript/dist/shared/HostConfigTypes";
+
+export class RNSFriendlyCustomPropertyEditor extends NativeScriptCustomPropertyEditor implements CustomNodeHierarchyManager<RNSFriendlyCustomPropertyEditor> {
+    /* We'll inherit the same implementation used by PropertyEditor;
+     * there may be a better way to set up this horizontal inheritance. */
+    private readonly propertyEditorCustomNodeHierarchyManager = PropertyEditorCustomNodeHierarchyManager;
+    public readonly __ImplementsCustomNodeHierarchyManager__: true = true;
+
+    constructor(){
+        super();
+        // This constructor call is needed for some reason; they must be doing something odd with the constructor.
+    }
+
+    public __customHostConfigAppendChild(parent: RNSFriendlyCustomPropertyEditor, child: Instance | TextInstance): boolean {
+        return this.propertyEditorCustomNodeHierarchyManager.__customHostConfigAppendChild(parent, child);
+    }
+    public __customHostConfigRemoveChild(parent: RNSFriendlyCustomPropertyEditor, child: Instance | TextInstance): boolean {
+        return this.propertyEditorCustomNodeHierarchyManager.__customHostConfigRemoveChild(parent, child);
+    }
+    public __customHostConfigInsertBefore(parent: RNSFriendlyCustomPropertyEditor, child: Instance | TextInstance, beforeChild: Instance | TextInstance): boolean {
+        return this.propertyEditorCustomNodeHierarchyManager.__customHostConfigInsertBefore(parent, child, beforeChild);
+    }
+}
 
 const elementKey: string = "radDataFormCustomPropertyEditor";
 register(
@@ -15,7 +37,7 @@ register(
         rootContainerInstance: Container,
         hostContext: HostContext,
     ) => {
-        return new NativeScriptCustomPropertyEditor();
+        return new RNSFriendlyCustomPropertyEditor();
     }
 );
 
