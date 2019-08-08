@@ -272,10 +272,10 @@ export class DetailPage extends React.Component<Props, State> {
     /* details START */
     private readonly updateSelectedTypeValue = (selTypeValue: PtItemType) => {
         // TOOD: make sure this is being called in knowledge that it's async
-        this.setState({
-            selectedTypeValue: selTypeValue,
-            itemTypeImage: ItemType.imageResFromType(selTypeValue),
-        });
+        // this.setState({
+        //     selectedTypeValue: selTypeValue,
+        //     itemTypeImage: ItemType.imageResFromType(selTypeValue),
+        // });
     }
 
     private readonly editorSetupEstimate = (editor: any) => {
@@ -338,13 +338,13 @@ export class DetailPage extends React.Component<Props, State> {
     /* tasks END */
       
     private readonly editorSetupPriority = (editor: any) => {
-        const editorPriority: PriorityEnum = editor.value as PriorityEnum;
-        const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
-        this.setState({
-            selectedPriorityValue,
-        }, () => {
-            setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
-        });
+        // const editorPriority: PriorityEnum = editor.value as PriorityEnum;
+        // const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
+        // this.setState({
+        //     selectedPriorityValue,
+        // }, () => {
+        //     setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
+        // });
     }
 
 
