@@ -17,7 +17,7 @@ import { PtTask } from "~/core/models/domain/pt-task.model";
 import { EMPTY_STRING } from '~/core/models/domain/constants/strings';
 import { PtComment } from "~/core/models/domain/pt-comment.model";
 import { dateConverter } from "~/utils/converters";
-import { RadDataForm, DataFormEventData } from "nativescript-ui-dataform";
+import { RadDataForm, DataFormEventData, DataFormEditorType, DataFormLabelPosition } from "nativescript-ui-dataform";
 import { ConfirmOptions, confirm } from 'tns-core-modules/ui/dialogs';
 import { PtUser } from "~/core/models/domain/pt-user.model";
 import { PtItemDetailsEditFormModel, ptItemToFormModel } from "~/core/models/forms/pt-item-details-edit-form.model";
@@ -40,16 +40,46 @@ import { PtTaskViewModel } from "~/shared/view-models/pages/detail/pt-task.vm";
 import { PtCommentViewModel } from "~/shared/view-models/pages/detail/pt-comment.vm";
 import { DetailPageProps } from "~/core/models/page-props/detail-page-props";
 import { EventData } from "tns-core-modules/ui/text-base/text-base";
-import { $RadDataForm, $EntityProperty } from "~/rns-plugins/RadDataForm/RadDataForm";
+import { $RadDataForm, $EntityProperty, $PropertyEditor, $PropertyEditorStyle, $NonEmptyValidator } from "~/rns-plugins/RadDataForm";
+import { PtItemType } from "~/core/models/domain/types";
+import { COLOR_DARK, COLOR_LIGHT, ItemType, PT_ITEM_STATUSES, PT_ITEM_PRIORITIES } from '~/core/constants';
+import {
+    getPickerEditorValueText,
+    setMultiLineEditorFontSize,
+    setPickerEditorImageLocation,
+    setSegmentedEditorColor,
+    setStepperEditorColors,
+    setStepperEditorContentOffset,
+    setStepperEditorTextPostfix
+  } from '~/shared/helpers/ui-data-form';
+import { PriorityEnum } from "~/core/models/domain/enums";
 
 type Props = DetailPageProps;
 
 interface State {
-    newTaskTitle: string,
-    newCommentText: string,
     selectedScreen: "details"|"tasks"|"chitchat",
-    selectedAssignee: PtUser,
+    // selectedAssignee: PtUser, // derived
+
+    /* details form */
+    itemForm: PtItemDetailsEditFormModel|null,
+    itemTypesProvider: PtItemType[],
+    statusesProvider: typeof PT_ITEM_STATUSES,
+    prioritiesProvider: typeof PT_ITEM_PRIORITIES,
+    selectedTypeValue?: PtItemType,
+    selectedPriorityValue?: PriorityEnum,
+    itemTypeImage?: string,
+    /* details form END */
+
+    /* tasks */
+    newTaskTitle: string,
+    tasks: ObservableArray<PtTaskViewModel>,
+    /* tasks END */
+
+    /* comments */
     currentUserAvatar: string,
+    newCommentText: string,
+    comments: ObservableArray<PtCommentViewModel>,
+    /* comments END */
 }
 
 export class DetailPage extends React.Component<Props, State> {
@@ -66,14 +96,37 @@ export class DetailPage extends React.Component<Props, State> {
         super(props);
 
         this.state = {
-            newTaskTitle: EMPTY_STRING,
-            newCommentText: EMPTY_STRING,
             selectedScreen: "details",
-            selectedAssignee: props.item.assignee,
+            // selectedAssignee: props.item.assignee,
+            
+            /* details form */
+            itemForm: null,
+            itemTypesProvider: ItemType.List.map(t => t.PtItemType),
+            statusesProvider: PT_ITEM_STATUSES,
+            prioritiesProvider: PT_ITEM_PRIORITIES,
+            selectedTypeValue: void 0,
+            selectedPriorityValue: void 0,
+            // itemTypeImage: ItemType.imageResFromType(selectedTypeValue),
+            itemTypeImage: void 0,
+            /* details form END */
+            
+            /* tasks */
+            newTaskTitle: EMPTY_STRING,
+            tasks: new ObservableArray<PtTaskViewModel>(
+                props.item.tasks.map(task => new PtTaskViewModel(task, props.item))
+            ),
+            /* tasks END */
+            
+            /* comments */
             currentUserAvatar: getCurrentUserAvatar(
                 getApiEndpoint(),
                 this.authService.getCurrentUserId()
             ),
+            newCommentText: EMPTY_STRING,
+            comments: new ObservableArray<PtCommentViewModel>(
+                props.item.comments.map(comment => new PtCommentViewModel(comment))
+            ),
+            /* comments END */
         };
     }
 
@@ -158,8 +211,76 @@ export class DetailPage extends React.Component<Props, State> {
     };
 
     private readonly onEditorUpdate = (args: DataFormEventData) => {
-
+        switch (args.propertyName) {
+            case 'description':
+                this.editorSetupDescription(args.editor);
+                break;
+            case 'typeStr':
+                this.editorSetupType(args.editor);
+                break;
+            case 'estimate':
+                this.editorSetupEstimate(args.editor);
+                break;
+            case 'priorityStr':
+                this.editorSetupPriority(args.editor);
+                break;
+          }
     };
+
+    private readonly itemTypeEditorDisplayName = () => {
+        return "Type";
+    }
+
+    private readonly editorSetupDescription = (editor) => {
+        setMultiLineEditorFontSize(editor, 17);
+    }
+      
+    private readonly editorSetupType = (editor) => {
+        setPickerEditorImageLocation(editor);
+        const selectedTypeValue: PtItemType = getPickerEditorValueText(editor) as PtItemType;
+        this.updateSelectedTypeValue(selectedTypeValue);
+    }
+
+    // public selectedTypeValue: PtItemType;
+    // public selectedPriorityValue: PriorityEnum;
+    // public itemTypeImage: string;
+
+    private readonly updateSelectedTypeValue = (selTypeValue: PtItemType) => {
+        // TOOD: make sure this is being called in knowledge that it's async
+        this.setState({
+            selectedTypeValue: selTypeValue,
+            itemTypeImage: ItemType.imageResFromType(selTypeValue),
+        });
+    }
+
+    private readonly updateSelectedPriorityValue = (editorPriority: PriorityEnum): PriorityEnum => {
+        const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
+
+        // TOOD: make sure this is being called in knowledge that it's async
+        this.setState({ selectedPriorityValue });
+        return selectedPriorityValue;
+    }
+
+    private readonly calculateSelectedPriorityValue = (editorPriority: PriorityEnum): PriorityEnum => {
+        return editorPriority ? editorPriority : this.state.itemForm.priorityStr as PriorityEnum;
+    }
+      
+    private readonly editorSetupEstimate = (editor) => {
+        setStepperEditorContentOffset(editor, -25, 0);
+        setStepperEditorTextPostfix(editor, 'point', 'points');
+        setStepperEditorColors(editor, COLOR_LIGHT, COLOR_DARK);
+    }
+      
+    private readonly editorSetupPriority = (editor) => {
+        const editorPriority: PriorityEnum = editor.value as PriorityEnum;
+        const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
+        this.setState({
+            selectedPriorityValue,
+        }, () => {
+            setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
+        });
+    }
+
 
     componentDidMount(){
         console.log(`[DetailPage.componentDidMount] this.props.forwardedRef: ${this.props.forwardedRef}; this.props.forwardedRef.current: ${this.props.forwardedRef}`);
@@ -169,14 +290,14 @@ export class DetailPage extends React.Component<Props, State> {
     public render(){
         const { item, ...rest } = this.props;
         const itemForm: PtItemDetailsEditFormModel = ptItemToFormModel(item);
-        const { comments, tasks, title } = item;
+        const { comments, tasks, title, selectedAssignee } = item;
         const observableTasks = new ObservableArray<PtTaskViewModel>(
             item.tasks.map(task => new PtTaskViewModel(task, item))
         );
         const observableComments = new ObservableArray<PtCommentViewModel>(
             item.comments.map(comment => new PtCommentViewModel(comment))
         );
-        const { newTaskTitle, newCommentText, selectedScreen, selectedAssignee } = this.state;
+        const { newTaskTitle, newCommentText, selectedScreen } = this.state;
 
         return (
             <$Page ref={this.props.forwardedRef} className="page" {...rest}>
@@ -225,84 +346,45 @@ export class DetailPage extends React.Component<Props, State> {
                                 onPropertyCommitted={this.onPropertyCommitted}
                                 onEditorUpdate={this.onEditorUpdate}
                             >
-                                <$EntityProperty></$EntityProperty>
+                                <$EntityProperty name="title" displayName="Title" index={1} hintText="Title">
+                                    <$PropertyEditor type={DataFormEditorType.Text}>
+                                        <$PropertyEditorStyle labelTextColor={new Color("#4b5833")} labelPosition={DataFormLabelPosition.Top}/>
+                                    </$PropertyEditor>
+                                    <$NonEmptyValidator errorMessage={"Title can't be empty."}/>
+                                </$EntityProperty>
+
+                                <$EntityProperty name="description" displayName="Description" index={2} required={true} hintText="description">
+                                    <$PropertyEditor type={DataFormEditorType.MultilineText}>
+                                        <$PropertyEditorStyle labelTextColor={new Color("#4b5833")} labelPosition={DataFormLabelPosition.Top}/>
+                                    </$PropertyEditor>
+                                </$EntityProperty>
+
+                                <$EntityProperty name="typeStr" displayName={this.itemTypeEditorDisplayName} index={3} imageResource={itemTypeImage} valuesProvider={itemTypesProvider}>
+                                    <$PropertyEditor type={DataFormEditorType.Picker}>
+                                        <$PropertyEditorStyle labelTextColor={new Color("#4b5833")}/>
+                                    </$PropertyEditor>
+                                </$EntityProperty>
+
+                                <$EntityProperty name="statusStr" displayName="Status" index={4} valuesProvider={statusesProvider}>
+                                    <$PropertyEditor type={DataFormEditorType.Picker}>
+                                        <$PropertyEditorStyle labelTextColor={new Color("#4b5833")}/>
+                                    </$PropertyEditor>
+                                </$EntityProperty>
+
+                                <$EntityProperty name="estimate" displayName="Estimate" index={5}>
+                                    <$PropertyEditor type={DataFormEditorType.Stepper}>
+                                        <$PropertyEditorStyle labelTextColor={new Color("#4b5833")}/>
+                                    </$PropertyEditor>
+                                </$EntityProperty>
+
+                                <$EntityProperty name="priorityStr" displayName="Priority" index={6} valuesProvider={prioritiesProvider}>
+                                    <$PropertyEditor type={DataFormEditorType.SegmentedEditor}>
+                                        <$PropertyEditorStyle labelTextColor={new Color("#4b5833")} labelPosition={DataFormLabelPosition.Top}/>
+                                    </$PropertyEditor>
+                                </$EntityProperty>
+
+                                <$EntityProperty name="assigneeName" hidden={true}/>
                             </$RadDataForm>
-
-                            {/* <df:RadDataForm id="itemDetailsDataForm" row={1} source="{{ itemForm }}" propertyCommitted="onPropertyCommitted" editorUpdate="onEditorUpdate">
-                                <df:RadDataForm.properties>
-                                    <df:EntityProperty name="title" displayName="Title" index="1" hintText="Title">
-                                        <df:EntityProperty.editor>
-                                            <df:PropertyEditor type="Text">
-                                                <df:PropertyEditor.propertyEditorStyle>
-                                                    <df:PropertyEditorStyle labelTextColor="#4b5833" labelPosition="top"></df:PropertyEditorStyle>
-                                                </df:PropertyEditor.propertyEditorStyle>
-                                            </df:PropertyEditor>
-                                        </df:EntityProperty.editor>
-                                        <df:EntityProperty.validators>
-                                            <df:NonEmptyValidator errorMessage="Title can't be empty."></df:NonEmptyValidator>
-                                        </df:EntityProperty.validators>
-                                    </df:EntityProperty>
-
-                                    <df:EntityProperty name="description" displayName="Description" index="2" required="true" hintText="description">
-                                        <df:EntityProperty.editor>
-                                            <df:PropertyEditor type="MultilineText">
-                                                <df:PropertyEditor.propertyEditorStyle>
-                                                    <df:PropertyEditorStyle labelTextColor="#4b5833" labelPosition="top"></df:PropertyEditorStyle>
-                                                </df:PropertyEditor.propertyEditorStyle>
-                                            </df:PropertyEditor>
-                                        </df:EntityProperty.editor>
-                                    </df:EntityProperty>
-
-                                    <df:EntityProperty name="typeStr" displayName="{{ itemTypeEditorDisplayName }}" index="3" imageResource="{{ itemTypeImage }}" valuesProvider="{{ itemTypesProvider }}">
-                                        <df:EntityProperty.editor>
-                                            <df:PropertyEditor type="Picker">
-                                                <df:PropertyEditor.propertyEditorStyle>
-                                                    <df:PropertyEditorStyle labelTextColor="#4b5833"></df:PropertyEditorStyle>
-                                                </df:PropertyEditor.propertyEditorStyle>
-                                            </df:PropertyEditor>
-                                        </df:EntityProperty.editor>
-                                    </df:EntityProperty>
-
-                                    <df:EntityProperty name="statusStr" displayName="Status" index="4" valuesProvider="{{ statusesProvider }}">
-                                        <df:EntityProperty.editor>
-                                            <df:PropertyEditor type="Picker">
-                                                <df:PropertyEditor.propertyEditorStyle>
-                                                    <df:PropertyEditorStyle labelTextColor="#4b5833"></df:PropertyEditorStyle>
-                                                </df:PropertyEditor.propertyEditorStyle>
-                                            </df:PropertyEditor>
-                                        </df:EntityProperty.editor>
-                                    </df:EntityProperty>
-
-                                    <df:EntityProperty name="estimate" displayName="Estimate" index="5">
-                                        <df:EntityProperty.editor>
-                                            <df:PropertyEditor type="Stepper">
-                                                <df:PropertyEditor.propertyEditorStyle>
-                                                    <df:PropertyEditorStyle labelTextColor="#4b5833"></df:PropertyEditorStyle>
-                                                </df:PropertyEditor.propertyEditorStyle>
-                                            </df:PropertyEditor>
-                                        </df:EntityProperty.editor>
-                                    </df:EntityProperty>
-
-
-                                    <df:EntityProperty name="priorityStr" displayName="Priority" index="6" valuesProvider="{{ prioritiesProvider }}">
-                                        <df:EntityProperty.editor>
-                                            <df:PropertyEditor type="SegmentedEditor">
-                                                <df:PropertyEditor.propertyEditorStyle>
-                                                    <df:PropertyEditorStyle labelTextColor="#4b5833" labelPosition="top"></df:PropertyEditorStyle>
-                                                </df:PropertyEditor.propertyEditorStyle>
-                                            </df:PropertyEditor>
-                                        </df:EntityProperty.editor>
-                                    </df:EntityProperty>
-
-
-                                    <df:EntityProperty name="assigneeName" hidden="true">
-                                    </df:EntityProperty>
-
-                                </df:RadDataForm.properties>
-                            </df:RadDataForm> */}
-
-
-
                         </$GridLayout>
 
                         {/* Tasks */}
