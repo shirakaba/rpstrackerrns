@@ -10,7 +10,7 @@ import {
     toUpdateItemRequest
 } from '~/core/contracts/requests/backlog';
 import { back } from '~/shared/helpers/navigation/nav.helper';
-import { Color, Page } from "react-nativescript/dist/client/ElementRegistry";
+import { Color, Page, TextField, View } from "react-nativescript/dist/client/ElementRegistry";
 import { PtItem } from "~/core/models/domain/pt-item.model";
 import { ItemEventData } from "react-nativescript/node_modules/tns-core-modules/ui/list-view/list-view";
 import { PtTask } from "~/core/models/domain/pt-task.model";
@@ -53,6 +53,8 @@ import {
     setStepperEditorTextPostfix
   } from '~/shared/helpers/ui-data-form';
 import { PriorityEnum } from "~/core/models/domain/enums";
+import { showModalAssigneeList } from "~/shared/helpers/modals";
+import { PtNewTask } from "~/core/models/dto/backlog";
 
 type Props = DetailPageProps;
 
@@ -131,31 +133,21 @@ export class DetailPage extends React.Component<Props, State> {
     }
 
     private readonly onDeleteTap = (args: GestureEventData) => {
-        // const options: ConfirmOptions = {
-        //     title: 'Delete Item',
-        //     message: 'Are you sure you want to delete this item?',
-        //     okButtonText: 'Yes',
-        //     cancelButtonText: 'Cancel'
-        // };
+        const options: ConfirmOptions = {
+            title: 'Delete Item',
+            message: 'Are you sure you want to delete this item?',
+            okButtonText: 'Yes',
+            cancelButtonText: 'Cancel'
+        };
 
-        // // confirm with options, with promise
-        // confirm(options).then((result: boolean) => {
-        //     // result can be true/false/undefined
-        //     if (result) {
-        //       detailsVm.deleteRequested();
-        //     }
-        // });
+        // confirm with options, with promise
+        confirm(options).then((result: boolean) => {
+            // result can be true/false/undefined
+            if (result) {
+                this.deleteRequested();
+            }
+        });
     };
-
-    // private readonly deleteRequested = () => {
-    //     const deleteItemRequest = toDeleteItemRequest(this.ptItem);
-    //     this.backlogService
-    //         .deletePtItem(deleteItemRequest)
-    //         .then(() => {})
-    //         .catch(() => {
-    //             console.log('some error occured');
-    //         });
-    // }
 
     private readonly onNavBackTap = (args: GestureEventData) => {
         back();
@@ -174,22 +166,46 @@ export class DetailPage extends React.Component<Props, State> {
         this.setState({ selectedScreen: "chitchat" });
     };
 
-    private readonly onAssigneeRowTap = (args: GestureEventData) => {
+    private readonly getSelectedAssignee = () => {
+        // return this.selectedAssignee ? this.selectedAssignee : this.ptItem.assignee;
+        return this.props.item.assignee;
+    }
+    
+    /* Redundant due to setState() approach */
+    private readonly setSelectedAssignee = (selectedAssignee: PtUser) => {
+        // if (selectedAssignee) {
+        //     // this.set('selectedAssignee', selectedAssignee);
+        
+        //     this.selectedAssignee = selectedAssignee;
+        //     this.notifyUpdateItem();
+        // }
+    }
 
+    private readonly onAssigneeRowTap = (args: GestureEventData) => {
+        const view = args.object as View;
+
+        showModalAssigneeList(view.page, this.getSelectedAssignee()).then(
+            selectedAssignee => {
+                /* TODO: it sounds like the user can set a new assignee to a given task,
+                 * so assignee is NOT in fact a derived property of item. It may also be optional? */
+                if (selectedAssignee) {
+                    this.setSelectedAssignee(selectedAssignee);
+                }
+            }
+        );
     };
 
     private readonly onAddComment = (args: GestureEventData) => {
 
     };
 
-    // Might be passed in as prop?
-    private readonly onAddTask = (args: GestureEventData) => {
-
-    };
-
-    // Might be passed in as prop?
+    // detail-page.ts
     private readonly onTaskToggleTap = (args: GestureEventData) => {
+        // TODO: revisit this.
 
+        // const textField = args.object as TextField;
+        // const taskVm = textField.bindingContext as PtTaskViewModel;
+        // taskVm.onTaskToggleRequested();
     };
 
     private readonly onListItemTap = (itemEventData: ItemEventData) => {
@@ -198,12 +214,22 @@ export class DetailPage extends React.Component<Props, State> {
         // stub
     };
 
+    // detail-page.ts
     private readonly onTaskFocused = (args: EventData) => {
+        // TODO: revisit this.
 
+        // const textField = args.object as TextField;
+        // const taskVm = textField.bindingContext as PtTaskViewModel;
+        // taskVm.onTaskFocused(textField.text);
+
+        // textField.on('textChange', () => taskVm.onTextChange(textField.text));
     };
 
     private readonly onTaskBlurred = (args: EventData) => {
-
+        // const textField = args.object as TextField;
+        // const taskVm = textField.bindingContext as PtTaskViewModel;
+        // textField.off('textChange');
+        // taskVm.onTaskBlurred();
     };
 
     private readonly onPropertyCommitted = (args: DataFormEventData) => {
@@ -227,24 +253,23 @@ export class DetailPage extends React.Component<Props, State> {
           }
     };
 
-    private readonly itemTypeEditorDisplayName = () => {
+    /* I don't know why this is an accessor in the original code, but for consistency... */
+    private get itemTypeEditorDisplayName(){
         return "Type";
     }
 
-    private readonly editorSetupDescription = (editor) => {
+    private readonly editorSetupDescription = (editor: any) => {
         setMultiLineEditorFontSize(editor, 17);
     }
       
-    private readonly editorSetupType = (editor) => {
+    private readonly editorSetupType = (editor: any) => {
         setPickerEditorImageLocation(editor);
         const selectedTypeValue: PtItemType = getPickerEditorValueText(editor) as PtItemType;
+        // CAUTION: this is now async
         this.updateSelectedTypeValue(selectedTypeValue);
     }
 
-    // public selectedTypeValue: PtItemType;
-    // public selectedPriorityValue: PriorityEnum;
-    // public itemTypeImage: string;
-
+    /* details START */
     private readonly updateSelectedTypeValue = (selTypeValue: PtItemType) => {
         // TOOD: make sure this is being called in knowledge that it's async
         this.setState({
@@ -253,25 +278,66 @@ export class DetailPage extends React.Component<Props, State> {
         });
     }
 
-    private readonly updateSelectedPriorityValue = (editorPriority: PriorityEnum): PriorityEnum => {
-        const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
-
-        // TOOD: make sure this is being called in knowledge that it's async
-        this.setState({ selectedPriorityValue });
-        return selectedPriorityValue;
-    }
-
-    private readonly calculateSelectedPriorityValue = (editorPriority: PriorityEnum): PriorityEnum => {
-        return editorPriority ? editorPriority : this.state.itemForm.priorityStr as PriorityEnum;
-    }
-      
-    private readonly editorSetupEstimate = (editor) => {
+    private readonly editorSetupEstimate = (editor: any) => {
         setStepperEditorContentOffset(editor, -25, 0);
         setStepperEditorTextPostfix(editor, 'point', 'points');
         setStepperEditorColors(editor, COLOR_LIGHT, COLOR_DARK);
     }
+
+    // private readonly updateSelectedPriorityValue = (editorPriority: PriorityEnum): PriorityEnum => {
+    //     const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
+
+    //     // CAUTION: async
+    //     this.setState({ selectedPriorityValue });
+    //     return selectedPriorityValue;
+    // }
+
+    private readonly calculateSelectedPriorityValue = (editorPriority: PriorityEnum): PriorityEnum => {
+        return editorPriority ? editorPriority : this.state.itemForm.priorityStr as PriorityEnum;
+    }
+
+    private readonly deleteRequested = (): void => {
+        this.backlogService
+            .deletePtItem(toDeleteItemRequest(this.props.item))
+            .then(() => {})
+            .catch(() => {
+                console.log('some error occured');
+            });
+    }
+    /* details END */
+
+    /* tasks START */
+    private readonly onAddTask = (args: GestureEventData) => {
+        const newTitle = this.state.newTaskTitle.trim();
+        if (newTitle.length === 0) {
+            return;
+        }
+
+        const newTask: PtNewTask = {
+            title: newTitle,
+            completed: false
+        };
+
+        this.taskService
+            .addNewPtTask(toCreateTaskRequest(newTask, this.props.item))
+            .then(response => {
+                this.state.tasks.unshift(
+                    new PtTaskViewModel(response.createdTask, this.props.item)
+                );
+                
+                return new Promise((resolve, reject) => {
+                    this.setState({ newTaskTitle: EMPTY_STRING }, () => {
+                        resolve();
+                    });
+                });
+            })
+            .catch(() => {
+                console.log('something went wrong when adding task');
+            });
+    }
+    /* tasks END */
       
-    private readonly editorSetupPriority = (editor) => {
+    private readonly editorSetupPriority = (editor: any) => {
         const editorPriority: PriorityEnum = editor.value as PriorityEnum;
         const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
         this.setState({
@@ -290,14 +356,14 @@ export class DetailPage extends React.Component<Props, State> {
     public render(){
         const { item, ...rest } = this.props;
         const itemForm: PtItemDetailsEditFormModel = ptItemToFormModel(item);
-        const { comments, tasks, title, selectedAssignee } = item;
+        const { comments, tasks, title, assignee: selectedAssignee } = item;
         const observableTasks = new ObservableArray<PtTaskViewModel>(
             item.tasks.map(task => new PtTaskViewModel(task, item))
         );
         const observableComments = new ObservableArray<PtCommentViewModel>(
             item.comments.map(comment => new PtCommentViewModel(comment))
         );
-        const { newTaskTitle, newCommentText, selectedScreen } = this.state;
+        const { newTaskTitle, newCommentText, selectedScreen, itemTypeImage, statusesProvider, itemTypesProvider, prioritiesProvider } = this.state;
 
         return (
             <$Page ref={this.props.forwardedRef} className="page" {...rest}>
@@ -460,7 +526,4 @@ export class DetailPage extends React.Component<Props, State> {
             </$Page>
         );
     }
-
-    // private readonly onSettingsTap = (args: GestureEventData) => {
-    // };
 }
