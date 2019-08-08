@@ -21,18 +21,18 @@ export function RNSFriendly<TBase extends Constructor<NativeScriptRadDataForm>>(
 
     public __customHostConfigAppendChild(parent: NativeScriptRadDataForm, child: Instance | TextInstance): boolean {
         if(child instanceof EntityProperty){
-            parent.properties = [...parent.properties, child];
+            parent.properties = [...(parent.properties || []), child];
         } else if(child instanceof PropertyGroup){
-            parent.groups = [...parent.groups, child];
+            parent.groups = [...(parent.groups || []), child];
         }
         // i.e. don't bother deferring to Host Config.
         return true;
     }
     public __customHostConfigRemoveChild(parent: NativeScriptRadDataForm, child: Instance | TextInstance): boolean {
         if(child instanceof EntityProperty){
-            parent.properties = parent.properties.filter((entityPoperty) => entityPoperty !== child);
+            parent.properties = (parent.properties || []).filter((entityPoperty) => entityPoperty !== child);
         } else if(child instanceof PropertyGroup){
-            parent.groups = parent.groups.filter((group) => group !== child);
+            parent.groups = (parent.groups || []).filter((group) => group !== child);
         }
         // i.e. don't bother deferring to Host Config.
         return true;

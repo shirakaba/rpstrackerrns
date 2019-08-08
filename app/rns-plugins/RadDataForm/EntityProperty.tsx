@@ -21,7 +21,7 @@ export function RNSFriendly<TBase extends Constructor<NativeScriptEntityProperty
         if(child instanceof PropertyEditor){
             parent.editor = child;
         } else if(child instanceof PropertyValidator){
-            parent.validators = [...parent.validators, child];
+            parent.validators = [...(parent.validators || []), child];
         }
         // i.e. don't bother deferring to Host Config.
         return true;
@@ -33,7 +33,7 @@ export function RNSFriendly<TBase extends Constructor<NativeScriptEntityProperty
             parent.editor = null;
         } else if(child instanceof PropertyValidator){
             // TODO: check whether nullable.
-            parent.validators = null;
+            parent.validators = (parent.validators || []).filter((validator) => validator !== child);;
         }
         // i.e. don't bother deferring to Host Config.
         return true;
