@@ -274,14 +274,11 @@ export class DetailPage extends React.Component<Props, State> {
         // taskVm.onTaskBlurred();
     };
 
-    /**
-     * In here, we'll update our React Component's state to reflect the property committed.
-     */
     private readonly onPropertyCommitted = (args: DataFormEventData) => {
-        const { editor, propertyName } = args;
-        console.log(`[onPropertyCommitted] ${propertyName}`);
+        console.log(`[onPropertyCommitted] ${args.propertyName}`);
+        const { editor } = args;
 
-        switch (propertyName) {
+        switch (args.propertyName) {
             case 'description':
                 break;
             case 'typeStr':
@@ -299,17 +296,9 @@ export class DetailPage extends React.Component<Props, State> {
         
                 this.setState({ selectedPriorityValue });
                 break;
-            }
-        /* FIXME: None of these choices are persisted when you revisit the screen.
-         *        This is because they don't result in any model mutation or backend request.
-         *        Looks like a limitation of the original app, so out-of-scope for this port. */
+        }
     };
 
-    /**
-     * In here, we'll update the view of the underlying RadDataForm component/sub-components.
-     * Updating state based on these updates seems to lead to infinite loops or undoing of the update,
-     * so we'll defer that until onPropertyCommitted.
-     */
     private readonly onEditorUpdate = (args: DataFormEventData) => {
         console.log(`[onEditorUpdate] ${args.propertyName}`);
 
