@@ -112,10 +112,10 @@ export class DetailPage extends React.Component<Props, State> {
             itemTypesProvider: ItemType.List.map(t => t.PtItemType),
             statusesProvider: PT_ITEM_STATUSES,
             prioritiesProvider: PT_ITEM_PRIORITIES,
-            selectedTypeValue: void 0,
-            selectedPriorityValue: void 0,
+            selectedTypeValue: void 0, // initialised by onEditorUpdate()..?
+            selectedPriorityValue: void 0, // initialised by onEditorUpdate()..?
             // itemTypeImage: ItemType.imageResFromType(selectedTypeValue),
-            itemTypeImage: void 0,
+            itemTypeImage: void 0, // initialised by onEditorUpdate()..?
             /* details form END */
             
             /* tasks */
@@ -391,14 +391,14 @@ export class DetailPage extends React.Component<Props, State> {
     public render(){
         const { item, ...rest } = this.props;
         const itemForm: PtItemDetailsEditFormModel = ptItemToFormModel(item);
-        const { comments, tasks, title, assignee: selectedAssignee } = item;
+        const { comments, tasks, title, assignee } = item;
         const observableTasks = new ObservableArray<PtTaskViewModel>(
             item.tasks.map(task => new PtTaskViewModel(task, item))
         );
         const observableComments = new ObservableArray<PtCommentViewModel>(
             item.comments.map(comment => new PtCommentViewModel(comment))
         );
-        const { newTaskTitle, newCommentText, selectedScreen, itemTypeImage, statusesProvider, itemTypesProvider, prioritiesProvider } = this.state;
+        const { newTaskTitle, newCommentText, selectedScreen, selectedAssignee, itemTypeImage, statusesProvider, itemTypesProvider, prioritiesProvider } = this.state;
 
         return (
             <$Page ref={this.props.forwardedRef} className="page" {...rest}>
