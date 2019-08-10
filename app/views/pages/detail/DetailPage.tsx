@@ -314,14 +314,19 @@ export class DetailPage extends React.Component<Props, State> {
     }
 
     /* details START */
-    private readonly updateSelectedTypeValue = (selTypeValue: PtItemType) => {
-        // if(){}
-        console.log(`[updateSelectedTypeValue] selTypeValue: ${selTypeValue}`);
-        // TOOD: make sure this is being called in knowledge that it's async
-        // this.setState({
-        //     selectedTypeValue: selTypeValue,
-        //     itemTypeImage: ItemType.imageResFromType(selTypeValue),
-        // });
+    private readonly updateSelectedTypeValue = (selectedTypeValue: PtItemType) => {
+        if(selectedTypeValue === this.state.selectedTypeValue){
+            console.log(`[updateSelectedTypeValue] selectedTypeValue: ${selectedTypeValue} (no-op)`);
+            // Prevent infinite loop (wherein the very action of setting state prompts the "editorUpdate" event).
+            return;
+        }
+        console.log(`[updateSelectedTypeValue] selectedTypeValue: ${selectedTypeValue} (payload)`);
+
+        // TODO: make sure this is being called in knowledge that it's async
+        this.setState({
+            selectedTypeValue,
+            itemTypeImage: ItemType.imageResFromType(selectedTypeValue),
+        });
     }
 
     private readonly editorSetupEstimate = (editor: any) => {
@@ -387,7 +392,16 @@ export class DetailPage extends React.Component<Props, State> {
     private readonly editorSetupPriority = (editor: any) => {
         const editorPriority: PriorityEnum = editor.value as PriorityEnum;
         console.log(`[editorSetupPriority] editorPriority ${editorPriority}`);
+        
         const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
+
+        if(selectedPriorityValue === this.state.selectedPriorityValue){
+            console.log(`[updateSelectedPriorityValue] selectedPriorityValue: ${selectedPriorityValue} (no-op)`);
+            // Prevent infinite loop (wherein the very action of setting state prompts the "editorUpdate" event).
+            return;
+        }
+        console.log(`[updateSelectedPriorityValue] selectedPriorityValue: ${selectedPriorityValue} (payload)`);
+
         this.setState({
             selectedPriorityValue,
         }, () => {
