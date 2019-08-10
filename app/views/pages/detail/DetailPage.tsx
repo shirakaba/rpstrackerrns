@@ -73,9 +73,9 @@ interface State {
     itemTypesProvider: PtItemType[],
     statusesProvider: typeof PT_ITEM_STATUSES,
     prioritiesProvider: typeof PT_ITEM_PRIORITIES,
-    selectedTypeValue?: PtItemType,
-    selectedPriorityValue?: PriorityEnum,
-    itemTypeImage?: string,
+    selectedTypeValue: PtItemType,
+    selectedPriorityValue: PriorityEnum,
+    itemTypeImage: string,
     /* details form END */
 
     /* tasks */
@@ -103,6 +103,13 @@ export class DetailPage extends React.Component<Props, State> {
     constructor(props: Props){
         super(props);
 
+        const itemForm: PtItemDetailsEditFormModel = ptItemToFormModel(props.item);
+        const { typeStr, priorityStr } = itemForm;
+
+        console.log(`Upon constructing DetailPage, typeStr was: ${typeStr}`);
+        const selectedTypeValue: PtItemType = typeStr as PtItemType;
+        const selectedPriorityValue: PriorityEnum = priorityStr as PriorityEnum;
+
         this.state = {
             selectedScreen: "details",
             selectedAssignee: props.item.assignee,
@@ -112,10 +119,9 @@ export class DetailPage extends React.Component<Props, State> {
             itemTypesProvider: ItemType.List.map(t => t.PtItemType),
             statusesProvider: PT_ITEM_STATUSES,
             prioritiesProvider: PT_ITEM_PRIORITIES,
-            selectedTypeValue: void 0, // initialised by onEditorUpdate()..?
-            selectedPriorityValue: void 0, // initialised by onEditorUpdate()..?
-            // itemTypeImage: ItemType.imageResFromType(selectedTypeValue),
-            itemTypeImage: void 0, // initialised by onEditorUpdate()..?
+            selectedTypeValue,
+            selectedPriorityValue,
+            itemTypeImage: ItemType.imageResFromType(selectedTypeValue),
             /* details form END */
             
             /* tasks */
@@ -217,6 +223,7 @@ export class DetailPage extends React.Component<Props, State> {
     }
 
     private readonly onAssigneeRowTap = (args: GestureEventData) => {
+        console.log(`[onAssigneeRowTap]`);
         const view = args.object as View;
 
         showModalAssigneeList(view.page, this.getSelectedAssignee())
@@ -268,10 +275,12 @@ export class DetailPage extends React.Component<Props, State> {
     };
 
     private readonly onPropertyCommitted = (args: DataFormEventData) => {
-
+        console.log(`[onPropertyCommitted]`);
     };
 
     private readonly onEditorUpdate = (args: DataFormEventData) => {
+        console.log(`[onEditorUpdate] ${args.propertyName}`);
+
         switch (args.propertyName) {
             case 'description':
                 this.editorSetupDescription(args.editor);
@@ -306,6 +315,8 @@ export class DetailPage extends React.Component<Props, State> {
 
     /* details START */
     private readonly updateSelectedTypeValue = (selTypeValue: PtItemType) => {
+        // if(){}
+        console.log(`[updateSelectedTypeValue] selTypeValue: ${selTypeValue}`);
         // TOOD: make sure this is being called in knowledge that it's async
         // this.setState({
         //     selectedTypeValue: selTypeValue,
@@ -320,6 +331,7 @@ export class DetailPage extends React.Component<Props, State> {
     }
 
     // private readonly updateSelectedPriorityValue = (editorPriority: PriorityEnum): PriorityEnum => {
+    //     console.log(`[updateSelectedPriorityValue] editorPriority: ${editorPriority}`);
     //     const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
 
     //     // CAUTION: async
@@ -373,13 +385,14 @@ export class DetailPage extends React.Component<Props, State> {
     /* tasks END */
       
     private readonly editorSetupPriority = (editor: any) => {
-        // const editorPriority: PriorityEnum = editor.value as PriorityEnum;
-        // const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
-        // this.setState({
-        //     selectedPriorityValue,
-        // }, () => {
-        //     setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
-        // });
+        const editorPriority: PriorityEnum = editor.value as PriorityEnum;
+        console.log(`[editorSetupPriority] editorPriority ${editorPriority}`);
+        const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
+        this.setState({
+            selectedPriorityValue,
+        }, () => {
+            setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
+        });
     }
 
 
