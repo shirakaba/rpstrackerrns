@@ -4,7 +4,7 @@ import { appConfig } from '~/config/app-config';
 import { setAppEvents } from '~/globals/app-events/app-events';
 import '~/globals/dependencies/locator';
 
-(global as any).__DEV__ = false;
+(global as any).__DEV__ = true;
 
 import * as React from "react";
 import * as ReactNativeScript from "react-nativescript/dist/index";
@@ -20,7 +20,7 @@ application.setResources({ L: localize });
 
 setAppEvents();
 
-const isLoggedIn = false;
+const isLoggedIn = true;
 
 const app = isLoggedIn ?
     React.createElement(AppRootAuthenticated, { forwardedRef: rootRef }, null) :
