@@ -275,7 +275,28 @@ export class DetailPage extends React.Component<Props, State> {
     };
 
     private readonly onPropertyCommitted = (args: DataFormEventData) => {
-        console.log(`[onPropertyCommitted]`);
+        console.log(`[onPropertyCommitted] ${args.propertyName}`);
+        const { editor } = args;
+
+        switch (args.propertyName) {
+            case 'description':
+                break;
+            case 'typeStr':
+                const selectedTypeValue: PtItemType = getPickerEditorValueText(editor) as PtItemType;
+                this.setState({
+                    selectedTypeValue,
+                    itemTypeImage: ItemType.imageResFromType(selectedTypeValue),
+                });
+                break;
+            case 'estimate':
+                break;
+            case 'priorityStr':
+                const editorPriority: PriorityEnum = editor.value as PriorityEnum;
+                const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
+        
+                this.setState({ selectedPriorityValue });
+                break;
+        }
     };
 
     private readonly onEditorUpdate = (args: DataFormEventData) => {
@@ -294,7 +315,7 @@ export class DetailPage extends React.Component<Props, State> {
             case 'priorityStr':
                 this.editorSetupPriority(args.editor);
                 break;
-          }
+        }
     };
 
     /* I don't know why this is an accessor in the original code, but for consistency... */
@@ -323,10 +344,10 @@ export class DetailPage extends React.Component<Props, State> {
         console.log(`[updateSelectedTypeValue] selectedTypeValue: ${selectedTypeValue} (payload)`);
 
         // TODO: make sure this is being called in knowledge that it's async
-        this.setState({
-            selectedTypeValue,
-            itemTypeImage: ItemType.imageResFromType(selectedTypeValue),
-        });
+        // this.setState({
+        //     selectedTypeValue,
+        //     itemTypeImage: ItemType.imageResFromType(selectedTypeValue),
+        // });
     }
 
     private readonly editorSetupEstimate = (editor: any) => {
@@ -390,10 +411,12 @@ export class DetailPage extends React.Component<Props, State> {
     /* tasks END */
       
     private readonly editorSetupPriority = (editor: any) => {
+
         const editorPriority: PriorityEnum = editor.value as PriorityEnum;
         console.log(`[editorSetupPriority] editorPriority ${editorPriority}`);
         
         const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
+        setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
 
         if(selectedPriorityValue === this.state.selectedPriorityValue){
             console.log(`[updateSelectedPriorityValue] selectedPriorityValue: ${selectedPriorityValue} (no-op)`);
@@ -402,11 +425,11 @@ export class DetailPage extends React.Component<Props, State> {
         }
         console.log(`[updateSelectedPriorityValue] selectedPriorityValue: ${selectedPriorityValue} (payload)`);
 
-        this.setState({
-            selectedPriorityValue,
-        }, () => {
-            setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
-        });
+        // this.setState({
+        //     selectedPriorityValue,
+        // }, () => {
+        //     setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
+        // });
     }
 
 
