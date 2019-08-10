@@ -7,7 +7,8 @@ import {
     toCreateCommentRequest,
     toCreateTaskRequest,
     toDeleteItemRequest,
-    toUpdateItemRequest
+    toUpdateItemRequest,
+    UpdateItemRequest
 } from '~/core/contracts/requests/backlog';
 import { back } from '~/shared/helpers/navigation/nav.helper';
 import { Color, Page, TextField, View } from "react-nativescript/dist/client/ElementRegistry";
@@ -20,7 +21,6 @@ import { dateConverter } from "~/utils/converters";
 import { RadDataForm, DataFormEventData, DataFormEditorType, DataFormLabelPosition } from "nativescript-ui-dataform";
 import { ConfirmOptions, confirm } from 'tns-core-modules/ui/dialogs';
 import { PtUser } from "~/core/models/domain/pt-user.model";
-import { PtItemDetailsEditFormModel, ptItemToFormModel } from "~/core/models/forms/pt-item-details-edit-form.model";
 import { getCurrentUserAvatar } from '~/core/services';
 import {
     getApiEndpoint,
@@ -35,6 +35,11 @@ import {
     PtCommentService,
     PtTaskService
 } from '~/core/contracts/services';
+import {
+    applyFormModelUpdatesToItem,
+    PtItemDetailsEditFormModel,
+    ptItemToFormModel
+} from '~/core/models/forms';
 import { ObservableArray } from "tns-core-modules/data/observable-array/observable-array";
 import { PtTaskViewModel } from "~/shared/view-models/pages/detail/pt-task.vm";
 import { PtCommentViewModel } from "~/shared/view-models/pages/detail/pt-comment.vm";
@@ -55,12 +60,13 @@ import {
 import { PriorityEnum } from "~/core/models/domain/enums";
 import { showModalAssigneeList } from "~/shared/helpers/modals";
 import { PtNewTask } from "~/core/models/dto/backlog";
+import { UpdateItemResponse } from "~/core/contracts/responses/backlog";
 
 type Props = DetailPageProps;
 
 interface State {
     selectedScreen: "details"|"tasks"|"chitchat",
-    // selectedAssignee: PtUser, // derived
+    selectedAssignee: PtUser,
 
     /* details form */
     itemForm: PtItemDetailsEditFormModel|null,
@@ -99,7 +105,7 @@ export class DetailPage extends React.Component<Props, State> {
 
         this.state = {
             selectedScreen: "details",
-            // selectedAssignee: props.item.assignee,
+            selectedAssignee: props.item.assignee,
             
             /* details form */
             itemForm: null,
@@ -167,30 +173,59 @@ export class DetailPage extends React.Component<Props, State> {
     };
 
     private readonly getSelectedAssignee = () => {
-        // return this.selectedAssignee ? this.selectedAssignee : this.ptItem.assignee;
-        return this.props.item.assignee;
+        return this.state.selectedAssignee ? this.state.selectedAssignee : this.props.item.assignee;
     }
     
-    /* Redundant due to setState() approach */
-    private readonly setSelectedAssignee = (selectedAssignee: PtUser) => {
-        // if (selectedAssignee) {
-        //     // this.set('selectedAssignee', selectedAssignee);
-        
-        //     this.selectedAssignee = selectedAssignee;
-        //     this.notifyUpdateItem();
-        // }
+    private readonly setSelectedAssignee = (selectedAssignee: PtUser): Promise<void> => {
+        if(!selectedAssignee){
+            return Promise.resolve();
+        }
+
+        return new Promise(
+            (resolve, reject) => {
+                this.setState(
+                    {
+                        selectedAssignee
+                    },
+                    () => {
+                        resolve(
+                            this.notifyUpdateItem()
+                            .then((response: UpdateItemResponse) => {
+                                // No-op
+                            })
+                            .catch((error: any) => {
+                                console.log(`[ERROR] notifyUpdateItem() failed`, error);
+                                // Just swalllow the error here.
+                            })
+                        );
+                    }
+                );
+            }
+        );
+    }
+
+    private readonly notifyUpdateItem = (): Promise<UpdateItemResponse> => {
+        const updatedItem: PtItem = applyFormModelUpdatesToItem(
+            this.props.item,
+            this.state.itemForm,
+            this.state.selectedAssignee
+        );
+    
+        const updateItemRequest: UpdateItemRequest = toUpdateItemRequest(updatedItem);
+    
+        return this.backlogService.updatePtItem(updateItemRequest);
     }
 
     private readonly onAssigneeRowTap = (args: GestureEventData) => {
         const view = args.object as View;
 
-        showModalAssigneeList(view.page, this.getSelectedAssignee()).then(
-            selectedAssignee => {
-                /* TODO: it sounds like the user can set a new assignee to a given task,
-                 * so assignee is NOT in fact a derived property of item. It may also be optional? */
-                if (selectedAssignee) {
-                    this.setSelectedAssignee(selectedAssignee);
+        showModalAssigneeList(view.page, this.getSelectedAssignee())
+        .then(
+            (selectedAssignee: PtUser) => {
+                if(!selectedAssignee){
+                    return;
                 }
+                return this.setSelectedAssignee(selectedAssignee);
             }
         );
     };
