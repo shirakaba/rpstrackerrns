@@ -108,7 +108,7 @@ export class DetailPage extends React.Component<Props, State> {
             selectedAssignee: props.item.assignee,
             
             /* details form */
-            itemForm: null,
+            itemForm: ptItemToFormModel(props.item),
             itemTypesProvider: ItemType.List.map(t => t.PtItemType),
             statusesProvider: PT_ITEM_STATUSES,
             prioritiesProvider: PT_ITEM_PRIORITIES,
@@ -210,7 +210,7 @@ export class DetailPage extends React.Component<Props, State> {
             this.state.itemForm,
             this.state.selectedAssignee
         );
-    
+        
         const updateItemRequest: UpdateItemRequest = toUpdateItemRequest(updatedItem);
     
         return this.backlogService.updatePtItem(updateItemRequest);
