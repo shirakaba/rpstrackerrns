@@ -115,7 +115,7 @@ export class DetailPage extends React.Component<Props, State> {
             selectedAssignee: props.item.assignee,
             
             /* details form */
-            itemForm: ptItemToFormModel(props.item),
+            itemForm,
             itemTypesProvider: ItemType.List.map(t => t.PtItemType),
             statusesProvider: PT_ITEM_STATUSES,
             prioritiesProvider: PT_ITEM_PRIORITIES,
@@ -322,11 +322,20 @@ export class DetailPage extends React.Component<Props, State> {
         }
         console.log(`[updateSelectedTypeValue] selectedTypeValue: ${selectedTypeValue} (payload)`);
 
-        // TODO: make sure this is being called in knowledge that it's async
-        this.setState({
-            selectedTypeValue,
-            itemTypeImage: ItemType.imageResFromType(selectedTypeValue),
-        });
+        this.setState(
+            (state: State) => {
+                return {
+                    /* We make sure to update the form itself too, otherwise state would be mismatched between the form and the DetailPage component.  */
+                    itemForm: {
+                        ...state.itemForm,
+                        typeStr: selectedTypeValue,
+                    },
+    
+                    selectedTypeValue,
+                    itemTypeImage: ItemType.imageResFromType(selectedTypeValue),
+                };
+            },
+        );
     }
 
     private readonly editorSetupEstimate = (editor: any) => {
@@ -402,11 +411,25 @@ export class DetailPage extends React.Component<Props, State> {
         }
         console.log(`[updateSelectedPriorityValue] selectedPriorityValue: ${selectedPriorityValue} (payload)`);
 
-        this.setState({
-            selectedPriorityValue,
-        }, () => {
-            setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
-        });
+        this.setState(
+            (state: State) => {
+                return {
+                    /* We make sure to update the form itself too, otherwise state would be mismatched between the form and the DetailPage component.  */
+                    itemForm: {
+                        ...state.itemForm,
+                        priorityStr: selectedPriorityValue,
+                    },
+    
+                    selectedPriorityValue,
+                };
+            },
+            () => {
+                setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
+            }
+        );
+
+        /* The value keeps resetting. I think this is because setState() triggers a re-render (as expected),
+         * but we never mutated this.props.item, so the form is rebuilt on the next render from its initial state. */
     }
 
 
@@ -416,19 +439,22 @@ export class DetailPage extends React.Component<Props, State> {
     }
 
     public render(){
-        const { item, ...rest } = this.props;
-        const itemForm: PtItemDetailsEditFormModel = ptItemToFormModel(item);
-        const { comments, tasks, title, assignee } = item;
+        console.log(`[DetailPage.render]`);
+        const { forwardedRef, item, ...rest } = this.props;
+        const { itemForm, newTaskTitle, newCommentText, selectedScreen, selectedAssignee, itemTypeImage, statusesProvider, itemTypesProvider, prioritiesProvider } = this.state;
+        /* These are unused */
+        // const { comments, tasks, title, assignee } = item;
+
+        /* TODO: if we find that tasks and comments may be mutable, we'll have to find a way to derive them from state rather than from this.props.item */
         const observableTasks = new ObservableArray<PtTaskViewModel>(
             item.tasks.map(task => new PtTaskViewModel(task, item))
         );
         const observableComments = new ObservableArray<PtCommentViewModel>(
             item.comments.map(comment => new PtCommentViewModel(comment))
         );
-        const { newTaskTitle, newCommentText, selectedScreen, selectedAssignee, itemTypeImage, statusesProvider, itemTypesProvider, prioritiesProvider } = this.state;
 
         return (
-            <$Page ref={this.props.forwardedRef} className="page" {...rest}>
+            <$Page ref={forwardedRef} className="page" {...rest}>
                 <$ActionBar title="Item">
                     <$NavigationButton text="Back" android={{ systemIcon: "ic_menu_back" }} onTap={this.onNavBackTap}/>
 
