@@ -80,13 +80,13 @@ interface State {
 
     /* tasks */
     newTaskTitle: string,
-    tasks: ObservableArray<PtTaskViewModel>,
+    tasks: Array<PtTask>,
     /* tasks END */
 
     /* comments */
     currentUserAvatar: string,
     newCommentText: string,
-    comments: ObservableArray<PtCommentViewModel>,
+    comments: Array<PtCommentViewModel>,
     /* comments END */
 }
 
@@ -126,9 +126,9 @@ export class DetailPage extends React.Component<Props, State> {
             
             /* tasks */
             newTaskTitle: EMPTY_STRING,
-            tasks: new ObservableArray<PtTaskViewModel>(
-                props.item.tasks.map(task => new PtTaskViewModel(task, props.item))
-            ),
+            // FIXME: Need to derive PtTaskViewModel from itemForm (whose state updates propagate to DetailPage where we track them) rather than item (which is immutable).
+            // TODO: Downgrade this to a regular array to reflect that React is managing the state
+            tasks: itemForm.tasks, //.map(task => new PtTaskViewModel(task, props.item)),
             /* tasks END */
             
             /* comments */
@@ -137,9 +137,7 @@ export class DetailPage extends React.Component<Props, State> {
                 this.authService.getCurrentUserId()
             ),
             newCommentText: EMPTY_STRING,
-            comments: new ObservableArray<PtCommentViewModel>(
-                props.item.comments.map(comment => new PtCommentViewModel(comment))
-            ),
+            comments: itemForm.comments.map(comment => new PtCommentViewModel(comment)),
             /* comments END */
         };
     }
@@ -439,19 +437,19 @@ export class DetailPage extends React.Component<Props, State> {
     }
 
     public render(){
-        console.log(`[DetailPage.render]`);
         const { forwardedRef, item, ...rest } = this.props;
-        const { itemForm, newTaskTitle, newCommentText, selectedScreen, selectedAssignee, itemTypeImage, statusesProvider, itemTypesProvider, prioritiesProvider } = this.state;
-        /* These are unused */
-        // const { comments, tasks, title, assignee } = item;
+        const { itemForm, newTaskTitle, newCommentText, selectedScreen, selectedAssignee, itemTypeImage, statusesProvider, itemTypesProvider, prioritiesProvider, tasks, comments } = this.state;
+        console.log(`[DetailPage.render] with tasks`, tasks);
 
-        /* TODO: if we find that tasks and comments may be mutable, we'll have to find a way to derive them from state rather than from this.props.item */
-        const observableTasks = new ObservableArray<PtTaskViewModel>(
-            item.tasks.map(task => new PtTaskViewModel(task, item))
-        );
-        const observableComments = new ObservableArray<PtCommentViewModel>(
-            item.comments.map(comment => new PtCommentViewModel(comment))
-        );
+        // /* Originally these were derived from this.props.item, but for React we ensure that the state is managed by DetailPage rather than stashed inside ObservableArray. */
+        // const observableTasks = new ObservableArray<PtTaskViewModel>(
+        //     // FIXME: Need to derive PtTaskViewModel from itemForm (whose state updates propagate to DetailPage where we track them) rather than item (which is immutable).
+        //     // TODO: Downgrade this to a regular array to reflect that React is managing the state
+        //     itemForm.tasks.map(task => new PtTaskViewModel(task, item))
+        // );
+        // const observableComments = new ObservableArray<PtCommentViewModel>(
+        //     itemForm.comments.map(comment => new PtCommentViewModel(comment))
+        // );
 
         return (
             <$Page ref={forwardedRef} className="page" {...rest}>
@@ -552,7 +550,8 @@ export class DetailPage extends React.Component<Props, State> {
                                 <$StackLayout className="pt-tasks-list-container">
                                     <$ListView
                                         id="tasksList"
-                                        items={observableTasks}
+                                        // FIXME: convert tasks from TasksViewModel to PtTask[]
+                                        items={tasks}
                                         onItemTap={this.onListItemTap}
                                         cellFactory={(task: PtTask, ref: React.RefObject<any>) => {
                                             const { title, completed, } = task;
@@ -587,7 +586,7 @@ export class DetailPage extends React.Component<Props, State> {
 
                             <$ScrollView row={1} className="pt-comments-scroll">
                                 <$StackLayout className="pt-comments-list-container">
-                                    {observableComments.map((comment: PtComment) => {
+                                    {comments.map((comment: PtComment) => {
                                         const { user, title, dateCreated, id } = comment;
                                         // In the Core version, this was all contained by a Repeater with the id "commentsList"
                                         return (

@@ -1,4 +1,4 @@
-import { PtItem, PtUser } from '~/core/models/domain';
+import { PtItem, PtUser, PtTask, PtComment } from '~/core/models/domain';
 
 export interface PtItemDetailsEditFormModel {
   title: string;
@@ -8,6 +8,10 @@ export interface PtItemDetailsEditFormModel {
   estimate: number;
   priorityStr: string;
   assigneeName: string;
+
+  /* Added to support React (so as not to conceal the state inside ObservableArrays) */
+  tasks: PtTask[],
+  comments: PtComment[],
 }
 
 export function ptItemToFormModel(item: PtItem): PtItemDetailsEditFormModel {
@@ -18,7 +22,11 @@ export function ptItemToFormModel(item: PtItem): PtItemDetailsEditFormModel {
     statusStr: item.status,
     estimate: item.estimate,
     priorityStr: item.priority,
-    assigneeName: item.assignee ? item.assignee.fullName : 'unassigned'
+    assigneeName: item.assignee ? item.assignee.fullName : 'unassigned',
+
+    /* Added to support React (so as not to conceal the state inside ObservableArrays) */
+    tasks: item.tasks,
+    comments: item.comments,
   };
 }
 
@@ -38,7 +46,10 @@ export function applyFormModelUpdatesToItem(
     status: itemForm.statusStr,
     priority: itemForm.priorityStr,
     estimate: itemForm.estimate,
-    assignee: updatedAssignee
+    assignee: updatedAssignee,
+
+    // tasks: itemForm.tasks,
+    // comments: itemForm.comments,
   });
   return updatedItem;
 }
