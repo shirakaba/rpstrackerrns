@@ -59,7 +59,7 @@ import {
   } from '~/shared/helpers/ui-data-form';
 import { PriorityEnum } from "~/core/models/domain/enums";
 import { showModalAssigneeList } from "~/shared/helpers/modals";
-import { PtNewTask } from "~/core/models/dto/backlog";
+import { PtNewTask, PtNewComment } from "~/core/models/dto/backlog";
 import { UpdateItemResponse } from "~/core/contracts/responses/backlog";
 import { StatusEnum } from '~/core/models/domain/enums';
 
@@ -132,14 +132,12 @@ export class DetailPage extends React.Component<Props, State> {
             
             /* tasks */
             newTaskTitle: EMPTY_STRING,
-            // FIXME: Need to derive PtTaskViewModel from itemForm (whose state updates propagate to DetailPage where we track them) rather than item (which is immutable).
-            // TODO: Downgrade this to a regular array to reflect that React is managing the state
-            // tasks: itemForm.tasks, //.map(task => new PtTaskViewModel(task, props.item)),
             /* tasks END */
             
             /* comments */
             currentUserAvatar: getCurrentUserAvatar(
                 getApiEndpoint(),
+                /* NOTE: will be undefined if you've hard-coded your way in, rather than gone through the proper login flow. */
                 this.authService.getCurrentUserId()
             ),
             newCommentText: EMPTY_STRING,
@@ -242,7 +240,43 @@ export class DetailPage extends React.Component<Props, State> {
     };
 
     private readonly onAddComment = (args: GestureEventData) => {
+        const newCommentTxt: string = this.state.newCommentText.trim();
+        if (newCommentTxt.length === 0) {
+            return;
+        }
+        
+        const newComment: PtNewComment = {
+            title: newCommentTxt
+        };
+        
+        this.commentService
+            .addNewPtComment(toCreateCommentRequest(
+                newComment,
+                this.props.item
+            ))
+            .then(response => {
+                return new Promise((resolve, reject) => {                    
+                    this.setState((state: State) => {
+                        const addedComment = response.createdComment;
+                        addedComment.user.avatar = state.currentUserAvatar;
 
+                        return {
+                            newCommentText: EMPTY_STRING,
+
+                            itemForm: {
+                                ...state.itemForm,
+                                comments: [new PtCommentViewModel(addedComment), ...state.itemForm.comments]
+                            }
+                        };
+                    },
+                    () => {
+                        resolve();
+                    });
+                });
+            })
+            .catch((error: any) => {
+                console.log('something went wrong when adding comment', error);
+            });
     };
 
     // From detail-page.ts
@@ -412,6 +446,14 @@ export class DetailPage extends React.Component<Props, State> {
         return editorEstimate ? editorEstimate : this.state.itemForm.estimate;
     }
 
+    private readonly onNewTaskTextChange = (args: EventData) => {
+        this.setState({ newTaskTitle: (args.object as TextField).text });
+    }
+
+    private readonly onNewCommentTextChange = (args: EventData) => {
+        this.setState({ newCommentText: (args.object as TextField).text });
+    }
+
     private readonly deleteRequested = (): void => {
         this.backlogService
             .deletePtItem(toDeleteItemRequest(this.props.item))
@@ -529,24 +571,12 @@ export class DetailPage extends React.Component<Props, State> {
 
 
     componentDidMount(){
-        console.log(`[DetailPage.componentDidMount] this.props.forwardedRef: ${this.props.forwardedRef}; this.props.forwardedRef.current: ${this.props.forwardedRef}`);
         this.props.forwardedRef.current!.addCssFile("views/pages/detail/detail-page.css");
     }
 
     public render(){
         const { forwardedRef, item, ...rest } = this.props;
-        const { itemForm, newTaskTitle, newCommentText, selectedScreen, selectedAssignee, itemTypeImage, statusesProvider, itemTypesProvider, prioritiesProvider } = this.state;
-        // console.log(`[DetailPage.render] with tasks`, tasks);
-
-        // /* Originally these were derived from this.props.item, but for React we ensure that the state is managed by DetailPage rather than stashed inside ObservableArray. */
-        // const observableTasks = new ObservableArray<PtTaskViewModel>(
-        //     // FIXME: Need to derive PtTaskViewModel from itemForm (whose state updates propagate to DetailPage where we track them) rather than item (which is immutable).
-        //     // TODO: Downgrade this to a regular array to reflect that React is managing the state
-        //     itemForm.tasks.map(task => new PtTaskViewModel(task, item))
-        // );
-        // const observableComments = new ObservableArray<PtCommentViewModel>(
-        //     itemForm.comments.map(comment => new PtCommentViewModel(comment))
-        // );
+        const { itemForm, newTaskTitle, newCommentText, selectedScreen, selectedAssignee, itemTypeImage, statusesProvider, itemTypesProvider, prioritiesProvider, currentUserAvatar } = this.state;
 
         const { tasks, comments, ...itemFormTruncated } = itemForm;
 
@@ -640,8 +670,8 @@ export class DetailPage extends React.Component<Props, State> {
                         {/* Tasks */}
                         <$GridLayout visibility={selectedScreen === 'tasks' ? 'visible' : 'collapse'} rows={[new ItemSpec(70, "pixel"), new ItemSpec(1, "star")]} columns={[]} className="pt-item-tasks-container">
                             <$GridLayout row={0} columns={[new ItemSpec(1, "star"), new ItemSpec(80, "pixel")]} rows={[]} className="pt-tasks-add-row">
-                                <$TextField hint="Enter new task..." text={newTaskTitle} col={0} className="pt-text-task-add" />
-                                <$Button onTap={this.onAddTask} text="Add" col={1} className="{{ newTaskTitle.length > 0 ? 'pt-btn-task-add enabled' : 'pt-btn-task-add' }}" isEnabled={newTaskTitle.length > 0}/>
+                                <$TextField hint="Enter new task..." text={newTaskTitle} onTextChange={this.onNewTaskTextChange} col={0} className="pt-text-task-add" />
+                                <$Button onTap={this.onAddTask} text="Add" col={1} className={newTaskTitle.length > 0 ? 'pt-btn-task-add enabled' : 'pt-btn-task-add' } isEnabled={newTaskTitle.length > 0}/>
                             </$GridLayout>
 
                             <$StackLayout row={1} className="pt-tasks-scroll">
@@ -703,8 +733,8 @@ export class DetailPage extends React.Component<Props, State> {
                         <$GridLayout visibility={selectedScreen === 'chitchat' ? 'visible' : 'collapse'} rows={[new ItemSpec(70, "pixel"), new ItemSpec(1, "star")]} columns={[]}  className="pt-item-chitchat-container">
 
                             <$GridLayout row={0} columns={[new ItemSpec(60, "pixel"), new ItemSpec(1, "star"), new ItemSpec(80, "pixel")]} rows={[]} className="pt-comments-add-row">
-                                <$Image src="{{ currentUserAvatar }}" stretch="aspectFit" className="pt-img-comment-add" col={0} />
-                                <$TextField hint="Enter new comment..." text={newCommentText} col={1} className="pt-text-comment-add" />
+                                <$Image src={ currentUserAvatar } stretch="aspectFit" className="pt-img-comment-add" col={0} />
+                                <$TextField hint="Enter new comment..." text={newCommentText} onTextChange={this.onNewCommentTextChange} col={1} className="pt-text-comment-add" />
                                 <$Button onTap={this.onAddComment} text="Add" col={2} className={newCommentText.length > 0 ? 'pt-btn-comment-add enabled' : 'pt-btn-comment-add'} isEnabled={newCommentText.length > 0}/>
                             </$GridLayout>
 
