@@ -42,7 +42,6 @@ import {
     ptItemToFormModel
 } from '~/core/models/forms';
 import { ObservableArray } from "tns-core-modules/data/observable-array/observable-array";
-import { PtTaskViewModel } from "~/shared/view-models/pages/detail/pt-task.vm";
 import { PtCommentViewModel } from "~/shared/view-models/pages/detail/pt-comment.vm";
 import { DetailPageProps } from "~/core/models/page-props/detail-page-props";
 import { EventData } from "tns-core-modules/ui/text-base/text-base";
@@ -286,15 +285,9 @@ export class DetailPage extends React.Component<Props, State> {
         );
     };
 
-    private readonly onListItemTap = (itemEventData: ItemEventData) => {
-        const task: PtTask = this.props.item.tasks[itemEventData.index];
-
-        // stub
-    };
-
-    private readonly onPropertyCommitted = (args: DataFormEventData) => {
-        console.log(`[onPropertyCommitted]`);
-    };
+    // private readonly onListItemTap = (itemEventData: ItemEventData) => {
+    //     const task: PtTask = this.props.item.tasks[itemEventData.index];
+    // };
 
     private readonly onEditorUpdate = (args: DataFormEventData) => {
         console.log(`[onEditorUpdate] ${args.propertyName}`);
@@ -328,16 +321,21 @@ export class DetailPage extends React.Component<Props, State> {
     }
       
     private readonly editorSetupType = (editor: any) => {
-        setPickerEditorImageLocation(editor);
         const selectedTypeValue: PtItemType = getPickerEditorValueText(editor) as PtItemType;
         // CAUTION: this is now async
-        this.updateSelectedTypeValue(selectedTypeValue);
+        this.updateSelectedTypeValue(editor, selectedTypeValue);
     }
 
     /* details START */
-    private readonly updateSelectedTypeValue = (selectedTypeValue: PtItemType) => {
+    private readonly updateSelectedTypeValue = (editor: any, selectedTypeValue: PtItemType) => {
+        function updatePicker(){
+            setPickerEditorImageLocation(editor);
+        }
+
         if(selectedTypeValue === this.state.selectedTypeValue){
             console.log(`[updateSelectedTypeValue] selectedTypeValue: ${selectedTypeValue} (no-op)`);
+            updatePicker();
+
             // Prevent infinite loop (wherein the very action of setting state prompts the "editorUpdate" event).
             return;
         }
@@ -356,6 +354,9 @@ export class DetailPage extends React.Component<Props, State> {
                     itemTypeImage: ItemType.imageResFromType(selectedTypeValue),
                 };
             },
+            () => {
+                updatePicker();
+            }
         );
     }
 
@@ -365,8 +366,16 @@ export class DetailPage extends React.Component<Props, State> {
         
         const selectedEstimateValue = this.calculateSelectedEstimateValue(editorEstimate);
 
+        function updateStepper(){
+            setStepperEditorContentOffset(editor, -25, 0);
+            setStepperEditorTextPostfix(editor, 'point', 'points');
+            setStepperEditorColors(editor, COLOR_LIGHT, COLOR_DARK);
+        }
+
         if(selectedEstimateValue === this.state.selectedEstimateValue){
             console.log(`[updateSelectedEstimateValue] selectedEstimateValue: ${selectedEstimateValue} (no-op)`);
+            updateStepper();
+
             // Prevent infinite loop (wherein the very action of setting state prompts the "editorUpdate" event).
             return;
         }
@@ -385,21 +394,11 @@ export class DetailPage extends React.Component<Props, State> {
                 };
             },
             () => {
-                setStepperEditorContentOffset(editor, -25, 0);
-                setStepperEditorTextPostfix(editor, 'point', 'points');
-                setStepperEditorColors(editor, COLOR_LIGHT, COLOR_DARK);
+                // editor has now likely changed due to the re-render, so may appear to do nothing.
+                updateStepper();
             }
         );
     }
-
-    // private readonly updateSelectedPriorityValue = (editorPriority: PriorityEnum): PriorityEnum => {
-    //     console.log(`[updateSelectedPriorityValue] editorPriority: ${editorPriority}`);
-    //     const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
-
-    //     // CAUTION: async
-    //     this.setState({ selectedPriorityValue });
-    //     return selectedPriorityValue;
-    // }
 
     private readonly calculateSelectedPriorityValue = (editorPriority: PriorityEnum): PriorityEnum => {
         return editorPriority ? editorPriority : this.state.itemForm.priorityStr as PriorityEnum;
@@ -438,10 +437,6 @@ export class DetailPage extends React.Component<Props, State> {
         this.taskService
             .addNewPtTask(toCreateTaskRequest(newTask, this.props.item))
             .then(response => {
-                // this.state.tasks.unshift(
-                //     new PtTaskViewModel(response.createdTask, this.props.item)
-                // );
-                
                 return new Promise((resolve, reject) => {
                     this.setState((state: State) => {
                         return {
@@ -470,8 +465,14 @@ export class DetailPage extends React.Component<Props, State> {
         
         const selectedPriorityValue = this.calculateSelectedPriorityValue(editorPriority);
 
+        function updateSegmentedEditor(){
+            setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
+        }
+
         if(selectedPriorityValue === this.state.selectedPriorityValue){
             console.log(`[updateSelectedPriorityValue] selectedPriorityValue: ${selectedPriorityValue} (no-op)`);
+            updateSegmentedEditor();
+
             // Prevent infinite loop (wherein the very action of setting state prompts the "editorUpdate" event).
             return;
         }
@@ -490,7 +491,9 @@ export class DetailPage extends React.Component<Props, State> {
                 };
             },
             () => {
-                setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
+                console.log(`[updateSelectedPriorityValue] setSegmentedEditorColor based on: ${selectedPriorityValue}`);
+                // editor has now likely changed due to the re-render, so may appear to do nothing.
+                updateSegmentedEditor();
             }
         );
     }
@@ -520,7 +523,6 @@ export class DetailPage extends React.Component<Props, State> {
                 };
             },
             () => {
-                // setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
             }
         );
     }
@@ -592,7 +594,6 @@ export class DetailPage extends React.Component<Props, State> {
                                 id="itemDetailsDataForm"
                                 row={1}
                                 source={itemFormTruncated}
-                                onPropertyCommitted={this.onPropertyCommitted}
                                 onEditorUpdate={this.onEditorUpdate}
                             >
                                 <$EntityProperty name="title" displayName="Title" index={1} hintText="Title">
@@ -648,13 +649,12 @@ export class DetailPage extends React.Component<Props, State> {
                                     <$ListView
                                         id="tasksList"
                                         items={tasks}
-                                        onItemTap={this.onListItemTap}
+                                        // onItemTap={this.onListItemTap}
                                         cellFactory={(task: PtTask, ref: React.RefObject<any>) => {
-                                            console.log(`tasksList got task`,);
                                             const { title, completed, } = task;
 
+                                            /* Aren't closures just great? */
                                             const taskVM: PtTaskViewModel = new PtTaskViewModel(task, this.props.item);
-
                                             let textFieldFocused: boolean = false;
 
                                             return (
