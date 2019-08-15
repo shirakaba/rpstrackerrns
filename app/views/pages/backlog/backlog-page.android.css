@@ -27,7 +27,9 @@
 
 .btn-add {
     vertical-align: middle;
-    height: 100%;
+    /* Setting any % height on btn-add, or exact height of 60, is somehow screwing up the hitbox; seems like an {N} bug */
+    /* height: 100%; */
+    height: 59;
     background-color: #555a97;
     border-color: #555a97;
     border-width: 1;

@@ -132,6 +132,7 @@ export class BackLogPage extends React.Component<Props, State> {
                             </$GridLayout>
 
                             <$StackLayout row={1} className="btn-add-wrapper">
+                                {/* Setting any % height on btn-add, or exact height of 60, is somehow screwing up the hitbox; seems like an {N} bug */}
                                 <$Button text="Add" className="btn-add bottom-safe-nav" onTap={this.onAddTap} />
                             </$StackLayout>
 
