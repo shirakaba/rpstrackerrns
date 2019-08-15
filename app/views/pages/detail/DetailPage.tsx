@@ -61,6 +61,7 @@ import { PriorityEnum } from "~/core/models/domain/enums";
 import { showModalAssigneeList } from "~/shared/helpers/modals";
 import { PtNewTask } from "~/core/models/dto/backlog";
 import { UpdateItemResponse } from "~/core/contracts/responses/backlog";
+import { StatusEnum } from '~/core/models/domain/enums';
 
 type Props = DetailPageProps;
 
@@ -74,6 +75,7 @@ interface State {
     statusesProvider: typeof PT_ITEM_STATUSES,
     prioritiesProvider: typeof PT_ITEM_PRIORITIES,
     selectedTypeValue: PtItemType,
+    selectedStatusValue: StatusEnum,
     selectedPriorityValue: PriorityEnum,
     itemTypeImage: string,
     /* details form END */
@@ -104,10 +106,10 @@ export class DetailPage extends React.Component<Props, State> {
         super(props);
 
         const itemForm: PtItemDetailsEditFormModel = ptItemToFormModel(props.item);
-        const { typeStr, priorityStr } = itemForm;
+        const { typeStr, priorityStr, statusStr } = itemForm;
 
-        console.log(`Upon constructing DetailPage, typeStr was: ${typeStr}`);
         const selectedTypeValue: PtItemType = typeStr as PtItemType;
+        const selectedStatusValue: StatusEnum = statusStr as StatusEnum;
         const selectedPriorityValue: PriorityEnum = priorityStr as PriorityEnum;
 
         this.state = {
@@ -120,6 +122,7 @@ export class DetailPage extends React.Component<Props, State> {
             statusesProvider: PT_ITEM_STATUSES,
             prioritiesProvider: PT_ITEM_PRIORITIES,
             selectedTypeValue,
+            selectedStatusValue,
             selectedPriorityValue,
             itemTypeImage: ItemType.imageResFromType(selectedTypeValue),
             /* details form END */
@@ -292,6 +295,9 @@ export class DetailPage extends React.Component<Props, State> {
             case 'priorityStr':
                 this.editorSetupPriority(args.editor);
                 break;
+            case 'statusStr':
+                this.editorSetupStatus(args.editor);
+                break;
           }
     };
 
@@ -353,6 +359,10 @@ export class DetailPage extends React.Component<Props, State> {
 
     private readonly calculateSelectedPriorityValue = (editorPriority: PriorityEnum): PriorityEnum => {
         return editorPriority ? editorPriority : this.state.itemForm.priorityStr as PriorityEnum;
+    }
+
+    private readonly calculateSelectedStatusValue = (editorStatus: StatusEnum): StatusEnum => {
+        return editorStatus ? editorStatus : this.state.itemForm.statusStr as StatusEnum;
     }
 
     private readonly deleteRequested = (): void => {
@@ -435,9 +445,36 @@ export class DetailPage extends React.Component<Props, State> {
                 setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
             }
         );
+    }
 
-        /* The value keeps resetting. I think this is because setState() triggers a re-render (as expected),
-         * but we never mutated this.props.item, so the form is rebuilt on the next render from its initial state. */
+    private readonly editorSetupStatus = (editor: any) => {
+        const editorStatus: StatusEnum = editor.value as StatusEnum;
+        console.log(`[editorSetupStatus] editorStatus ${editorStatus}`);
+        
+        const selectedStatusValue: StatusEnum = this.calculateSelectedStatusValue(editorStatus);
+        if(selectedStatusValue === this.state.selectedStatusValue){
+            // Prevent infinite loop (wherein the very action of setting state prompts the "editorUpdate" event).
+            return;
+        }
+
+        console.log(`[updateSelectedStatusValue] selectedStatusValue: ${selectedStatusValue} (payload)`);
+
+        this.setState(
+            (state: State) => {
+                return {
+                    /* We make sure to update the form itself too, otherwise state would be mismatched between the form and the DetailPage component.  */
+                    itemForm: {
+                        ...state.itemForm,
+                        statusStr: selectedStatusValue,
+                    },
+    
+                    selectedStatusValue,
+                };
+            },
+            () => {
+                // setSegmentedEditorColor(editor, PriorityEnum.getColor(selectedPriorityValue));
+            }
+        );
     }
 
 
