@@ -80,13 +80,13 @@ interface State {
 
     /* tasks */
     newTaskTitle: string,
-    tasks: Array<PtTask>,
+    // tasks: Array<PtTask>,
     /* tasks END */
 
     /* comments */
     currentUserAvatar: string,
     newCommentText: string,
-    comments: Array<PtCommentViewModel>,
+    // comments: Array<PtCommentViewModel>,
     /* comments END */
 }
 
@@ -128,7 +128,7 @@ export class DetailPage extends React.Component<Props, State> {
             newTaskTitle: EMPTY_STRING,
             // FIXME: Need to derive PtTaskViewModel from itemForm (whose state updates propagate to DetailPage where we track them) rather than item (which is immutable).
             // TODO: Downgrade this to a regular array to reflect that React is managing the state
-            tasks: itemForm.tasks, //.map(task => new PtTaskViewModel(task, props.item)),
+            // tasks: itemForm.tasks, //.map(task => new PtTaskViewModel(task, props.item)),
             /* tasks END */
             
             /* comments */
@@ -137,7 +137,7 @@ export class DetailPage extends React.Component<Props, State> {
                 this.authService.getCurrentUserId()
             ),
             newCommentText: EMPTY_STRING,
-            comments: itemForm.comments.map(comment => new PtCommentViewModel(comment)),
+            // comments: itemForm.comments.map(comment => new PtCommentViewModel(comment)),
             /* comments END */
         };
     }
@@ -380,12 +380,22 @@ export class DetailPage extends React.Component<Props, State> {
         this.taskService
             .addNewPtTask(toCreateTaskRequest(newTask, this.props.item))
             .then(response => {
-                this.state.tasks.unshift(
-                    new PtTaskViewModel(response.createdTask, this.props.item)
-                );
+                // this.state.tasks.unshift(
+                //     new PtTaskViewModel(response.createdTask, this.props.item)
+                // );
                 
                 return new Promise((resolve, reject) => {
-                    this.setState({ newTaskTitle: EMPTY_STRING }, () => {
+                    this.setState((state: State) => {
+                        return {
+                            newTaskTitle: EMPTY_STRING,
+
+                            itemForm: {
+                                ...state.itemForm,
+                                tasks: [new PtTaskViewModel(response.createdTask, this.props.item), ...state.itemForm.tasks]
+                            }
+                        };
+                    },
+                    () => {
                         resolve();
                     });
                 });
@@ -438,8 +448,8 @@ export class DetailPage extends React.Component<Props, State> {
 
     public render(){
         const { forwardedRef, item, ...rest } = this.props;
-        const { itemForm, newTaskTitle, newCommentText, selectedScreen, selectedAssignee, itemTypeImage, statusesProvider, itemTypesProvider, prioritiesProvider, tasks, comments } = this.state;
-        console.log(`[DetailPage.render] with tasks`, tasks);
+        const { itemForm, newTaskTitle, newCommentText, selectedScreen, selectedAssignee, itemTypeImage, statusesProvider, itemTypesProvider, prioritiesProvider } = this.state;
+        // console.log(`[DetailPage.render] with tasks`, tasks);
 
         // /* Originally these were derived from this.props.item, but for React we ensure that the state is managed by DetailPage rather than stashed inside ObservableArray. */
         // const observableTasks = new ObservableArray<PtTaskViewModel>(
@@ -450,6 +460,8 @@ export class DetailPage extends React.Component<Props, State> {
         // const observableComments = new ObservableArray<PtCommentViewModel>(
         //     itemForm.comments.map(comment => new PtCommentViewModel(comment))
         // );
+
+        const { tasks, comments, ...itemFormTruncated } = itemForm;
 
         return (
             <$Page ref={forwardedRef} className="page" {...rest}>
@@ -494,7 +506,7 @@ export class DetailPage extends React.Component<Props, State> {
                             <$RadDataForm
                                 id="itemDetailsDataForm"
                                 row={1}
-                                source={itemForm}
+                                source={itemFormTruncated}
                                 onPropertyCommitted={this.onPropertyCommitted}
                                 onEditorUpdate={this.onEditorUpdate}
                             >
@@ -554,6 +566,7 @@ export class DetailPage extends React.Component<Props, State> {
                                         items={tasks}
                                         onItemTap={this.onListItemTap}
                                         cellFactory={(task: PtTask, ref: React.RefObject<any>) => {
+                                            console.log(`tasksList got task`,);
                                             const { title, completed, } = task;
 
                                             return (

@@ -48,8 +48,8 @@ export function applyFormModelUpdatesToItem(
     estimate: itemForm.estimate,
     assignee: updatedAssignee,
 
-    // tasks: itemForm.tasks,
-    // comments: itemForm.comments,
+    tasks: itemForm.tasks,
+    comments: itemForm.comments,
   });
   return updatedItem;
 }
