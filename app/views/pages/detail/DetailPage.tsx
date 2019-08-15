@@ -22,6 +22,7 @@ import { RadDataForm, DataFormEventData, DataFormEditorType, DataFormLabelPositi
 import { ConfirmOptions, confirm } from 'tns-core-modules/ui/dialogs';
 import { PtUser } from "~/core/models/domain/pt-user.model";
 import { getCurrentUserAvatar } from '~/core/services';
+import { PtTaskViewModel } from '~/shared/view-models/pages/detail/pt-task.vm';
 import {
     getApiEndpoint,
     getAuthService,
@@ -245,37 +246,50 @@ export class DetailPage extends React.Component<Props, State> {
 
     };
 
-    // detail-page.ts
-    private readonly onTaskToggleTap = (args: GestureEventData) => {
-        // TODO: revisit this.
-
+    // From detail-page.ts
+    private readonly onTaskToggleTap = (task: PtTask) => {
         // const textField = args.object as TextField;
         // const taskVm = textField.bindingContext as PtTaskViewModel;
         // taskVm.onTaskToggleRequested();
+
+        this.setState(
+            (state: State) => {
+                const currentTasks: PtTask[] = state.itemForm.tasks;
+
+                let matchingTaskIndex: number = -1;
+                for(let i = 0; i < currentTasks.length; i++){
+                    if(currentTasks[i].id === task.id){
+                        matchingTaskIndex = i;
+                        break;
+                    }
+                }
+
+                if(matchingTaskIndex === -1){
+                    return;
+                }
+
+                const newTasks: PtTask[] = [...currentTasks];
+                newTasks[matchingTaskIndex].completed = !newTasks[matchingTaskIndex].completed;
+
+                return {
+                    /* We make sure to update the form itself too, otherwise state would be mismatched between the form and the DetailPage component.  */
+                    itemForm: {
+                        ...state.itemForm,
+                        tasks: newTasks,
+                    },
+                    
+                };
+            },
+            () => {
+                new PtTaskViewModel(task, this.props.item).onTaskToggleRequested();
+            }
+        );
     };
 
     private readonly onListItemTap = (itemEventData: ItemEventData) => {
         const task: PtTask = this.props.item.tasks[itemEventData.index];
 
         // stub
-    };
-
-    // detail-page.ts
-    private readonly onTaskFocused = (args: EventData) => {
-        // TODO: revisit this.
-
-        // const textField = args.object as TextField;
-        // const taskVm = textField.bindingContext as PtTaskViewModel;
-        // taskVm.onTaskFocused(textField.text);
-
-        // textField.on('textChange', () => taskVm.onTextChange(textField.text));
-    };
-
-    private readonly onTaskBlurred = (args: EventData) => {
-        // const textField = args.object as TextField;
-        // const taskVm = textField.bindingContext as PtTaskViewModel;
-        // textField.off('textChange');
-        // taskVm.onTaskBlurred();
     };
 
     private readonly onPropertyCommitted = (args: DataFormEventData) => {
@@ -633,12 +647,15 @@ export class DetailPage extends React.Component<Props, State> {
                                 <$StackLayout className="pt-tasks-list-container">
                                     <$ListView
                                         id="tasksList"
-                                        // FIXME: convert tasks from TasksViewModel to PtTask[]
                                         items={tasks}
                                         onItemTap={this.onListItemTap}
                                         cellFactory={(task: PtTask, ref: React.RefObject<any>) => {
                                             console.log(`tasksList got task`,);
                                             const { title, completed, } = task;
+
+                                            const taskVM: PtTaskViewModel = new PtTaskViewModel(task, this.props.item);
+
+                                            let textFieldFocused: boolean = false;
 
                                             return (
                                                 <$GridLayout
@@ -647,9 +664,32 @@ export class DetailPage extends React.Component<Props, State> {
                                                     columns={[new ItemSpec(30, "pixel"), new ItemSpec(1, "star")]}
                                                     rows={[]}
                                                 >
-                                                    <$Image onTap={this.onTaskToggleTap} src={completed ? 'res://checkboxchecked' : 'res://checkboxunchecked'} className="task-checkbox" col={0} />
-                                                    {/* TODO */}
-                                                    <$TextField col={1} text={title} onFocus={this.onTaskFocused} onBlur={this.onTaskBlurred} className="task-title" />
+                                                    <$Image
+                                                        onTap={(args: GestureEventData) => {
+                                                            this.onTaskToggleTap(task);
+                                                        }}
+                                                        src={completed ? 'res://checkboxchecked' : 'res://checkboxunchecked'}
+                                                        className="task-checkbox"
+                                                        col={0}
+                                                    />
+                                                    <$TextField
+                                                        col={1}
+                                                        text={title}
+                                                        onFocus={(args: EventData) => {
+                                                            textFieldFocused = true;
+                                                            taskVM.onTaskFocused(title);
+                                                        }}
+                                                        onTextChange={(args: EventData) => {
+                                                            if(textFieldFocused){
+                                                                taskVM.onTextChange((args.object as TextField).text);
+                                                            }
+                                                        }}
+                                                        onBlur={(args: EventData) => {
+                                                            textFieldFocused = false;
+                                                            taskVM.onTaskBlurred();
+                                                        }}
+                                                        className="task-title"
+                                                    />
                                                 </$GridLayout>
                                             );
                                         }}
