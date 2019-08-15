@@ -77,6 +77,7 @@ interface State {
     selectedTypeValue: PtItemType,
     selectedStatusValue: StatusEnum,
     selectedPriorityValue: PriorityEnum,
+    selectedEstimateValue: number,
     itemTypeImage: string,
     /* details form END */
 
@@ -106,11 +107,12 @@ export class DetailPage extends React.Component<Props, State> {
         super(props);
 
         const itemForm: PtItemDetailsEditFormModel = ptItemToFormModel(props.item);
-        const { typeStr, priorityStr, statusStr } = itemForm;
+        const { typeStr, priorityStr, statusStr, estimate } = itemForm;
 
         const selectedTypeValue: PtItemType = typeStr as PtItemType;
         const selectedStatusValue: StatusEnum = statusStr as StatusEnum;
         const selectedPriorityValue: PriorityEnum = priorityStr as PriorityEnum;
+        const selectedEstimateValue: number = estimate as number;
 
         this.state = {
             selectedScreen: "details",
@@ -124,6 +126,7 @@ export class DetailPage extends React.Component<Props, State> {
             selectedTypeValue,
             selectedStatusValue,
             selectedPriorityValue,
+            selectedEstimateValue,
             itemTypeImage: ItemType.imageResFromType(selectedTypeValue),
             /* details form END */
             
@@ -343,9 +346,36 @@ export class DetailPage extends React.Component<Props, State> {
     }
 
     private readonly editorSetupEstimate = (editor: any) => {
-        setStepperEditorContentOffset(editor, -25, 0);
-        setStepperEditorTextPostfix(editor, 'point', 'points');
-        setStepperEditorColors(editor, COLOR_LIGHT, COLOR_DARK);
+        const editorEstimate: number = editor.value as number;
+        console.log(`[editorSetupEstimate] editorEstimate ${editorEstimate}`);
+        
+        const selectedEstimateValue = this.calculateSelectedEstimateValue(editorEstimate);
+
+        if(selectedEstimateValue === this.state.selectedEstimateValue){
+            console.log(`[updateSelectedEstimateValue] selectedEstimateValue: ${selectedEstimateValue} (no-op)`);
+            // Prevent infinite loop (wherein the very action of setting state prompts the "editorUpdate" event).
+            return;
+        }
+        console.log(`[updateSelectedEstimateValue] selectedEstimateValue: ${selectedEstimateValue} (payload)`);
+
+        this.setState(
+            (state: State) => {
+                return {
+                    /* We make sure to update the form itself too, otherwise state would be mismatched between the form and the DetailPage component.  */
+                    itemForm: {
+                        ...state.itemForm,
+                        estimate: selectedEstimateValue,
+                    },
+    
+                    selectedEstimateValue,
+                };
+            },
+            () => {
+                setStepperEditorContentOffset(editor, -25, 0);
+                setStepperEditorTextPostfix(editor, 'point', 'points');
+                setStepperEditorColors(editor, COLOR_LIGHT, COLOR_DARK);
+            }
+        );
     }
 
     // private readonly updateSelectedPriorityValue = (editorPriority: PriorityEnum): PriorityEnum => {
@@ -363,6 +393,10 @@ export class DetailPage extends React.Component<Props, State> {
 
     private readonly calculateSelectedStatusValue = (editorStatus: StatusEnum): StatusEnum => {
         return editorStatus ? editorStatus : this.state.itemForm.statusStr as StatusEnum;
+    }
+
+    private readonly calculateSelectedEstimateValue = (editorEstimate: number): number => {
+        return editorEstimate ? editorEstimate : this.state.itemForm.estimate;
     }
 
     private readonly deleteRequested = (): void => {
