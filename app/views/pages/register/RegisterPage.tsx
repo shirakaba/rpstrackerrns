@@ -6,17 +6,11 @@ import { Page, isIOS, isAndroid } from "tns-core-modules/ui/page/page";
 import { GestureEventData } from "tns-core-modules/ui/gestures/gestures";
 import { RegisterPageProps } from "~/core/models/page-props/register-page-props";
 import { localize } from "nativescript-localize";
-
 import * as emailValidator from 'email-validator';
-import {
-  Observable,
-  PropertyChangeData
-} from 'tns-core-modules/data/observable';
 import { PtAuthService } from '~/core/contracts/services';
 import { PtRegisterModel } from '~/core/models/domain';
 import { EMPTY_STRING } from '~/core/models/domain/constants/strings';
 import { getAuthService } from '~/globals/dependencies/locator';
-import { ObservableProperty } from '~/shared/observable-property-decorator';
 import {
     goToBacklogPage,
     goToLoginPage
@@ -33,7 +27,8 @@ interface State {
     password: string,
     passwordEmpty: boolean,
     formValid: boolean,
-    loggingIn: boolean,
+    /* I've changed the 'loggingIn' property from the original to 'registering' - maybe a misunderstanding though */
+    registering: boolean,
 }
 
 export class RegisterPage extends React.Component<Props, State> {
@@ -51,17 +46,33 @@ export class RegisterPage extends React.Component<Props, State> {
             password: EMPTY_STRING,
             passwordEmpty: false,
             formValid: false,
-            loggingIn: false,
+            registering: false,
         };
     }
 
-    componentDidMount(){
-        this.props.forwardedRef.current!.addCssFile("views/pages/backlog/backlog-page.css");
+    public componentDidUpdate(prevProps: Props, prevState: State): void {
+        const { fullName, email, password } = this.state;
+
+        if(fullName !== prevState.fullName){
+            this.validate("fullName");
+        }
+
+        if(email !== prevState.email){
+            this.validate("email");
+        }
+
+        if(password !== prevState.password){
+            this.validate("password");
+        }
     }
 
-    render(){
+    public componentDidMount(){
+        this.props.forwardedRef.current!.addCssFile("views/pages/register/register-page.css");
+    }
+
+    public render(){
         const { forwardedRef } = this.props;
-        const { fullName, nameEmpty, email, emailValid, emailEmpty, password, passwordEmpty, formValid, loggingIn } = this.state;
+        const { fullName, nameEmpty, email, emailValid, emailEmpty, password, passwordEmpty, formValid, registering } = this.state;
 
         return (
             <$Page ref={forwardedRef} className="page" actionBarHidden={true}>
@@ -214,32 +225,38 @@ export class RegisterPage extends React.Component<Props, State> {
     }
 
     private readonly onRegisterTap = (args: GestureEventData) => {
-        const { email, password, fullName } = this.state;
-        const registerModel: PtRegisterModel = {
-            username: email,
-            password,
-            fullName,
-        };
-        
         return new Promise((resolve, reject) => {
-            this.authService
-                .register(registerModel)
-                .then(() => {
-                    this.setState(
-                        { loggingIn: false },
-                        () => {
-                            resolve();
-                        }
-                    );
-                })
-                .catch((error: any) => {
-                    this.setState(
-                        { loggingIn: false },
-                        () => {
-                            reject(error);
-                        }
-                    );
-                });
+            this.setState(
+                { registering: true },
+                () => {
+                    const { email, password, fullName } = this.state;
+                    const registerModel: PtRegisterModel = {
+                        username: email,
+                        password,
+                        fullName,
+                    };
+
+                    this.authService
+                        .register(registerModel)
+                        .then(() => {
+                            this.setState(
+                                { registering: false },
+                                () => {
+                                    resolve();
+                                }
+                            );
+                        })
+                        .catch((error: any) => {
+                            this.setState(
+                                { registering: false },
+                                () => {
+                                    reject(error);
+                                }
+                            );
+                        });
+                }
+            )
+
         })
         .then(() => {
             // TODO: convert to React-style navigation
