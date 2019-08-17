@@ -20,7 +20,7 @@ application.setResources({ L: localize });
 
 setAppEvents();
 
-const isLoggedIn = true;
+const isLoggedIn = false;
 
 const app = isLoggedIn ?
     React.createElement(AppRootAuthenticated, { forwardedRef: rootRef }, null) :

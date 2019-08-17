@@ -13,6 +13,8 @@ import { localize } from "nativescript-localize";
 import { EMPTY_STRING } from '~/core/models/domain/constants/strings';
 import * as emailValidator from 'email-validator';
 import { EventData } from "tns-core-modules/ui/editable-text-base/editable-text-base";
+import { RegisterPageProps } from "~/core/models/page-props/register-page-props";
+import { RegisterPage } from "../register/RegisterPage";
 
 interface Props {
     forwardedRef: React.RefObject<Page>,
@@ -26,9 +28,12 @@ interface State {
     passwordEmpty: boolean,
     formValid: boolean,
     loggingIn: boolean,
+    
+    navToRegisterPageArgs: Omit<RegisterPageProps, "forwardedRef">|null,
 }
 
 export class LoginPage extends React.Component<Props, State> {
+    private readonly registerPageRef: React.RefObject<Page> = React.createRef<Page>();
     private readonly authService: PtAuthService = getAuthService();
 
     public componentDidMount(): void {
@@ -46,11 +51,13 @@ export class LoginPage extends React.Component<Props, State> {
             email: "alex@nuvious.com",
             loggingIn: false,
             formValid: true,
+            
+            navToRegisterPageArgs: null,
         };
     }
 
     public render(){
-        const { loggingIn, emailEmpty, email, emailValid, password, passwordEmpty, formValid } = this.state;
+        const { loggingIn, emailEmpty, email, emailValid, password, passwordEmpty, formValid, navToRegisterPageArgs } = this.state;
 
         return (
             <$Page ref={this.props.forwardedRef} actionBarHidden={true} className={"sanity-test"}>
@@ -142,17 +149,45 @@ export class LoginPage extends React.Component<Props, State> {
 
                     <$ActivityIndicator row={1} busy={loggingIn} color={new Color("white")}/>
                 </$GridLayout>
+
+                {/* === ROUTES THAT WE CAN NAVIGATE ON TO (not visual children of Page, but can be mounted as dependents) === */}
+                {/* It's a bit fiddly, but this setup lets us lazily mount a Page and unmount it as soon as we've returned from it. */}
+                {/* One day we'll make a navigation framework to produce a simpler approach, but... one thing at a time! */}
+                {
+                    navToRegisterPageArgs === null ?
+                        null :
+                        (
+                            <RegisterPage
+                                forwardedRef={this.registerPageRef}
+                                // onNavigatedFrom={this.onNavigatedFromRegisterPage}
+                            />
+                        )
+                }
             </$Page>
         );
     }
 
     private readonly onGotoRegisterTap = () => {
-        goToRegisterPage();
+        // goToRegisterPage();
+
+        this.setState(
+            {
+                navToRegisterPageArgs: {}
+            },
+            () => {
+                this.props.forwardedRef.current!.frame.navigate({
+                    create: () => {
+                        return this.registerPageRef.current!;
+                    }
+                })
+            }
+        );
     };
 
     private readonly onLoginTap = () => {
         this.onLoginTapHandler()
         .then(() => {
+            // TODO: implement in React
             // Note when implementing in React: we must specify clearHistory in the NavigationEntry
             goToBacklogPage(true);
         })
