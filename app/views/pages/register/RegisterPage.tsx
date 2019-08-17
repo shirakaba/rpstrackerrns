@@ -76,22 +76,22 @@ export class RegisterPage extends React.Component<Props, State> {
 
                     <$StackLayout row={1}>
                         <$GridLayout columns={[]} rows={[new ItemSpec(50, "pixel"), new ItemSpec(1, "star"), new ItemSpec(1, "auto")]} className="register-page-wrapper">
-                            <$Label className="title" row={0} text={ localize('Register')}/>
+                            <$Label className="title" row={0} text={localize('Register')}/>
                             <$StackLayout row={1}>
                                 <$StackLayout>
 
                                     <$StackLayout className="input-field with-validation">
                                         <$GridLayout columns={[new ItemSpec(1, "star"), new ItemSpec(25, "pixel")]} rows={[]} className="login-field-wrapper">
                                             <$TextField col={0}  
-                                                className={ !nameEmpty ? 'login-field valid' : 'login-field invalid'}
-                                                hint="Name" text={ fullName} />
+                                                className={!nameEmpty ? 'login-field valid' : 'login-field invalid'}
+                                                hint="Name" text={fullName} />
                                             <$Label col={1} 
                                                 className="fa login-icon" 
                                                 text="&#xf007;" />
                                         </$GridLayout>
 
                                         <$StackLayout>
-                                            <$Label visibility={ nameEmpty ? 'visible' : 'collapse' }
+                                            <$Label visibility={nameEmpty ? 'visible' : 'collapse' }
                                                 text="full name is missing" className="validation"/>
                                         </$StackLayout>
                                     </$StackLayout>
@@ -100,18 +100,18 @@ export class RegisterPage extends React.Component<Props, State> {
                                     <$StackLayout className="input-field with-validation">
                                         <$GridLayout columns={[new ItemSpec(1, "star"), new ItemSpec(25, "pixel")]} rows={[]} className="login-field-wrapper">
                                             <$TextField col={0}
-                                                className={ !emailEmpty && emailValid ? 'login-field valid' : 'login-field invalid'}
+                                                className={!emailEmpty && emailValid ? 'login-field valid' : 'login-field invalid'}
                                                 keyboardType="email"
-                                                hint="Email" text={ email} />
+                                                hint="Email" text={email} />
                                             <$Label col={1}
                                                 className="fa login-icon" 
                                                 text="&#xf0e0;" />
                                         </$GridLayout>
 
                                         <$StackLayout>
-                                            <$Label visibility={ emailEmpty ? 'visible' : 'collapse'}
+                                            <$Label visibility={emailEmpty ? 'visible' : 'collapse'}
                                                 text="email is missing" className="validation"/>
-                                            <$Label visibility={ !emailValid ? 'visible' : 'collapse'}
+                                            <$Label visibility={!emailValid ? 'visible' : 'collapse'}
                                                 text="the email is not in the correct format" className="validation"/>
                                         </$StackLayout>
                                     </$StackLayout>
@@ -119,24 +119,24 @@ export class RegisterPage extends React.Component<Props, State> {
                                     <$StackLayout className="input-field with-validation">
                                         <$GridLayout columns={[new ItemSpec(1, "star"), new ItemSpec(25, "pixel")]} rows={[]} className="login-field-wrapper">
                                             <$TextField col={0}
-                                                className={ !passwordEmpty ? 'login-field valid' : 'login-field invalid'}
+                                                className={!passwordEmpty ? 'login-field valid' : 'login-field invalid'}
                                                 hint="Password" secure={true} 
-                                                text={ password} />
+                                                text={password} />
                                             <$Label className="fa login-icon" text="&#xf023;" col={1}/>
                                         </$GridLayout>
 
                                         <$StackLayout>
                                             <$StackLayout>
-                                                <$Label visibility={ passwordEmpty ? 'visible' : 'collapse'}
+                                                <$Label visibility={passwordEmpty ? 'visible' : 'collapse'}
                                                     text="password is required" className="validation"/>
                                             </$StackLayout>
                                         </$StackLayout>
                                     </$StackLayout>
 
 
-                                    <$Button text={ localize('Register')} onTap={this.onRegisterTap}
-                                        isEnabled={ formValid}
-                                        className={ formValid ? 'btn-login btn-primary' : 'btn-login'}/>
+                                    <$Button text={localize('Register')} onTap={this.onRegisterTap}
+                                        isEnabled={formValid}
+                                        className={formValid ? 'btn-login btn-primary' : 'btn-login'}/>
 
                                 </$StackLayout>
 
@@ -146,7 +146,7 @@ export class RegisterPage extends React.Component<Props, State> {
                                 <$Label onTap={this.onGoToLoginTap}
                                     textTransform="uppercase" 
                                     className="text-center m-20" 
-                                    color={new Color("white")} text={ localize('Login')}/>
+                                    color={new Color("white")} text={localize('Login')}/>
                             </$StackLayout>
                         </$GridLayout>
                     </$StackLayout>
