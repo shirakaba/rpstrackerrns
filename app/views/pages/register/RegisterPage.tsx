@@ -5,18 +5,62 @@ import { ItemSpec } from "tns-core-modules/ui/layouts/grid-layout/grid-layout";
 import { Page, isIOS, isAndroid } from "tns-core-modules/ui/page/page";
 import { GestureEventData } from "tns-core-modules/ui/gestures/gestures";
 import { RegisterPageProps } from "~/core/models/page-props/register-page-props";
+import { localize } from "nativescript-localize";
+
+import * as emailValidator from 'email-validator';
+import {
+  Observable,
+  PropertyChangeData
+} from 'tns-core-modules/data/observable';
+import { PtAuthService } from '~/core/contracts/services';
+import { PtRegisterModel } from '~/core/models/domain';
+import { EMPTY_STRING } from '~/core/models/domain/constants/strings';
+import { getAuthService } from '~/globals/dependencies/locator';
+import { ObservableProperty } from '~/shared/observable-property-decorator';
 
 type Props = RegisterPageProps;
+
+interface State {
+    fullName: string,
+    nameEmpty: boolean,
+    email: string,
+    emailValid: boolean,
+    emailEmpty: boolean,
+    password: string,
+    passwordEmpty: boolean,
+    formValid: boolean,
+    loggingIn: boolean,
+}
 
 /* TODO: set state from register.page.vm.ts
  * TODO: determine any props from navigation binding context (passed into register-page.ts) */
 
-export class RegisterPage extends React.Component<Props, {}> {
+export class RegisterPage extends React.Component<Props, State> {
+    private readonly authService: PtAuthService;
+
+    constructor(props: Props) {
+        super(props);
+
+        this.state = {
+            fullName: EMPTY_STRING,
+            nameEmpty: false,
+            email: EMPTY_STRING,
+            emailValid: true,
+            emailEmpty: false,
+            password: EMPTY_STRING,
+            passwordEmpty: false,
+            formValid: false,
+            loggingIn: false,
+        };
+    }
+
     componentDidMount(){
         this.props.forwardedRef.current!.addCssFile("views/pages/backlog/backlog-page.css");
     }
 
     render(){
+        const { fullName, nameEmpty, email, emailValid, emailEmpty, password, passwordEmpty, formValid, loggingIn } = this.state;
+
         return (
             <$Page
                 className="page"
@@ -32,7 +76,7 @@ export class RegisterPage extends React.Component<Props, {}> {
 
                     <$StackLayout row={1}>
                         <$GridLayout columns={[]} rows={[new ItemSpec(50, "pixel"), new ItemSpec(1, "star"), new ItemSpec(1, "auto")]} className="register-page-wrapper">
-                            <$Label className="title" row={0} text={ L('Register')}/>
+                            <$Label className="title" row={0} text={ localize('Register')}/>
                             <$StackLayout row={1}>
                                 <$StackLayout>
 
@@ -90,7 +134,7 @@ export class RegisterPage extends React.Component<Props, {}> {
                                     </$StackLayout>
 
 
-                                    <$Button text={ L('Register')} onTap={this.onRegisterTap}
+                                    <$Button text={ localize('Register')} onTap={this.onRegisterTap}
                                         isEnabled={ formValid}
                                         className={ formValid ? 'btn-login btn-primary' : 'btn-login'}/>
 
@@ -99,10 +143,10 @@ export class RegisterPage extends React.Component<Props, {}> {
                             </$StackLayout>
                             <$StackLayout row={2} className="bottom-safe-nav">
                                 <$Label text="Already have an account?" className="smaller"/>
-                                <$Label tap="onGotoLoginTap"
+                                <$Label onTap={this.onGoToLoginTap}
                                     textTransform="uppercase" 
                                     className="text-center m-20" 
-                                    color={new Color("white")} text={ L('Login')}/>
+                                    color={new Color("white")} text={ localize('Login')}/>
                             </$StackLayout>
                         </$GridLayout>
                     </$StackLayout>
@@ -112,6 +156,14 @@ export class RegisterPage extends React.Component<Props, {}> {
             </$Page>
         );
     }
+
+    private readonly onRegisterTap = (args: GestureEventData) => {
+
+    };
+
+    private readonly onGoToLoginTap = (args: GestureEventData) => {
+
+    };
 
     private readonly onNavBackTap = (args: GestureEventData) => {
         this.props.forwardedRef.current!.frame.goBack();
