@@ -17,6 +17,10 @@ import { PtRegisterModel } from '~/core/models/domain';
 import { EMPTY_STRING } from '~/core/models/domain/constants/strings';
 import { getAuthService } from '~/globals/dependencies/locator';
 import { ObservableProperty } from '~/shared/observable-property-decorator';
+import {
+    goToBacklogPage,
+    goToLoginPage
+  } from '~/shared/helpers/navigation/nav.helper';
 
 type Props = RegisterPageProps;
 
@@ -32,11 +36,8 @@ interface State {
     loggingIn: boolean,
 }
 
-/* TODO: set state from register.page.vm.ts
- * TODO: determine any props from navigation binding context (passed into register-page.ts) */
-
 export class RegisterPage extends React.Component<Props, State> {
-    private readonly authService: PtAuthService;
+    private readonly authService: PtAuthService = getAuthService();
 
     constructor(props: Props) {
         super(props);
@@ -59,14 +60,11 @@ export class RegisterPage extends React.Component<Props, State> {
     }
 
     render(){
+        const { forwardedRef } = this.props;
         const { fullName, nameEmpty, email, emailValid, emailEmpty, password, passwordEmpty, formValid, loggingIn } = this.state;
 
         return (
-            <$Page
-                className="page"
-                // navigatingTo="onNavigatingTo" 
-                actionBarHidden={true}
-            >
+            <$Page ref={forwardedRef} className="page" actionBarHidden={true}>
 
                 <$GridLayout rows={[new ItemSpec(1, "auto"), new ItemSpec(1, "star")]} columns={[]} className={isIOS ? "auth-container top-safe-full-screen-margin" : isAndroid ? "auth-container pull-up" : ""}>
 
@@ -157,15 +155,104 @@ export class RegisterPage extends React.Component<Props, State> {
         );
     }
 
-    private readonly onRegisterTap = (args: GestureEventData) => {
+    private readonly validate = (changedPropName: string) => {
+        switch (changedPropName) {
+            case 'fullName':
+                {
+                    this.setState(
+                        (state: State) => {
+                            const { fullName, emailValid, emailEmpty, passwordEmpty } = state;
+                            const nameEmpty: boolean = fullName.trim() === EMPTY_STRING;
 
+                            return {
+                                nameEmpty,
+                                formValid: !nameEmpty && emailValid && !emailEmpty && !passwordEmpty
+                            };
+                        }
+                    );
+                }
+                break;
+    
+            case 'email':
+                {
+                    this.setState(
+                        (state: State) => {
+                            const { email, nameEmpty, passwordEmpty } = state;
+                            const emailEmpty: boolean = email.trim() === EMPTY_STRING;
+                            /* Apparently empty emails are valid too */
+                            const emailValid: boolean = emailEmpty || emailValidator.validate(email);
+
+                            return {
+                                passwordEmpty,
+                                emailValid,
+                                formValid: !nameEmpty && emailValid && !emailEmpty && !passwordEmpty
+                            };
+                        }
+                    );
+                }
+                break;
+    
+            case 'password':
+                {
+                    this.setState(
+                        (state: State) => {
+                            const { password, nameEmpty, emailValid, emailEmpty } = state;
+                            const passwordEmpty: boolean = password.trim().length === 0;
+
+                            return {
+                                passwordEmpty,
+                                formValid: !nameEmpty && emailValid && !emailEmpty && !passwordEmpty
+                            };
+                        }
+                    );
+                }
+                break;
+    
+            default:
+                return;
+        }
+    }
+
+    private readonly onRegisterTap = (args: GestureEventData) => {
+        const { email, password, fullName } = this.state;
+        const registerModel: PtRegisterModel = {
+            username: email,
+            password,
+            fullName,
+        };
+        
+        return new Promise((resolve, reject) => {
+            this.authService
+                .register(registerModel)
+                .then(() => {
+                    this.setState(
+                        { loggingIn: false },
+                        () => {
+                            resolve();
+                        }
+                    );
+                })
+                .catch((error: any) => {
+                    this.setState(
+                        { loggingIn: false },
+                        () => {
+                            reject(error);
+                        }
+                    );
+                });
+        })
+        .then(() => {
+            // TODO: convert to React-style navigation
+            goToBacklogPage(true);
+        })
+        .catch(error => {
+            console.error(error);
+            alert('Sorry, could not register you at this time');
+        });
     };
 
     private readonly onGoToLoginTap = (args: GestureEventData) => {
-
-    };
-
-    private readonly onNavBackTap = (args: GestureEventData) => {
-        this.props.forwardedRef.current!.frame.goBack();
+        // TODO: convert to React-style navigation
+        goToLoginPage(false);
     };
 }
