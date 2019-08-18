@@ -1,6 +1,6 @@
 # RPS Project Tracker 2.0 (ported to React NativeScript)
 
-This app serves as the real-world sample app for React NativeScript. It's my port of Alex Zisklind's `rpstrackertnsts` app – which is the NativeScript Core incarnation of his series of apps called "RPS Project Tracker 2.0". After setting up the standard boilerplate for a React NativeScript app, I mostly just needed to adjust the `app/views` folder to facilitate the port.
+This app serves as the real-world sample app for React NativeScript. It's my port of Alex Zisklind's `rpstrackertnsts` app – which is the NativeScript Core incarnation of his series of apps called "RPS Project Tracker 2.0". After setting up the standard boilerplate for a React NativeScript app, I mostly just needed to adjust the [`app/views`](https://github.com/shirakaba/rpstrackerrns/tree/master/app/views) folder to facilitate the port.
 
 ## Features
 
@@ -39,17 +39,17 @@ Until I have some time to build a documentation website, this is the closest res
 
 ### NativeScript UI plugins ported to React
 
-I had to port three UI plugins to React while making this app; you can find them all in `app/rns-plugins`. I haven't published these ports to the respective plugins' repositories as I haven't completely stabilised the API for making custom plugins yet. Once I've stabilised the API, I'll explain it on the documentation website (which doesn't exist yet).
+I had to port three UI plugins to React while making this app; you can find them all in [`app/rns-plugins`](https://github.com/shirakaba/rpstrackerrns/tree/master/app/rns-plugins). I haven't published these ports to the respective plugins' repositories as I haven't completely stabilised the API for making custom plugins yet. Once I've stabilised the API, I'll explain it on the documentation website (which doesn't exist yet).
 
-* `@nstudio/nativescript-pulltorefresh`
+* [`@nstudio/nativescript-pulltorefresh`](https://github.com/shirakaba/rpstrackerrns/tree/master/app/rns-plugins/@nstudio/nativescript-pulltorefresh)
 
-* `RadDataForm`
+* [`RadDataForm`](https://github.com/shirakaba/rpstrackerrns/tree/master/app/rns-plugins/RadDataForm)
 
-* `RadSideDrawer`
+* [`RadSideDrawer`](https://github.com/shirakaba/rpstrackerrns/tree/master/app/rns-plugins/RadSideDrawer)
 
 ### My apologies for RadDataForm
 
-RadDataForm really doesn't map very well to React at all, because it handles so much state internally. Therefore the code required to port the original NativeScript Core usage of RadDataForm for `app/views/pages/backlog/DetailPage.tsx` may look a bit masochistic and off-putting. For React NativeScript, it may be preferable to do forms without RadDataForm in practice. I leave the task of improving the ergonomics of RadDataForm to the community and core team (as I've had quite enough of it).
+RadDataForm really doesn't map very well to React at all, because it handles so much state internally. Therefore the code required to port the original NativeScript Core usage of RadDataForm for [`app/views/pages/backlog/DetailPage.tsx`](https://github.com/shirakaba/rpstrackerrns/blob/master/app/views/pages/backlog/DetailPage.tsx) may look a bit masochistic and off-putting. For React NativeScript, it may be preferable to do forms without RadDataForm in practice. I leave the task of improving the ergonomics of RadDataForm to the community and core team (as I've had quite enough of it).
 
 ### Navigation
 
@@ -57,7 +57,7 @@ There are a few possible navigation patterns, but they're all just different way
 
 #### Frame to root Page
 
-A Frame is only useful once it has navigated to an initial 'root' page. To navigate your Frame to a Page as early as possible in its lifecycle, see my usage of the `componentDidMount()` method in the Frame components in `app/AppRootAnonymous.tsx` or `app/AppRootAuthenticated.tsx`.
+A Frame is only useful once it has navigated to an initial 'root' page. To navigate your Frame to a Page as early as possible in its lifecycle, see my usage of the `componentDidMount()` method in the Frame components in [`app/AppRootAnonymous.tsx`](https://github.com/shirakaba/rpstrackerrns/blob/master/AppRootAnonymous.tsx) or [`app/AppRootAuthenticated.tsx`](https://github.com/shirakaba/rpstrackerrns/blob/master/app/AppRootAuthenticated.tsx).
 
 #### Page to Page
 
@@ -65,7 +65,7 @@ To be precise, you must ask the *Frame* to navigate to a new Page. When doing so
 
 In React NativeScript, I allow Page components to be nested inside other Page components so that it's easier to coordinate the rendering lifecycle of a dependent Page. I welcome the community to build a better solution to improve upon this rather odd state-of-the-art.
 
-I explored an alternative pattern for rendering Pages "out-of-tree" on-demand (shown in `app/shared/helpers/navigation/nav-react.helper.tsx`), but it leads to crashes in certain circumstances, so I can't recommend it; instead, please use the pattern of nesting any dependent (target) Pages inside their source Pages.
+I explored an alternative pattern for rendering Pages "out-of-tree" on-demand (shown in [`app/shared/helpers/navigation/nav-react.helper.tsx`](https://github.com/shirakaba/rpstrackerrns/tree/master/app/shared/helpers/navigation/nav-react.helper.tsx)), but it leads to crashes in certain circumstances, so I can't recommend it; instead, please use the pattern of nesting any dependent (target) Pages inside their source Pages.
 
 ##### Clearing 'back' history upon navigation
 
@@ -73,9 +73,9 @@ This prevents a 'back' button appearing in the ActionBar (if an ActionBar is vis
 
 See how `clearHistory` is set to `true` in:
 
-* the `onLoginTap()` and `onGotoRegisterTap()` methods of `app/views/pages/login/LoginPage.tsx`, and;
-* the `onGoToLoginTap()` method of `app/views/pages/register/RegisterPage.tsx`, and;
-* the `onLogoutTap` method of `app/views/pages/backlog/BacklogPage.tsx`.
+* the `onLoginTap()` and `onGotoRegisterTap()` methods of [`app/views/pages/login/LoginPage.tsx`](https://github.com/shirakaba/rpstrackerrns/tree/master/app/views/pages/login/LoginPage.tsx), and;
+* the `onGoToLoginTap()` method of [`app/views/pages/register/RegisterPage.tsx`](https://github.com/shirakaba/rpstrackerrns/blob/master/app/views/pages/register/RegisterPage.tsx), and;
+* the `onLogoutTap()` method of [`app/views/pages/backlog/BacklogPage.tsx`](https://github.com/shirakaba/rpstrackerrns/blob/master/app/views/pages/backlog/BacklogPage.tsx).
 
 ##### Preserving 'back' history upon navigation
 
@@ -83,11 +83,11 @@ This ensures that a 'back' button will appear in any ActionBar for the given Pag
 
 See how `clearHistory` is set to `false` or left unspecified in:
 
-* the `onSettingsTap()` and `onListItemTap()` methods of `app/views/pages/backlog/BacklogPage.tsx`.
+* the `onSettingsTap()` and `onListItemTap()` methods of [`app/views/pages/backlog/BacklogPage.tsx`](https://github.com/shirakaba/rpstrackerrns/blob/master/app/views/pages/backlog/BacklogPage.tsx).
 
 ##### Taking action upon 'back' navigation
 
-An example of this is left in the comments of `onNavigatedFromDetailPage()` and `onNavigatedFromSettingsPage()` in `app/views/pages/backlog/BacklogPage.tsx`.
+An example of this is left in the comments of `onNavigatedFromDetailPage()` and `onNavigatedFromSettingsPage()` in [`app/views/pages/backlog/BacklogPage.tsx`](https://github.com/shirakaba/rpstrackerrns/blob/master/app/views/pages/backlog/BacklogPage.tsx).
 
 There wasn't much use for it in this particular app.
 
