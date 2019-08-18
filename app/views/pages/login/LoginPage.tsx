@@ -15,6 +15,7 @@ import * as emailValidator from 'email-validator';
 import { EventData } from "tns-core-modules/ui/editable-text-base/editable-text-base";
 import { RegisterPageProps } from "~/core/models/page-props/register-page-props";
 import { RegisterPage } from "../register/RegisterPage";
+import { goToBacklogPageReact } from "~/shared/helpers/navigation/nav-react.helper";
 
 interface Props {
     forwardedRef: React.RefObject<Page>,
@@ -187,9 +188,8 @@ export class LoginPage extends React.Component<Props, State> {
     private readonly onLoginTap = () => {
         this.onLoginTapHandler()
         .then(() => {
-            // TODO: implement in React
-            // Note when implementing in React: we must specify clearHistory in the NavigationEntry
-            goToBacklogPage(true);
+            // goToBacklogPage(true);
+            goToBacklogPageReact({}, { clearHistory: true });
         })
         .catch(error => {
             console.error(error);

@@ -162,7 +162,7 @@ export class BacklogPage extends React.Component<Props, State> {
                 {/* === ROUTES THAT WE CAN NAVIGATE ON TO (not visual children of Page, but can be mounted as dependents) === */}
                 {/* It's a bit fiddly, but this setup lets us lazily mount a Page and unmount it as soon as we've returned from it. */}
                 {/* One day we'll make a navigation framework to produce a simpler approach, but... one thing at a time! */}
-                {
+                {/* {
                     navToDetailPageArgs === null ?
                         null :
                         (
@@ -172,7 +172,7 @@ export class BacklogPage extends React.Component<Props, State> {
                                 onNavigatedFrom={this.onNavigatedFromDetailPage}
                             />
                         )
-                }
+                } */}
 
                 {
                     navToSettingsPageArgs === null ?
@@ -199,19 +199,19 @@ export class BacklogPage extends React.Component<Props, State> {
         // goToDetailPage(item);
 
         console.log(`Going to (React) detail page via memory-efficient approach...`);
-        // goToDetailPageReact({ item });
-        this.setState(
-            {
-                navToDetailPageArgs: { item }
-            },
-            () => {
-                this.props.forwardedRef.current!.frame.navigate({
-                    create: () => {
-                        return this.detailsPageRef.current!;
-                    }
-                })
-            }
-        );
+        goToDetailPageReact({ item });
+        // this.setState(
+        //     {
+        //         navToDetailPageArgs: { item }
+        //     },
+        //     () => {
+        //         this.props.forwardedRef.current!.frame.navigate({
+        //             create: () => {
+        //                 return this.detailsPageRef.current!;
+        //             }
+        //         })
+        //     }
+        // );
     };
 
     /* From rigor789: Pages are loaded in only upon first navigation (lazily).

@@ -8,4 +8,4 @@ export const ROUTES = {
     newItemModal: './views/modals/new-item/new-item-modal',
     textInputModal: './views/modals/text-input/text-input-modal',
     listSelectorModal: './views/modals/list-selector/list-selector-modal',
-};
+} as const;
