@@ -230,7 +230,7 @@ export class LoginPage extends React.Component<Props, State> {
             );
 
             /* No longer recommending this approach. Although it's simple, it leads to crashes. */
-            goToBacklogPageReact({}, { clearHistory: true, animated: true });
+            // goToBacklogPageReact({}, { clearHistory: true, animated: true });
         })
         .catch(error => {
             console.error(error);
