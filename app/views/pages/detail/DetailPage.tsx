@@ -2,7 +2,6 @@ import * as React from "react";
 import { $Page, $StackLayout, $GridLayout, $Label, $ActionBar, $ActionItem, $NavigationButton, $Image, $TextField, $TextView, $ScrollView, $ListView, $FlexboxLayout, $Button } from "react-nativescript";
 import { ItemSpec } from "tns-core-modules/ui/layouts/grid-layout/grid-layout";
 import { GestureEventData } from "tns-core-modules/ui/gestures/gestures";
-import { goToSettingsPage } from "~/shared/helpers/navigation/nav.helper";
 import {
     toCreateCommentRequest,
     toCreateTaskRequest,
@@ -13,7 +12,6 @@ import {
 import { back } from '~/shared/helpers/navigation/nav.helper';
 import { Color, Page, TextField, View } from "react-nativescript/dist/client/ElementRegistry";
 import { PtItem } from "~/core/models/domain/pt-item.model";
-import { ItemEventData } from "react-nativescript/node_modules/tns-core-modules/ui/list-view/list-view";
 import { PtTask } from "~/core/models/domain/pt-task.model";
 import { EMPTY_STRING } from '~/core/models/domain/constants/strings';
 import { PtComment } from "~/core/models/domain/pt-comment.model";
@@ -41,7 +39,6 @@ import {
     PtItemDetailsEditFormModel,
     ptItemToFormModel
 } from '~/core/models/forms';
-import { ObservableArray } from "tns-core-modules/data/observable-array/observable-array";
 import { PtCommentViewModel } from "~/shared/view-models/pages/detail/pt-comment.vm";
 import { DetailPageProps } from "~/core/models/page-props/detail-page-props";
 import { EventData } from "tns-core-modules/ui/text-base/text-base";
@@ -279,10 +276,6 @@ export class DetailPage extends React.Component<Props, State> {
 
     // From detail-page.ts
     private readonly onTaskToggleTap = (task: PtTask) => {
-        // const textField = args.object as TextField;
-        // const taskVm = textField.bindingContext as PtTaskViewModel;
-        // taskVm.onTaskToggleRequested();
-
         this.setState(
             (state: State) => {
                 const currentTasks: PtTask[] = state.itemForm.tasks;
@@ -316,10 +309,6 @@ export class DetailPage extends React.Component<Props, State> {
             }
         );
     };
-
-    // private readonly onListItemTap = (itemEventData: ItemEventData) => {
-    //     const task: PtTask = this.props.item.tasks[itemEventData.index];
-    // };
 
     private readonly onEditorUpdate = (args: DataFormEventData) => {
         console.log(`[onEditorUpdate] ${args.propertyName}`);
@@ -581,7 +570,7 @@ export class DetailPage extends React.Component<Props, State> {
             this.notifyUpdateItem()
             .then((response: UpdateItemResponse) => {
                 // No-op
-                console.log(`[onPropertyCommitted] notifyUpdateItem() succeeded`, response.updatedItem);
+                console.log(`[onPropertyCommitted] notifyUpdateItem() succeeded`);
             })
             .catch((error: any) => {
                 console.log(`[ERROR] notifyUpdateItem() failed`, error);
