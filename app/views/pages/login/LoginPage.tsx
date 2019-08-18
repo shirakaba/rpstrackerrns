@@ -18,6 +18,9 @@ import { RegisterPage } from "../register/RegisterPage";
 import { goToBacklogPageReact, goToRegisterPageReact } from "~/shared/helpers/navigation/nav-react.helper";
 import { LoginPageProps } from "~/core/models/page-props/login-page-props";
 
+// Because at-loader can't find this type for some reason...
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+
 type Props = LoginPageProps;
 
 interface State {
@@ -170,20 +173,21 @@ export class LoginPage extends React.Component<Props, State> {
     private readonly onGotoRegisterTap = () => {
         // goToRegisterPage();
 
-        // this.setState(
-        //     {
-        //         navToRegisterPageArgs: {}
-        //     },
-        //     () => {
-        //         this.props.forwardedRef.current!.frame.navigate({
-        //             create: () => {
-        //                 return this.registerPageRef.current!;
-        //             }
-        //         })
-        //     }
-        // );
+        this.setState(
+            {
+                navToRegisterPageArgs: {}
+            },
+            () => {
+                this.props.forwardedRef.current!.frame.navigate({
+                    create: () => {
+                        return this.registerPageRef.current!;
+                    },
+                    animated: false,
+                })
+            }
+        );
 
-        goToRegisterPageReact({}, { animated: false });
+        // goToRegisterPageReact({}, { animated: false });
     };
 
     private readonly onLoginTap = () => {

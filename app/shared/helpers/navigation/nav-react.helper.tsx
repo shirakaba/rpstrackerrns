@@ -19,10 +19,16 @@ import { LoginPageProps } from "~/core/models/page-props/login-page-props";
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
 /**
- * WARNING: This navigation method makes use of undocumented React internals and may be prone to 
- * failure due to race conditions in the render queue. I don't really know.
+ * WARNING: This navigation method makes use of undocumented React internals. It's a proof-of-concept
+ * investigation only.
  * 
- * I'll try to get in touch with a React team member to better define any limitations of this.
+ * Because rendering is async, this navigation method is prone to race conditions and may crash your
+ * app under various circumstances (e.g. fast back-and-forth navigation or multiple active render
+ * trees, such as from a ListView, occupying the queue).
+ * 
+ * I'll try to get in touch with a React core team member to better define this approach and
+ * determine its limitations (or how it could be improved upon). Until then, please don't expect any
+ * support if you try to use this known-as-faulty approach.
  * 
  * @param PageJSXElement The JSX element contructor for the target page.
  * @param props The props for the target page (excluding forwardedRef, which we pass in ourselves)

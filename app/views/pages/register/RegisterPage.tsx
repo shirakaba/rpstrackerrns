@@ -16,6 +16,11 @@ import {
     goToLoginPage
   } from '~/shared/helpers/navigation/nav.helper';
 import { goToBacklogPageReact, goToLoginPageReact } from "~/shared/helpers/navigation/nav-react.helper";
+import { LoginPage } from "../login/LoginPage";
+import { LoginPageProps } from "~/core/models/page-props/login-page-props";
+
+// Because at-loader can't find this type for some reason...
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
 type Props = RegisterPageProps;
 
@@ -30,9 +35,12 @@ interface State {
     formValid: boolean,
     /* I've changed the 'loggingIn' property from the original to 'registering' - maybe a misunderstanding though */
     registering: boolean,
+
+    navToLoginPageArgs: Omit<LoginPageProps, "forwardedRef">|null,
 }
 
 export class RegisterPage extends React.Component<Props, State> {
+    private readonly loginPageRef: React.RefObject<Page> = React.createRef<Page>();
     private readonly authService: PtAuthService = getAuthService();
 
     constructor(props: Props) {
@@ -48,6 +56,8 @@ export class RegisterPage extends React.Component<Props, State> {
             passwordEmpty: false,
             formValid: false,
             registering: false,
+
+            navToLoginPageArgs: null,
         };
     }
 
@@ -73,7 +83,7 @@ export class RegisterPage extends React.Component<Props, State> {
 
     public render(){
         const { forwardedRef } = this.props;
-        const { fullName, nameEmpty, email, emailValid, emailEmpty, password, passwordEmpty, formValid, registering } = this.state;
+        const { fullName, nameEmpty, email, emailValid, emailEmpty, password, passwordEmpty, formValid, registering, navToLoginPageArgs } = this.state;
 
         return (
             <$Page ref={forwardedRef} className="page" actionBarHidden={true}>
@@ -161,6 +171,19 @@ export class RegisterPage extends React.Component<Props, State> {
                         </$GridLayout>
                     </$StackLayout>
 
+                {/* === ROUTES THAT WE CAN NAVIGATE ON TO (not visual children of Page, but can be mounted as dependents) === */}
+                {/* It's a bit fiddly, but this setup lets us lazily mount a Page and unmount it as soon as we've returned from it. */}
+                {/* One day we'll make a navigation framework to produce a simpler approach, but... one thing at a time! */}
+                {
+                    navToLoginPageArgs === null ?
+                        null :
+                        (
+                            <LoginPage
+                                forwardedRef={this.loginPageRef}
+                                // onNavigatedFrom={this.onNavigatedFromLoginPage}
+                            />
+                        )
+                }
                 </$GridLayout>
 
             </$Page>
@@ -273,6 +296,21 @@ export class RegisterPage extends React.Component<Props, State> {
     private readonly onGoToLoginTap = (args: GestureEventData) => {
         // TODO: convert to React-style navigation
         // goToLoginPage(false);
-        goToLoginPageReact({}, { animated: false });
+
+        this.setState(
+            {
+                navToLoginPageArgs: {}
+            },
+            () => {
+                this.props.forwardedRef.current!.frame.navigate({
+                    create: () => {
+                        return this.loginPageRef.current!;
+                    },
+                    animated: false,
+                })
+            }
+        );
+
+        // goToLoginPageReact({}, { animated: false });
     };
 }
