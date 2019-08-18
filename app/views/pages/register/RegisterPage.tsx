@@ -60,37 +60,9 @@ export class RegisterPage extends React.Component<Props, State> {
         };
     }
 
-    public componentDidUpdate(prevProps: Props, prevState: State): void {
-        const { fullName, email, password } = this.state;
-
-        if(fullName !== prevState.fullName){
-            this.validate("fullName");
-        }
-
-        if(email !== prevState.email){
-            this.validate("email");
-        }
-
-        if(password !== prevState.password){
-            this.validate("password");
-        }
-    }
-
     public componentDidMount(){
         this.props.forwardedRef.current!.addCssFile("views/pages/register/register-page.css");
     }
-
-    private readonly onNameTextFieldChange = (args: EventData) => {
-        this.setState({ fullName: (args.object as TextField).text });
-    };
-
-    private readonly onEmailTextFieldChange = (args: EventData) => {
-        this.setState({ email: (args.object as TextField).text });
-    };
-
-    private readonly onPasswordTextFieldChange = (args: EventData) => {
-        this.setState({ password: (args.object as TextField).text });
-    };
 
     public render(){
         const { forwardedRef } = this.props;
@@ -204,63 +176,59 @@ export class RegisterPage extends React.Component<Props, State> {
         );
     }
 
-    private readonly validate = (changedPropName: string) => {
-        switch (changedPropName) {
-            case 'fullName':
-                {
-                    this.setState(
-                        (state: State) => {
-                            const { fullName, emailValid, emailEmpty, passwordEmpty } = state;
-                            const nameEmpty: boolean = fullName.trim() === EMPTY_STRING;
+    private readonly onNameTextFieldChange = (args: EventData) => {
+        const fullName: string = (args.object as TextField).text;
 
-                            return {
-                                nameEmpty,
-                                formValid: !nameEmpty && emailValid && !emailEmpty && !passwordEmpty
-                            };
-                        }
-                    );
-                }
-                break;
-    
-            case 'email':
-                {
-                    this.setState(
-                        (state: State) => {
-                            const { email, nameEmpty, passwordEmpty } = state;
-                            const emailEmpty: boolean = email.trim() === EMPTY_STRING;
-                            /* Apparently empty emails are valid too */
-                            const emailValid: boolean = emailEmpty || emailValidator.validate(email);
+        this.setState(
+            (state: State) => {
+                const { emailValid, emailEmpty, passwordEmpty } = state;
+                const nameEmpty: boolean = fullName.trim() === EMPTY_STRING;
 
-                            return {
-                                passwordEmpty,
-                                emailValid,
-                                formValid: !nameEmpty && emailValid && !emailEmpty && !passwordEmpty
-                            };
-                        }
-                    );
-                }
-                break;
-    
-            case 'password':
-                {
-                    this.setState(
-                        (state: State) => {
-                            const { password, nameEmpty, emailValid, emailEmpty } = state;
-                            const passwordEmpty: boolean = password.trim().length === 0;
+                return {
+                    fullName,
+                    nameEmpty,
+                    formValid: !nameEmpty && emailValid && !emailEmpty && !passwordEmpty
+                };
+            }
+        );
+    };
 
-                            return {
-                                passwordEmpty,
-                                formValid: !nameEmpty && emailValid && !emailEmpty && !passwordEmpty
-                            };
-                        }
-                    );
-                }
-                break;
-    
-            default:
-                return;
-        }
-    }
+    private readonly onEmailTextFieldChange = (args: EventData) => {
+        const email: string = (args.object as TextField).text;
+
+        this.setState(
+            (state: State) => {
+                const { nameEmpty, passwordEmpty } = state;
+                const emailEmpty: boolean = email.trim() === EMPTY_STRING;
+                /* Apparently empty emails are valid too */
+                const emailValid: boolean = emailEmpty || emailValidator.validate(email);
+
+                return {
+                    email,
+                    passwordEmpty,
+                    emailValid,
+                    formValid: !nameEmpty && emailValid && !emailEmpty && !passwordEmpty
+                };
+            }
+        );
+    };
+
+    private readonly onPasswordTextFieldChange = (args: EventData) => {
+        const password: string = (args.object as TextField).text;
+
+        this.setState(
+            (state: State) => {
+                const { nameEmpty, emailValid, emailEmpty } = state;
+                const passwordEmpty: boolean = password.trim().length === 0;
+
+                return {
+                    password,
+                    passwordEmpty,
+                    formValid: !nameEmpty && emailValid && !emailEmpty && !passwordEmpty
+                };
+            }
+        );
+    };
 
     private readonly onRegisterTap = (args: GestureEventData) => {
         return new Promise((resolve, reject) => {
