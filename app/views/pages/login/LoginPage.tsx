@@ -19,6 +19,7 @@ import { goToBacklogPageReact, goToRegisterPageReact } from "~/shared/helpers/na
 import { LoginPageProps } from "~/core/models/page-props/login-page-props";
 import { BacklogPageProps } from "~/core/models/page-props/backlog-page-props";
 import { BacklogPage } from "../backlog/BacklogPage";
+import { GestureEventData } from "tns-core-modules/ui/gestures/gestures";
 
 type Props = LoginPageProps;
 
@@ -165,7 +166,7 @@ export class LoginPage extends React.Component<Props, State> {
         );
     }
 
-    private readonly onGotoRegisterTap = () => {
+    private readonly onGotoRegisterTap = (args: GestureEventData) => {
         this.setState(
             {
                 navToRegisterPageArgs: {
@@ -186,7 +187,7 @@ export class LoginPage extends React.Component<Props, State> {
         // goToRegisterPageReact({}, { animated: false });
     };
 
-    private readonly onLoginTap = () => {
+    private readonly onLoginTap = (args: GestureEventData) => {
         new Promise((resolve, reject) => {
             this.setState(
                 {
