@@ -15,11 +15,10 @@ import * as emailValidator from 'email-validator';
 import { EventData } from "tns-core-modules/ui/editable-text-base/editable-text-base";
 import { RegisterPageProps } from "~/core/models/page-props/register-page-props";
 import { RegisterPage } from "../register/RegisterPage";
-import { goToBacklogPageReact } from "~/shared/helpers/navigation/nav-react.helper";
+import { goToBacklogPageReact, goToRegisterPageReact } from "~/shared/helpers/navigation/nav-react.helper";
+import { LoginPageProps } from "~/core/models/page-props/login-page-props";
 
-interface Props {
-    forwardedRef: React.RefObject<Page>,
-}
+type Props = LoginPageProps;
 
 interface State {
     email: string,
@@ -171,25 +170,27 @@ export class LoginPage extends React.Component<Props, State> {
     private readonly onGotoRegisterTap = () => {
         // goToRegisterPage();
 
-        this.setState(
-            {
-                navToRegisterPageArgs: {}
-            },
-            () => {
-                this.props.forwardedRef.current!.frame.navigate({
-                    create: () => {
-                        return this.registerPageRef.current!;
-                    }
-                })
-            }
-        );
+        // this.setState(
+        //     {
+        //         navToRegisterPageArgs: {}
+        //     },
+        //     () => {
+        //         this.props.forwardedRef.current!.frame.navigate({
+        //             create: () => {
+        //                 return this.registerPageRef.current!;
+        //             }
+        //         })
+        //     }
+        // );
+
+        goToRegisterPageReact({}, { animated: false });
     };
 
     private readonly onLoginTap = () => {
         this.onLoginTapHandler()
         .then(() => {
             // goToBacklogPage(true);
-            goToBacklogPageReact({}, { clearHistory: true });
+            goToBacklogPageReact({}, { clearHistory: true, animated: true });
         })
         .catch(error => {
             console.error(error);

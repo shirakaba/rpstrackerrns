@@ -15,6 +15,7 @@ import {
     goToBacklogPage,
     goToLoginPage
   } from '~/shared/helpers/navigation/nav.helper';
+import { goToBacklogPageReact, goToLoginPageReact } from "~/shared/helpers/navigation/nav-react.helper";
 
 type Props = RegisterPageProps;
 
@@ -260,7 +261,8 @@ export class RegisterPage extends React.Component<Props, State> {
         })
         .then(() => {
             // TODO: convert to React-style navigation
-            goToBacklogPage(true);
+            // goToBacklogPage(true);
+            goToBacklogPageReact({}, {});
         })
         .catch(error => {
             console.error(error);
@@ -270,6 +272,7 @@ export class RegisterPage extends React.Component<Props, State> {
 
     private readonly onGoToLoginTap = (args: GestureEventData) => {
         // TODO: convert to React-style navigation
-        goToLoginPage(false);
+        // goToLoginPage(false);
+        goToLoginPageReact({}, { animated: false });
     };
 }

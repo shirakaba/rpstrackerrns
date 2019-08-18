@@ -38,12 +38,11 @@ import { DetailPage } from "../detail/DetailPage";
 import { NavigatedData } from "tns-core-modules/ui/page/page";
 import { SettingsPage } from "../settings/SettingsPage";
 import { SettingsPageProps } from "~/core/models/page-props/settings-page-props";
+import { BacklogPageProps } from "~/core/models/page-props/backlog-page-props";
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
-interface Props {
-    forwardedRef: React.RefObject<Page>
-}
+type Props = BacklogPageProps;
 
 interface State {
     navToDetailPageArgs: Omit<DetailPageProps, "forwardedRef">|null,

@@ -10,6 +10,10 @@ import { topmost, Frame, NavigationEntry, ViewEntry } from "tns-core-modules/ui/
 import { StackLayout } from "tns-core-modules/ui/layouts/stack-layout/stack-layout";
 import { PageComponentProps } from "react-nativescript/dist/components/Page";
 import { Label } from "tns-core-modules/ui/label/label";
+import { RegisterPageProps } from "~/core/models/page-props/register-page-props";
+import { RegisterPage } from "~/views/pages/register/RegisterPage";
+import { LoginPage } from "~/views/pages/login/LoginPage";
+import { LoginPageProps } from "~/core/models/page-props/login-page-props";
 
 // Because at-loader can't find this type for some reason...
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
@@ -82,11 +86,26 @@ export function goToBacklogPageReact(
 }
 
 export function goToDetailPageReact(
-    props: Omit<BacklogPageProps, "forwardedRef">,
+    props: Omit<DetailPageProps, "forwardedRef">,
     navEntry: Omit<NavigationEntry, keyof ViewEntry> = {},
 ): void
 {
     goToPageReact(DetailPage, props, "detailPage", navEntry);
+}
+
+export function goToRegisterPageReact(
+    props: Omit<RegisterPageProps, "forwardedRef">,
+    navEntry: Omit<NavigationEntry, keyof ViewEntry> = {},
+): void
+{
+    goToPageReact(RegisterPage, props, "registerPage", navEntry);
+}
+export function goToLoginPageReact(
+    props: Omit<LoginPageProps, "forwardedRef">,
+    navEntry: Omit<NavigationEntry, keyof ViewEntry> = {},
+): void
+{
+    goToPageReact(LoginPage, props, "loginPage", navEntry);
 }
 
 // interface LazyMountedPageProps<P extends {}> {
