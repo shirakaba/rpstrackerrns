@@ -50,7 +50,7 @@ interface State {
     navToSettingsPageArgs: Omit<SettingsPageProps, "forwardedRef">|null,
 }
 
-export class BackLogPage extends React.Component<Props, State> {
+export class BacklogPage extends React.Component<Props, State> {
     private readonly drawerRef: React.RefObject<RadSideDrawer> = React.createRef<RadSideDrawer>();
     private readonly detailsPageRef: React.RefObject<Page> = React.createRef<Page>();
     private readonly settingsPageRef: React.RefObject<Page> = React.createRef<Page>();

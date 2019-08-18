@@ -1,7 +1,7 @@
 import * as React from "react";
 import { $Frame } from "react-nativescript";
 import { Frame, Page } from "react-nativescript/dist/client/ElementRegistry";
-import { BackLogPage } from "./views/pages/backlog/BackLogPage";
+import { BacklogPage } from "./views/pages/backlog/BackLogPage";
 
 export class AppRootAuthenticated extends React.Component<{ forwardedRef: React.RefObject<Frame> }, {}> {
     private readonly pageRef: React.RefObject<Page> = React.createRef<Page>();
@@ -13,7 +13,7 @@ export class AppRootAuthenticated extends React.Component<{ forwardedRef: React.
     render(){
         return (
             <$Frame ref={this.props.forwardedRef}>
-                <BackLogPage forwardedRef={this.pageRef}/>
+                <BacklogPage forwardedRef={this.pageRef}/>
             </$Frame>
         );
     }
