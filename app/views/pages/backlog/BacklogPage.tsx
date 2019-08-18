@@ -38,18 +38,22 @@ import { NavigatedData } from "tns-core-modules/ui/page/page";
 import { SettingsPage } from "../settings/SettingsPage";
 import { SettingsPageProps } from "~/core/models/page-props/settings-page-props";
 import { BacklogPageProps } from "~/core/models/page-props/backlog-page-props";
+import { LoginPageProps } from "~/core/models/page-props/login-page-props";
+import { LoginPage } from "../login/LoginPage";
 // import { goToDetailPageReact } from "~/shared/helpers/navigation/nav-react.helper";
 
 type Props = BacklogPageProps;
 
 interface State {
+    navToLoginPageArgs: LoginPageProps|null,
     navToDetailPageArgs: DetailPageProps|null,
     navToSettingsPageArgs: SettingsPageProps|null,
 }
 
 export class BacklogPage extends React.Component<Props, State> {
     private readonly drawerRef: React.RefObject<RadSideDrawer> = React.createRef<RadSideDrawer>();
-    private readonly detailsPageRef: React.RefObject<Page> = React.createRef<Page>();
+    private readonly loginPageRef: React.RefObject<Page> = React.createRef<Page>();
+    private readonly detailPageRef: React.RefObject<Page> = React.createRef<Page>();
     private readonly settingsPageRef: React.RefObject<Page> = React.createRef<Page>();
 
     private readonly authService: PtAuthService = getAuthService();
@@ -60,20 +64,19 @@ export class BacklogPage extends React.Component<Props, State> {
         super(props);
 
         this.state = {
+            navToLoginPageArgs: null,
             navToDetailPageArgs: null,
             navToSettingsPageArgs: null,
         };
     }
     
     componentDidMount(){
-        // console.log(`BackLogPage.componentDidMount`);
         this.props.forwardedRef.current!.addCssFile("views/pages/backlog/backlog-page.css");
     }
 
     render(){
-        const { navToDetailPageArgs, navToSettingsPageArgs } = this.state;
+        const { navToDetailPageArgs, navToSettingsPageArgs, navToLoginPageArgs } = this.state;
 
-        // console.log(`BackLogPage.render`);
         return (
             <$Page ref={this.props.forwardedRef} onLoaded={this.onPageLoaded}>
                 <$ActionBar title="Backlog">
@@ -159,6 +162,8 @@ export class BacklogPage extends React.Component<Props, State> {
                 {/* === ROUTES THAT WE CAN NAVIGATE ON TO (not visual children of Page, but can be mounted as dependents) === */}
                 {/* It's a bit fiddly, but this setup lets us lazily mount a Page. */}
                 {/* One day we'll make a navigation framework to produce a simpler approach, but... one thing at a time! */}
+                {navToLoginPageArgs === null ? null : (<LoginPage {...navToLoginPageArgs}/>)}
+
                 {navToDetailPageArgs === null ? null : (<DetailPage {...navToDetailPageArgs}/>)}
 
                 {navToSettingsPageArgs === null ? null : (<SettingsPage {...navToSettingsPageArgs}/>)}
@@ -184,7 +189,7 @@ export class BacklogPage extends React.Component<Props, State> {
         this.setState(
             {
                 navToDetailPageArgs: {
-                    forwardedRef: this.detailsPageRef,
+                    forwardedRef: this.detailPageRef,
                     item,
                     onNavigatedFrom: this.onNavigatedFromDetailPage,
                 }
@@ -192,7 +197,7 @@ export class BacklogPage extends React.Component<Props, State> {
             () => {
                 this.props.forwardedRef.current!.frame.navigate({
                     create: () => {
-                        return this.detailsPageRef.current!;
+                        return this.detailPageRef.current!;
                     }
                 })
             }
@@ -234,7 +239,27 @@ export class BacklogPage extends React.Component<Props, State> {
     };
 
     private readonly onLogoutTap = () => {
-        this.onLogoutTapHandler().then(() => goToLoginPage());
+        this.authService.logout()
+        .then(() => {
+            /* No longer recommending this approach. Although it's simple, it leads to crashes. */
+            // goToLoginPageReact();
+
+            this.setState(
+                {
+                    navToLoginPageArgs: {
+                        forwardedRef: this.loginPageRef,
+                    }
+                },
+                () => {
+                    this.props.forwardedRef.current!.frame.navigate({
+                        create: () => {
+                            return this.loginPageRef.current!;
+                        },
+                        clearHistory: true,
+                    })
+                }
+            );
+        });
     };
 
     /* In the original, this was deferred to the menu component, but we'll pass it down as a prop in this version. */
@@ -262,10 +287,6 @@ export class BacklogPage extends React.Component<Props, State> {
     private readonly onToggleDrawerTap = () => {
         this.drawerRef.current!.toggleDrawerState();
     };
-    
-    private readonly onLogoutTapHandler = () => {
-        return this.authService.logout();
-    }
 
     private readonly onRefreshRequested = (args: EventData) => {
         const pullToRefresh: PullToRefresh = args.object as PullToRefresh;

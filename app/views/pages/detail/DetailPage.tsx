@@ -644,7 +644,7 @@ export class DetailPage extends React.Component<Props, State> {
                             </$GridLayout>
 
                             <$RadDataForm
-                                // id="itemDetailsDataForm"
+                                id="itemDetailsDataForm"
                                 ref={this.formRef}
                                 row={1}
                                 source={itemFormTruncated}
