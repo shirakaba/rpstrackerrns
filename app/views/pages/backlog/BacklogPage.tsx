@@ -40,13 +40,11 @@ import { SettingsPage } from "../settings/SettingsPage";
 import { SettingsPageProps } from "~/core/models/page-props/settings-page-props";
 import { BacklogPageProps } from "~/core/models/page-props/backlog-page-props";
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
 type Props = BacklogPageProps;
 
 interface State {
-    navToDetailPageArgs: Omit<DetailPageProps, "forwardedRef">|null,
-    navToSettingsPageArgs: Omit<SettingsPageProps, "forwardedRef">|null,
+    navToDetailPageArgs: DetailPageProps|null,
+    navToSettingsPageArgs: SettingsPageProps|null,
 }
 
 export class BacklogPage extends React.Component<Props, State> {
@@ -159,27 +157,11 @@ export class BacklogPage extends React.Component<Props, State> {
                 </$RadSideDrawer>
 
                 {/* === ROUTES THAT WE CAN NAVIGATE ON TO (not visual children of Page, but can be mounted as dependents) === */}
-                {/* It's a bit fiddly, but this setup lets us lazily mount a Page and unmount it as soon as we've returned from it. */}
+                {/* It's a bit fiddly, but this setup lets us lazily mount a Page. */}
                 {/* One day we'll make a navigation framework to produce a simpler approach, but... one thing at a time! */}
-                {/* {
-                    navToDetailPageArgs === null ?
-                        null :
-                        (
-                            <DetailPage
-                                forwardedRef={this.detailsPageRef}
-                                item={navToDetailPageArgs.item}
-                                onNavigatedFrom={this.onNavigatedFromDetailPage}
-                            />
-                        )
-                } */}
+                {navToDetailPageArgs === null ? null : (<DetailPage {...navToDetailPageArgs}/>)}
 
-                {
-                    navToSettingsPageArgs === null ?
-                        null :
-                        (
-                            <SettingsPage forwardedRef={this.settingsPageRef} onNavigatedFrom={this.onNavigatedFromSettingsPage}/>
-                        )
-                }
+                {navToSettingsPageArgs === null ? null : (<SettingsPage {...navToSettingsPageArgs}/>)}
             </$Page>
         );
     }
@@ -195,22 +177,25 @@ export class BacklogPage extends React.Component<Props, State> {
     private readonly onListItemTap = (itemEventData: ItemEventData) => {
         const item: PtItem = this.items.getItem(itemEventData.index);
 
-        // goToDetailPage(item);
+        /* No longer recommending this approach. Although it's simple, it leads to crashes. */
+        // goToDetailPageReact({ item });
 
-        console.log(`Going to (React) detail page via memory-efficient approach...`);
-        goToDetailPageReact({ item });
-        // this.setState(
-        //     {
-        //         navToDetailPageArgs: { item }
-        //     },
-        //     () => {
-        //         this.props.forwardedRef.current!.frame.navigate({
-        //             create: () => {
-        //                 return this.detailsPageRef.current!;
-        //             }
-        //         })
-        //     }
-        // );
+        this.setState(
+            {
+                navToDetailPageArgs: {
+                    forwardedRef: this.detailsPageRef,
+                    item,
+                    onNavigatedFrom: this.onNavigatedFromDetailPage,
+                }
+            },
+            () => {
+                this.props.forwardedRef.current!.frame.navigate({
+                    create: () => {
+                        return this.detailsPageRef.current!;
+                    }
+                })
+            }
+        );
     };
 
     /* From rigor789: Pages are loaded in only upon first navigation (lazily).
@@ -219,13 +204,17 @@ export class BacklogPage extends React.Component<Props, State> {
      * - you navigate away whilst backStackVisible is false  */
     private readonly onNavigatedFromDetailPage = (args: NavigatedData) => {
         if(args.isBackNavigation){
-            this.setState({ navToDetailPageArgs: null });
+            this.setState({ navToDetailPageArgs: null }, () => {
+                // this.refresh();
+            });
         }
     };
 
     private readonly onNavigatedFromSettingsPage = (args: NavigatedData) => {
         if(args.isBackNavigation){
-            this.setState({ navToSettingsPageArgs: null });
+            this.setState({ navToSettingsPageArgs: null }, () => {
+                // this.refresh();
+            });
         }
     };
 
@@ -244,17 +233,17 @@ export class BacklogPage extends React.Component<Props, State> {
 
     /* In the original, this was deferred to the menu component, but we'll pass it down as a prop in this version. */
     private readonly onSettingsTap = () => {
-        // TODO: navigate to React-managed page
-        // goToSettingsPage();
+        /* No longer recommending this approach. Although it's simple, it leads to crashes. */
+        // goToSettingsPageReact({});
 
-        console.log(`Going to (React) settings page via memory-efficient approach with this.props.forwardedRef.current: ${this.props.forwardedRef.current}; this.settingsPageRef.current: ${this.settingsPageRef.current}`);
-        // goToDetailPageReact({ item });
         this.setState(
             {
-                navToSettingsPageArgs: {}
+                navToSettingsPageArgs: {
+                    forwardedRef: this.settingsPageRef,
+                    onNavigatedFrom: this.onNavigatedFromSettingsPage,
+                }
             },
             () => {
-                console.log(`Finished setting state to mount SettingsPage. this.props.forwardedRef.current: ${this.props.forwardedRef.current}; this.settingsPageRef.current: ${this.settingsPageRef.current}`);
                 this.props.forwardedRef.current!.frame.navigate({
                     create: () => {
                         return this.settingsPageRef.current!;

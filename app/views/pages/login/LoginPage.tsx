@@ -167,6 +167,9 @@ export class LoginPage extends React.Component<Props, State> {
     }
 
     private readonly onGotoRegisterTap = (args: GestureEventData) => {
+        /* No longer recommending this approach. Although it's simple, it leads to crashes. */
+        // goToRegisterPageReact({}, { animated: false });
+        
         this.setState(
             {
                 navToRegisterPageArgs: {
@@ -182,9 +185,6 @@ export class LoginPage extends React.Component<Props, State> {
                 })
             }
         );
-
-        /* No longer recommending this approach. Although it's simple, it leads to crashes. */
-        // goToRegisterPageReact({}, { animated: false });
     };
 
     private readonly onLoginTap = (args: GestureEventData) => {
@@ -213,6 +213,9 @@ export class LoginPage extends React.Component<Props, State> {
             );
         })
         .then(() => {
+            /* No longer recommending this approach. Although it's simple, it leads to crashes. */
+            // goToBacklogPageReact({}, { clearHistory: true, animated: true });
+
             this.setState(
                 {
                     navToBacklogPageArgs: {
@@ -229,9 +232,6 @@ export class LoginPage extends React.Component<Props, State> {
                     })
                 }
             );
-
-            /* No longer recommending this approach. Although it's simple, it leads to crashes. */
-            // goToBacklogPageReact({}, { clearHistory: true, animated: true });
         })
         .catch(error => {
             console.error(error);
@@ -241,7 +241,6 @@ export class LoginPage extends React.Component<Props, State> {
 
     private readonly onEmailTextChange = (args: EventData) => {
         const text: string = (args.object as TextField).text;
-        // console.log(`onEmailTextChange`, text);
         if (text.trim() === EMPTY_STRING) {
             this.setState({
                 email: text,
@@ -268,7 +267,6 @@ export class LoginPage extends React.Component<Props, State> {
 
     private readonly onPasswordTextChange = (args: EventData) => {
         const text: string = (args.object as TextField).text;
-        // console.log(`onPasswordTextChange`, text);
         if (text.trim() === EMPTY_STRING) {
             this.setState({
                 password: text,

@@ -264,6 +264,9 @@ export class RegisterPage extends React.Component<Props, State> {
             )
         })
         .then(() => {
+            /* No longer recommending this approach. Although it's simple, it leads to crashes. */
+            // goToBacklogPageReact({}, { clearHistory: true, animated: true });
+
             this.setState(
                 {
                     navToBacklogPageArgs: {
@@ -280,9 +283,6 @@ export class RegisterPage extends React.Component<Props, State> {
                     })
                 }
             );
-
-            /* No longer recommending this approach. Although it's simple, it leads to crashes. */
-            // goToBacklogPageReact({}, { clearHistory: true, animated: true });
         })
         .catch(error => {
             console.error(error);
@@ -291,6 +291,9 @@ export class RegisterPage extends React.Component<Props, State> {
     };
 
     private readonly onGoToLoginTap = (args: GestureEventData) => {
+        /* No longer recommending this approach. Although it's simple, it leads to crashes. */
+        // goToLoginPageReact({}, { animated: false });
+
         this.setState(
             {
                 navToLoginPageArgs: {
@@ -306,8 +309,5 @@ export class RegisterPage extends React.Component<Props, State> {
                 })
             }
         );
-
-        /* No longer recommending this approach. Although it's simple, it leads to crashes. */
-        // goToLoginPageReact({}, { animated: false });
     };
 }
