@@ -27,7 +27,7 @@ import {
     goToDetailPage,
     goToLoginPage,
     goToSettingsPage
-  } from '~/shared/helpers/navigation/nav.helper';
+} from '~/shared/helpers/navigation/nav.helper';
 import { EventData } from "tns-core-modules/data/observable/observable";
 import { dateConverter, itemToIndicatorClassConverter } from "~/utils/converters";
 import { ItemEventData } from "tns-core-modules/ui/list-view/list-view";
