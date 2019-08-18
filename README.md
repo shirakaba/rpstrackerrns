@@ -12,6 +12,8 @@ This app serves as the real-world sample app for React NativeScript. It's my por
 
 This repository is just the front-end. You will also need to run [the backend](https://github.com/alexziskind1/rpsapi) to do anything exciting with it (instructions below).
 
+Note: I haven't ported any of the modals (in the folder [`app/views/modals`](https://github.com/shirakaba/rpstrackerrns/tree/master/app/views/modals)) as I couldn't figure out where they were being used, but at least 90% of the app is ported. There's plenty enough in here to learn from, still!
+
 ## Setup
 
 ### Backend
