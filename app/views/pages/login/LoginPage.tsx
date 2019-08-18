@@ -181,6 +181,7 @@ export class LoginPage extends React.Component<Props, State> {
                     create: () => {
                         return this.registerPageRef.current!;
                     },
+                    clearHistory: true,
                     animated: false,
                 })
             }
