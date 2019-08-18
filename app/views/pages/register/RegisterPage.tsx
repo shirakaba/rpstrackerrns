@@ -11,13 +11,11 @@ import { PtAuthService } from '~/core/contracts/services';
 import { PtRegisterModel } from '~/core/models/domain';
 import { EMPTY_STRING } from '~/core/models/domain/constants/strings';
 import { getAuthService } from '~/globals/dependencies/locator';
-import {
-    goToBacklogPage,
-    goToLoginPage
-  } from '~/shared/helpers/navigation/nav.helper';
 import { goToBacklogPageReact, goToLoginPageReact } from "~/shared/helpers/navigation/nav-react.helper";
 import { LoginPage } from "../login/LoginPage";
 import { LoginPageProps } from "~/core/models/page-props/login-page-props";
+import { BacklogPage } from "../backlog/BacklogPage";
+import { BacklogPageProps } from "~/core/models/page-props/backlog-page-props";
 
 // Because at-loader can't find this type for some reason...
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
@@ -37,10 +35,12 @@ interface State {
     registering: boolean,
 
     navToLoginPageArgs: Omit<LoginPageProps, "forwardedRef">|null,
+    navToBacklogPageArgs: Omit<BacklogPageProps, "forwardedRef">|null,
 }
 
 export class RegisterPage extends React.Component<Props, State> {
     private readonly loginPageRef: React.RefObject<Page> = React.createRef<Page>();
+    private readonly backlogPageRef: React.RefObject<Page> = React.createRef<Page>();
     private readonly authService: PtAuthService = getAuthService();
 
     constructor(props: Props) {
@@ -58,6 +58,7 @@ export class RegisterPage extends React.Component<Props, State> {
             registering: false,
 
             navToLoginPageArgs: null,
+            navToBacklogPageArgs: null,
         };
     }
 
@@ -83,7 +84,7 @@ export class RegisterPage extends React.Component<Props, State> {
 
     public render(){
         const { forwardedRef } = this.props;
-        const { fullName, nameEmpty, email, emailValid, emailEmpty, password, passwordEmpty, formValid, registering, navToLoginPageArgs } = this.state;
+        const { fullName, nameEmpty, email, emailValid, emailEmpty, password, passwordEmpty, formValid, registering, navToLoginPageArgs, navToBacklogPageArgs } = this.state;
 
         return (
             <$Page ref={forwardedRef} className="page" actionBarHidden={true}>
@@ -172,17 +173,18 @@ export class RegisterPage extends React.Component<Props, State> {
                     </$StackLayout>
 
                 {/* === ROUTES THAT WE CAN NAVIGATE ON TO (not visual children of Page, but can be mounted as dependents) === */}
-                {/* It's a bit fiddly, but this setup lets us lazily mount a Page and unmount it as soon as we've returned from it. */}
+                {/* It's a bit fiddly, but this setup lets us lazily mount a Page. */}
                 {/* One day we'll make a navigation framework to produce a simpler approach, but... one thing at a time! */}
                 {
                     navToLoginPageArgs === null ?
                         null :
-                        (
-                            <LoginPage
-                                forwardedRef={this.loginPageRef}
-                                // onNavigatedFrom={this.onNavigatedFromLoginPage}
-                            />
-                        )
+                        (<LoginPage forwardedRef={this.loginPageRef} />)
+                }
+
+                {
+                    navToBacklogPageArgs === null ?
+                        null :
+                        (<BacklogPage forwardedRef={this.backlogPageRef} />)
                 }
                 </$GridLayout>
 
@@ -280,12 +282,25 @@ export class RegisterPage extends React.Component<Props, State> {
                         });
                 }
             )
-
         })
         .then(() => {
-            // TODO: convert to React-style navigation
-            // goToBacklogPage(true);
-            goToBacklogPageReact({}, {});
+            this.setState(
+                {
+                    navToBacklogPageArgs: {}
+                },
+                () => {
+                    this.props.forwardedRef.current!.frame.navigate({
+                        create: () => {
+                            return this.backlogPageRef.current!;
+                        },
+                        clearHistory: true,
+                        animated: true,
+                    })
+                }
+            );
+
+            /* No longer recommending this approach. Although it's simple, it leads to crashes. */
+            // goToBacklogPageReact({}, { clearHistory: true });
         })
         .catch(error => {
             console.error(error);
@@ -294,9 +309,6 @@ export class RegisterPage extends React.Component<Props, State> {
     };
 
     private readonly onGoToLoginTap = (args: GestureEventData) => {
-        // TODO: convert to React-style navigation
-        // goToLoginPage(false);
-
         this.setState(
             {
                 navToLoginPageArgs: {}
@@ -311,6 +323,7 @@ export class RegisterPage extends React.Component<Props, State> {
             }
         );
 
+        /* No longer recommending this approach. Although it's simple, it leads to crashes. */
         // goToLoginPageReact({}, { animated: false });
     };
 }

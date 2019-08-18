@@ -154,17 +154,12 @@ export class LoginPage extends React.Component<Props, State> {
                 </$GridLayout>
 
                 {/* === ROUTES THAT WE CAN NAVIGATE ON TO (not visual children of Page, but can be mounted as dependents) === */}
-                {/* It's a bit fiddly, but this setup lets us lazily mount a Page and unmount it as soon as we've returned from it. */}
+                {/* It's a bit fiddly, but this setup lets us lazily mount a Page. */}
                 {/* One day we'll make a navigation framework to produce a simpler approach, but... one thing at a time! */}
                 {
                     navToRegisterPageArgs === null ?
                         null :
-                        (
-                            <RegisterPage
-                                forwardedRef={this.registerPageRef}
-                                // onNavigatedFrom={this.onNavigatedFromRegisterPage}
-                            />
-                        )
+                        (<RegisterPage forwardedRef={this.registerPageRef} />)
                 }
             </$Page>
         );
