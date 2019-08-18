@@ -2,6 +2,33 @@
 
 This app serves as the real-world sample app for React NativeScript. It's my port of Alex Zisklind's `rpstrackertnsts` app – which is the NativeScript Core incarnation of his series of apps called "RPS Project Tracker 2.0". After setting up the standard boilerplate for a React NativeScript app, I mostly just needed to adjust the [`app/views`](https://github.com/shirakaba/rpstrackerrns/tree/master/app/views) folder to facilitate the port.
 
+<table>
+    <tbody>
+        <tr>
+            <td align="center" valign="middle">
+                <img width="200px" src="/github_img/LoginPage.png"/>
+            </td>
+            <td align="center" valign="middle">
+                <img width="200px" src="/github_img/BacklogPage.png"/>
+            </td>
+            <td align="center" valign="middle">
+                <img width="200px" src="/github_img/DetailPage.png"/>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" valign="middle">
+                <p><b><a href="https://github.com/shirakaba/rpstrackerrns/tree/master/app/views/pages/login/LoginPage.tsx">Login Page</a></b></p>
+            </td>
+            <td align="center" valign="middle">
+                <p><b><a href="https://github.com/shirakaba/rpstrackerrns/tree/master/app/views/pages/backlog/BacklogPage.tsx">Backlog Page</a></b></p>
+            </td>
+            <td align="center" valign="middle">
+                <p><b><a href="https://github.com/shirakaba/rpstrackerrns/blob/master/app/views/pages/detail/DetailPage.tsx">Detail Page</a></b></p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
 ## Features
 
 * Registration and login
