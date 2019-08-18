@@ -101,8 +101,6 @@ export class DetailPage extends React.Component<Props, State> {
     private readonly taskService: PtTaskService = getTaskService();
     private readonly commentService: PtCommentService = getCommentService();
 
-    private readonly itemDetailsDataForm?: RadDataForm;
-
     constructor(props: Props){
         super(props);
 
@@ -567,8 +565,33 @@ export class DetailPage extends React.Component<Props, State> {
             () => {
             }
         );
-    }
+    };
 
+    private readonly onPropertyCommitted = (args: DataFormEventData) => {
+        console.log(`[onPropertyCommitted] will call notifyUpdateItem()`);
+
+        this.formRef.current!
+        .validateAll()
+        .then((ok: boolean) => {
+            if(!ok){
+                console.log(`[onPropertyCommitted] notifyUpdateItem() found form to be invalid`);
+                return;
+            }
+
+            this.notifyUpdateItem()
+            .then((response: UpdateItemResponse) => {
+                // No-op
+                console.log(`[onPropertyCommitted] notifyUpdateItem() succeeded`, response.updatedItem);
+            })
+            .catch((error: any) => {
+                console.log(`[ERROR] notifyUpdateItem() failed`, error);
+                // Just swalllow the error here.
+            })
+        })
+        .catch((error: any) => {
+          console.error(error);
+        });
+    };
 
     componentDidMount(){
         this.props.forwardedRef.current!.addCssFile("views/pages/detail/detail-page.css");
@@ -621,10 +644,12 @@ export class DetailPage extends React.Component<Props, State> {
                             </$GridLayout>
 
                             <$RadDataForm
-                                id="itemDetailsDataForm"
+                                // id="itemDetailsDataForm"
+                                ref={this.formRef}
                                 row={1}
                                 source={itemFormTruncated}
                                 onEditorUpdate={this.onEditorUpdate}
+                                onPropertyCommitted={this.onPropertyCommitted}
                             >
                                 <$EntityProperty name="title" displayName="Title" index={1} hintText="Title">
                                     <$PropertyEditor type={DataFormEditorType.Text}>

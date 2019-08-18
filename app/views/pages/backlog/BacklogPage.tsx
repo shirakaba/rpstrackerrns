@@ -32,13 +32,13 @@ import { EventData } from "tns-core-modules/data/observable/observable";
 import { dateConverter, itemToIndicatorClassConverter } from "~/utils/converters";
 import { ItemEventData } from "tns-core-modules/ui/list-view/list-view";
 import { PullToRefresh } from "@nstudio/nativescript-pulltorefresh";
-import { goToDetailPageReact } from "~/shared/helpers/navigation/nav-react.helper";
 import { DetailPageProps } from "~/core/models/page-props/detail-page-props";
 import { DetailPage } from "../detail/DetailPage";
 import { NavigatedData } from "tns-core-modules/ui/page/page";
 import { SettingsPage } from "../settings/SettingsPage";
 import { SettingsPageProps } from "~/core/models/page-props/settings-page-props";
 import { BacklogPageProps } from "~/core/models/page-props/backlog-page-props";
+// import { goToDetailPageReact } from "~/shared/helpers/navigation/nav-react.helper";
 
 type Props = BacklogPageProps;
 
@@ -176,6 +176,7 @@ export class BacklogPage extends React.Component<Props, State> {
 
     private readonly onListItemTap = (itemEventData: ItemEventData) => {
         const item: PtItem = this.items.getItem(itemEventData.index);
+        console.log(`[onListItemTap] Viewing item ID`, item.id);
 
         /* No longer recommending this approach. Although it's simple, it leads to crashes. */
         // goToDetailPageReact({ item });
@@ -204,7 +205,11 @@ export class BacklogPage extends React.Component<Props, State> {
      * - you navigate away whilst backStackVisible is false  */
     private readonly onNavigatedFromDetailPage = (args: NavigatedData) => {
         if(args.isBackNavigation){
+            // console.log(`[onNavigatedFromDetailPage]`);
             this.setState({ navToDetailPageArgs: null }, () => {
+                // console.log(`[onNavigatedFromDetailPage] refreshing`);
+
+                /* Seems that refreshing isn't necessary. e.g. Estimate gets updated in list after altering on Detail page. */
                 // this.refresh();
             });
         }
@@ -213,6 +218,7 @@ export class BacklogPage extends React.Component<Props, State> {
     private readonly onNavigatedFromSettingsPage = (args: NavigatedData) => {
         if(args.isBackNavigation){
             this.setState({ navToSettingsPageArgs: null }, () => {
+                /* Settings page doesn't have a purpose at the moment, so I'm unsure whether we'll want to refresh upon return from it at the moment. */
                 // this.refresh();
             });
         }
