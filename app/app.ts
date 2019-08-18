@@ -1,7 +1,8 @@
 import { setAppEvents } from '~/globals/app-events/app-events';
 import '~/globals/dependencies/locator';
 
-(global as any).__DEV__ = true;
+/* Controls react-nativescript log verbosity. true: all logs; false: only error logs. */
+Object.defineProperty(global, '__DEV__', { value: false });
 
 import * as React from "react";
 import * as ReactNativeScript from "react-nativescript/dist/index";
