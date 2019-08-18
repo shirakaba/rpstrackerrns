@@ -17,9 +17,8 @@ import { RegisterPageProps } from "~/core/models/page-props/register-page-props"
 import { RegisterPage } from "../register/RegisterPage";
 import { goToBacklogPageReact, goToRegisterPageReact } from "~/shared/helpers/navigation/nav-react.helper";
 import { LoginPageProps } from "~/core/models/page-props/login-page-props";
-
-// Because at-loader can't find this type for some reason...
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+import { BacklogPageProps } from "~/core/models/page-props/backlog-page-props";
+import { BacklogPage } from "../backlog/BacklogPage";
 
 type Props = LoginPageProps;
 
@@ -32,11 +31,13 @@ interface State {
     formValid: boolean,
     loggingIn: boolean,
     
-    navToRegisterPageArgs: Omit<RegisterPageProps, "forwardedRef">|null,
+    navToRegisterPageArgs: RegisterPageProps|null,
+    navToBacklogPageArgs: BacklogPageProps|null,
 }
 
 export class LoginPage extends React.Component<Props, State> {
     private readonly registerPageRef: React.RefObject<Page> = React.createRef<Page>();
+    private readonly backlogPageRef: React.RefObject<Page> = React.createRef<Page>();
     private readonly authService: PtAuthService = getAuthService();
 
     public componentDidMount(): void {
@@ -56,11 +57,12 @@ export class LoginPage extends React.Component<Props, State> {
             formValid: true,
             
             navToRegisterPageArgs: null,
+            navToBacklogPageArgs: null,
         };
     }
 
     public render(){
-        const { loggingIn, emailEmpty, email, emailValid, password, passwordEmpty, formValid, navToRegisterPageArgs } = this.state;
+        const { loggingIn, emailEmpty, email, emailValid, password, passwordEmpty, formValid, navToRegisterPageArgs, navToBacklogPageArgs } = this.state;
 
         return (
             <$Page ref={this.props.forwardedRef} actionBarHidden={true} className={"sanity-test"}>
@@ -156,21 +158,19 @@ export class LoginPage extends React.Component<Props, State> {
                 {/* === ROUTES THAT WE CAN NAVIGATE ON TO (not visual children of Page, but can be mounted as dependents) === */}
                 {/* It's a bit fiddly, but this setup lets us lazily mount a Page. */}
                 {/* One day we'll make a navigation framework to produce a simpler approach, but... one thing at a time! */}
-                {
-                    navToRegisterPageArgs === null ?
-                        null :
-                        (<RegisterPage forwardedRef={this.registerPageRef} />)
-                }
+                {navToRegisterPageArgs === null ? null : (<RegisterPage {...navToRegisterPageArgs} />)}
+
+                {navToBacklogPageArgs === null ? null : (<BacklogPage {...navToBacklogPageArgs} />)}
             </$Page>
         );
     }
 
     private readonly onGotoRegisterTap = () => {
-        // goToRegisterPage();
-
         this.setState(
             {
-                navToRegisterPageArgs: {}
+                navToRegisterPageArgs: {
+                    forwardedRef: this.registerPageRef,
+                }
             },
             () => {
                 this.props.forwardedRef.current!.frame.navigate({
@@ -182,23 +182,12 @@ export class LoginPage extends React.Component<Props, State> {
             }
         );
 
+        /* No longer recommending this approach. Although it's simple, it leads to crashes. */
         // goToRegisterPageReact({}, { animated: false });
     };
 
     private readonly onLoginTap = () => {
-        this.onLoginTapHandler()
-        .then(() => {
-            // goToBacklogPage(true);
-            goToBacklogPageReact({}, { clearHistory: true, animated: true });
-        })
-        .catch(error => {
-            console.error(error);
-            alert('Sorry, could not log in at this time');
-        });
-    };
-
-	private readonly onLoginTapHandler = () : Promise<void> => {
-        return new Promise((resolve, reject) => {
+        new Promise((resolve, reject) => {
             this.setState(
                 {
                     loggingIn: true
@@ -221,8 +210,33 @@ export class LoginPage extends React.Component<Props, State> {
                     });
                 }
             );
+        })
+        .then(() => {
+            this.setState(
+                {
+                    navToBacklogPageArgs: {
+                        forwardedRef: this.backlogPageRef,
+                    }
+                },
+                () => {
+                    this.props.forwardedRef.current!.frame.navigate({
+                        create: () => {
+                            return this.backlogPageRef.current!;
+                        },
+                        clearHistory: true,
+                        animated: true,
+                    })
+                }
+            );
+
+            /* No longer recommending this approach. Although it's simple, it leads to crashes. */
+            goToBacklogPageReact({}, { clearHistory: true, animated: true });
+        })
+        .catch(error => {
+            console.error(error);
+            alert('Sorry, could not log in at this time');
         });
-    }
+    };
 
     private readonly onEmailTextChange = (args: EventData) => {
         const text: string = (args.object as TextField).text;

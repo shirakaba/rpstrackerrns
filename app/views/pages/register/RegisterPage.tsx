@@ -17,9 +17,6 @@ import { LoginPageProps } from "~/core/models/page-props/login-page-props";
 import { BacklogPage } from "../backlog/BacklogPage";
 import { BacklogPageProps } from "~/core/models/page-props/backlog-page-props";
 
-// Because at-loader can't find this type for some reason...
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
-
 type Props = RegisterPageProps;
 
 interface State {
@@ -34,8 +31,8 @@ interface State {
     /* I've changed the 'loggingIn' property from the original to 'registering' - maybe a misunderstanding though */
     registering: boolean,
 
-    navToLoginPageArgs: Omit<LoginPageProps, "forwardedRef">|null,
-    navToBacklogPageArgs: Omit<BacklogPageProps, "forwardedRef">|null,
+    navToLoginPageArgs: LoginPageProps|null,
+    navToBacklogPageArgs: BacklogPageProps|null,
 }
 
 export class RegisterPage extends React.Component<Props, State> {
@@ -175,17 +172,9 @@ export class RegisterPage extends React.Component<Props, State> {
                 {/* === ROUTES THAT WE CAN NAVIGATE ON TO (not visual children of Page, but can be mounted as dependents) === */}
                 {/* It's a bit fiddly, but this setup lets us lazily mount a Page. */}
                 {/* One day we'll make a navigation framework to produce a simpler approach, but... one thing at a time! */}
-                {
-                    navToLoginPageArgs === null ?
-                        null :
-                        (<LoginPage forwardedRef={this.loginPageRef} />)
-                }
+                {navToLoginPageArgs === null ? null : (<LoginPage {...navToLoginPageArgs} />)}
 
-                {
-                    navToBacklogPageArgs === null ?
-                        null :
-                        (<BacklogPage forwardedRef={this.backlogPageRef} />)
-                }
+                {navToBacklogPageArgs === null ? null : (<BacklogPage {...navToBacklogPageArgs} />)}
                 </$GridLayout>
 
             </$Page>
@@ -286,7 +275,9 @@ export class RegisterPage extends React.Component<Props, State> {
         .then(() => {
             this.setState(
                 {
-                    navToBacklogPageArgs: {}
+                    navToBacklogPageArgs: {
+                        forwardedRef: this.backlogPageRef,
+                    }
                 },
                 () => {
                     this.props.forwardedRef.current!.frame.navigate({
@@ -300,7 +291,7 @@ export class RegisterPage extends React.Component<Props, State> {
             );
 
             /* No longer recommending this approach. Although it's simple, it leads to crashes. */
-            // goToBacklogPageReact({}, { clearHistory: true });
+            // goToBacklogPageReact({}, { clearHistory: true, animated: true });
         })
         .catch(error => {
             console.error(error);
@@ -311,7 +302,9 @@ export class RegisterPage extends React.Component<Props, State> {
     private readonly onGoToLoginTap = (args: GestureEventData) => {
         this.setState(
             {
-                navToLoginPageArgs: {}
+                navToLoginPageArgs: {
+                    forwardedRef: this.loginPageRef,
+                }
             },
             () => {
                 this.props.forwardedRef.current!.frame.navigate({
