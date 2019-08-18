@@ -2,7 +2,7 @@ import * as React from "react";
 import { $StackLayout, $Label, $Page, $GridLayout, $Image, $TextField, $Button } from "react-nativescript";
 import { Color } from "tns-core-modules/color/color";
 import { ItemSpec } from "tns-core-modules/ui/layouts/grid-layout/grid-layout";
-import { Page, isIOS, isAndroid } from "tns-core-modules/ui/page/page";
+import { Page, isIOS, isAndroid, EventData } from "tns-core-modules/ui/page/page";
 import { GestureEventData } from "tns-core-modules/ui/gestures/gestures";
 import { RegisterPageProps } from "~/core/models/page-props/register-page-props";
 import { localize } from "nativescript-localize";
@@ -16,6 +16,7 @@ import { LoginPage } from "../login/LoginPage";
 import { LoginPageProps } from "~/core/models/page-props/login-page-props";
 import { BacklogPage } from "../backlog/BacklogPage";
 import { BacklogPageProps } from "~/core/models/page-props/backlog-page-props";
+import { TextField } from "react-nativescript/dist/client/ElementRegistry";
 
 type Props = RegisterPageProps;
 
@@ -79,6 +80,18 @@ export class RegisterPage extends React.Component<Props, State> {
         this.props.forwardedRef.current!.addCssFile("views/pages/register/register-page.css");
     }
 
+    private readonly onNameTextFieldChange = (args: EventData) => {
+        this.setState({ fullName: (args.object as TextField).text });
+    };
+
+    private readonly onEmailTextFieldChange = (args: EventData) => {
+        this.setState({ email: (args.object as TextField).text });
+    };
+
+    private readonly onPasswordTextFieldChange = (args: EventData) => {
+        this.setState({ password: (args.object as TextField).text });
+    };
+
     public render(){
         const { forwardedRef } = this.props;
         const { fullName, nameEmpty, email, emailValid, emailEmpty, password, passwordEmpty, formValid, registering, navToLoginPageArgs, navToBacklogPageArgs } = this.state;
@@ -100,9 +113,13 @@ export class RegisterPage extends React.Component<Props, State> {
 
                                     <$StackLayout className="input-field with-validation">
                                         <$GridLayout columns={[new ItemSpec(1, "star"), new ItemSpec(25, "pixel")]} rows={[]} className="login-field-wrapper">
-                                            <$TextField col={0}  
+                                            <$TextField
+                                                col={0}
                                                 className={!nameEmpty ? 'login-field valid' : 'login-field invalid'}
-                                                hint="Name" text={fullName} />
+                                                hint="Name"
+                                                text={fullName}
+                                                onTextChange={this.onNameTextFieldChange}
+                                            />
                                             <$Label col={1} 
                                                 className="fa login-icon" 
                                                 text="&#xf007;" />
@@ -120,7 +137,10 @@ export class RegisterPage extends React.Component<Props, State> {
                                             <$TextField col={0}
                                                 className={!emailEmpty && emailValid ? 'login-field valid' : 'login-field invalid'}
                                                 keyboardType="email"
-                                                hint="Email" text={email} />
+                                                hint="Email"
+                                                text={email}
+                                                onTextChange={this.onEmailTextFieldChange}
+                                            />
                                             <$Label col={1}
                                                 className="fa login-icon" 
                                                 text="&#xf0e0;" />
@@ -138,8 +158,11 @@ export class RegisterPage extends React.Component<Props, State> {
                                         <$GridLayout columns={[new ItemSpec(1, "star"), new ItemSpec(25, "pixel")]} rows={[]} className="login-field-wrapper">
                                             <$TextField col={0}
                                                 className={!passwordEmpty ? 'login-field valid' : 'login-field invalid'}
-                                                hint="Password" secure={true} 
-                                                text={password} />
+                                                hint="Password"
+                                                secure={true} 
+                                                text={password}
+                                                onTextChange={this.onPasswordTextFieldChange}
+                                            />
                                             <$Label className="fa login-icon" text="&#xf023;" col={1}/>
                                         </$GridLayout>
 
