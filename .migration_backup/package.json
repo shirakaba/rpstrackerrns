@@ -14,7 +14,7 @@
   "repository": "<fill-your-repository-here>",
   "dependencies": {
     "email-validator": "2.0.4",
-    "moment": "2.24.0",
+    "moment": "2.29.4",
     "nativescript-localize": "4.1.1",
     "nativescript-pulltorefresh": "2.2.1",
     "nativescript-theme-core": "~1.0.4",
